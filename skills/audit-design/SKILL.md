@@ -13,7 +13,7 @@ when_to_use: >-
   sweep catch".
 argument-hint: "[surface]"
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 # Audit a designed surface

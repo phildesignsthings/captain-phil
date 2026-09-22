@@ -19,7 +19,7 @@ compatibility: >-
   null, or issues.retired true, no issue declaration is written. With verify.mcp null step 4 reads
   the files rather than the screen and says so.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [surfaces.root, surfaces.unit, surfaces.doc, surfaces.route, surfaces.limits, theme.registry, memory.connectors, records.design, issues.ladder, issues.doc, issues.retired, components.dir, dev.platform, dev.start, dev.url, verify.mcp]
 ---
 

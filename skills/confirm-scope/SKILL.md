@@ -16,7 +16,7 @@ compatibility: >-
   Runs standalone in any repo. Step 3 escalates to a skill that interviews a design brief; without
   one, ask a second round instead.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 # Confirm the scope

@@ -15,7 +15,7 @@ compatibility: >-
   With verify.probes null no number can be asserted and every value is reported as looked at
   rather than measured. Without verify.doc, the rules in references/measuring.md apply.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [dev.start, dev.cwd, dev.url, dev.platform, verify.mcp, verify.probes, verify.doc, verify.agent, checks.typecheck]
 ---
 

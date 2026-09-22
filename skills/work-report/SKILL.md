@@ -11,7 +11,7 @@ when_to_use: >-
   Trigger phrases "work report", "clean report", "write this up", "format this for me", "make
   this skimmable", "tl;dr this", "hand this back".
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 # Report finished work

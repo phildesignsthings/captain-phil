@@ -2,7 +2,7 @@
 house_style: true
 ---
 
-# phil-d-skills
+# captain-phil
 
 Phil Davies's working defaults, as agent skills that install into any repo. Gates and review stops,
 one way of asking for a decision, one way of reporting finished work, and a rule that nothing is
@@ -13,19 +13,19 @@ claimed as rendered until something looked at it.
 Into one project:
 
 ```bash
-npx skills add goji-phil/phil-d-skills --all
+npx skills add phildesignsthings/captain-phil --all
 ```
 
 Globally, for every session on the machine:
 
 ```bash
-npx skills add goji-phil/phil-d-skills -g --all
+npx skills add phildesignsthings/captain-phil -g --all
 ```
 
 List what the repo publishes without installing any of it:
 
 ```bash
-npx skills add goji-phil/phil-d-skills -l
+npx skills add phildesignsthings/captain-phil -l
 ```
 
 Refresh every installed skill from `main`:
@@ -95,7 +95,7 @@ next `npx skills update -p -y` pulls the change.
 
 **`update` refreshes what a repo installed; it does not add what the suite gained.** The lock file
 is the list it walks, so a skill merged to `main` after a repo's install stays invisible to it. A
-consumer picks up a new skill by running `npx skills add goji-phil/phil-d-skills --all` again,
+consumer picks up a new skill by running `npx skills add phildesignsthings/captain-phil --all` again,
 which adds the missing folders and leaves the rest alone. Say which of the two a release needs.
 
 - **Version history** is the consuming repo's own git log. Commit `.agents/skills/` and
@@ -120,6 +120,6 @@ style over every markdown file.
 
 ## Access
 
-The repo is private under `goji-phil`. Coworkers who want to install the suite are added as
+The repo is private under `phildesignsthings`. Coworkers who want to install the suite are added as
 read-only collaborators, which lets `npx skills add` resolve the repo and keeps the skills a single
 source: an installed copy is reinstalled by `update`, so a local edit does not survive.

@@ -18,7 +18,7 @@ compatibility: >-
   references/memory-statuses.md apply. With issues.tracker null, there is no document set to
   sweep, so the reverse question cannot be answered.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [memory.root, memory.archive, memory.doc, memory.gloss, issues.tracker, checks.guard]
 ---
 

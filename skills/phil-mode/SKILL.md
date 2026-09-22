@@ -6,7 +6,7 @@ when_to_use: >-
   Use when somebody asks to work the way Phil does. Trigger phrases "phil mode", "work like
   Phil", "use Phil's defaults".
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 # Phil mode

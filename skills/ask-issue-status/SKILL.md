@@ -20,7 +20,7 @@ compatibility: >-
   nothing. With issues.ask absent the rungs are read out of the ladder file directly. With
   issues.doc absent the rung words are read off the ladder file's own type or table.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [issues.ladder, issues.tracker, issues.doc, issues.ask, issues.retired, git.doc, docs.local, checks.typecheck]
 ---
 

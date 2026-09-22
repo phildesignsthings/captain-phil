@@ -13,7 +13,7 @@ compatibility: >-
   Runs standalone in any repo. Step 2 needs the project's own check command; without one, report
   that no automated checks exist.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 # Finish clean

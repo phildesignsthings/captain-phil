@@ -13,7 +13,7 @@ compatibility: >-
   Reads the gate-state record `wrap-gate` writes. Without that skill, point this one at whatever
   file records a gate's finished state and its entry point.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 # Open a gate

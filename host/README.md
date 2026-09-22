@@ -119,7 +119,7 @@ compatibility: >-
   Reads dev.start, dev.url, verify.mcp and verify.probes from .agents/host.json. Without
   verify.probes, every number is reported as looked at rather than measured.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [dev.start, dev.url, verify.mcp, verify.probes]
 ```
 

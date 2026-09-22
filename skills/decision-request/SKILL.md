@@ -14,7 +14,7 @@ compatibility: >-
   Reads dev.start, dev.url and verify.mcp from .agents/host.json. Without them, start the server
   the way the repo's readme says and drive every path in a browser before quoting it.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [dev.start, dev.url, verify.mcp]
 ---
 

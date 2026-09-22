@@ -10,7 +10,7 @@ when_to_use: >-
   and wait for an answer before rolling. Trigger phrases "give me 3 random options", "off the
   wall", "get weird", "surprise me", "roll for it", "this is a snoozefest", "show me the log".
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 # Get creative

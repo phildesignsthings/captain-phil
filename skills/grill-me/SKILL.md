@@ -7,7 +7,7 @@ when_to_use: >-
   Use when user wants to stress-test a plan, get grilled on their design, or mentions "grill
   me".
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 Invoke /unslop and...

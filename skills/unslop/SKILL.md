@@ -9,7 +9,7 @@ when_to_use: >-
   exempt. Trigger phrases "unslop this", "this reads like AI wrote it", "strip the slop", "make
   this sound human".
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
 ---
 
 # Unslop

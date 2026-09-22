@@ -19,7 +19,7 @@ compatibility: >-
   work. With no slot answered at all, step 2 reads the shipped screens directly and the brief
   says which components it could not check.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [records.design, surfaces.root, theme.dir, theme.registry, components.dir, components.registry, components.showcase, docs.local]
 ---
 

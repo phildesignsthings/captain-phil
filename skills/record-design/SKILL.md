@@ -19,7 +19,7 @@ compatibility: >-
   records.design empty, ask which file records this surface and offer to record the answer.
   With records.driftWatch null, drift is noticed by reading rather than reported.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [records.design, records.designDoc, records.driftWatch, surfaces.root, surfaces.unit, theme.registry, docs.gotchas, verify.mcp, verify.probes]
 ---
 

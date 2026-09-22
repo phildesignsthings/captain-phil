@@ -16,7 +16,7 @@ compatibility: >-
   shape. With components.registry null the repo shows no catalogue: registration is skipped and
   said so in one line, and step 5 has one route to check instead of two.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [components.dir, components.install, components.registry, components.showcase, components.doc, theme.contract, verify.mcp, dev.start]
 ---
 

@@ -26,7 +26,7 @@ compatibility: >-
   does not run. With theme.registry null the repo lists no themes and step 6 asks only whether
   an identity exists. With issues.ladder null, or issues.retired true, step 8 does not run.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [git.trunk, git.release, git.engagementBranch, git.doc, memory.root, memory.connectors, memory.doc, records.product, records.productTemplate, docs.local, theme.registry, issues.tracker, issues.ladder, issues.doc, issues.retired, checks.guard]
 ---
 

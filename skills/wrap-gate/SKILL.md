@@ -14,7 +14,7 @@ compatibility: >-
   script falls back to the package manifest's own scripts against a baseline of zero and says so;
   without verify.mcp, step 2 cannot run and the gate is reported unverified.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [checks.typecheck, dev.url, verify.mcp]
 ---
 

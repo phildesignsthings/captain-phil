@@ -19,7 +19,7 @@ compatibility: >-
   theme. With verify.mcp null nothing can drive the app, so step 6 reads the file instead of the
   screen and says so.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [theme.dir, theme.registry, theme.contract, theme.generator, theme.doc, components.showcase, records.product, checks.guard, dev.start, verify.mcp]
 ---
 

@@ -18,7 +18,7 @@ compatibility: >-
   once and offer to record the answer. With memory.root null, the repo keeps no project notes,
   so step 1 never routes content there. Without checks.guard, step 6 runs by hand.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [docs.root, docs.index, docs.glossary, docs.retired, docs.local, memory.root, memory.doc, memory.gloss, checks.guard]
 ---
 

@@ -15,7 +15,7 @@ compatibility: >-
   rules in references/composition.md apply. With docs.gotchas null, step 1 is skipped in one
   line. With surfaces.limits null, file shape is judged by reading.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [docs.gotchas, surfaces.root, surfaces.doc, surfaces.compositionDoc, surfaces.limits, surfaces.seam, components.dir, dev.platform, checks.typecheck, checks.lint]
 ---
 

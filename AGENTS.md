@@ -43,7 +43,7 @@ because a mistake here lands in a repo the author never sees.
 ## Adding a skill
 
 1. Create `skills/<name>/SKILL.md` with `name`, `description` and `when_to_use` folded as `>-`.
-2. Set `metadata.suite: phil-d-skills`, and `metadata.host` where the skill reads any slot.
+2. Set `metadata.suite: captain-phil`, and `metadata.host` where the skill reads any slot.
 3. Write `compatibility` naming the fallback for every slot listed.
 4. Add `argument-hint` where the body reads `$1`.
 5. Bundle whatever the skill reads off disk under `references/`, `scripts/` or `assets/`.
@@ -59,7 +59,7 @@ because a mistake here lands in a repo the author never sees.
 The guard never runs in a consuming repo, so a rule about how an installed skill behaves has to be
 tested by installing it:
 
-1. Create a scratch repo and run `npx skills add goji-phil/phil-d-skills --all` in it.
+1. Create a scratch repo and run `npx skills add phildesignsthings/captain-phil --all` in it.
 2. Confirm `.claude/skills/<name>` is a symlink into `.agents/skills/`.
 3. Drop the matching `host/templates/*.json` in as `.agents/host.json`.
 4. Invoke the skill in a fresh session and read what it does with an absent slot and a `null` one.

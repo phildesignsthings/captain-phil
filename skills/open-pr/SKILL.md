@@ -16,7 +16,7 @@ compatibility: >-
   With git.release null, the trunk is also the release branch and the § Variants catch-up does
   not run. With issues.ladder null, no rung changes and the status ask is skipped in one line.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [git.trunk, git.release, git.engagementBranch, git.doc, checks.typecheck, checks.lint, checks.test, issues.ladder, issues.doc, verify.doc]
 ---
 

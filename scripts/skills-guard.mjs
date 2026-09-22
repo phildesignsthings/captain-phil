@@ -226,10 +226,10 @@ function checkFrontmatter() {
       );
     if (fm.compatibility && fm.compatibility__style !== ">-")
       fail(`${rel} writes \`compatibility:\` without \`>-\`. Fold it.`);
-    if (fm.metadata?.suite !== "phil-d-skills")
+    if (fm.metadata?.suite !== "captain-phil")
       fail(
         `${rel} declares \`metadata.suite: ${fm.metadata?.suite ?? "(none)"}\`. Every skill in this ` +
-          `repo carries \`phil-d-skills\`, which is how a consuming repo tells a suite skill from ` +
+          `repo carries \`captain-phil\`, which is how a consuming repo tells a suite skill from ` +
           `one of its own.`,
       );
     if (/\$1\b/.test(bodyProse(text)) && !fm["argument-hint"])

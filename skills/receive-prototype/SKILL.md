@@ -21,7 +21,7 @@ compatibility: >-
   machinery is identified by reading and named before it is cut. With surfaces.seam null the source
   fetched at the call site, so step 4 edits each call rather than one file.
 metadata:
-  suite: phil-d-skills
+  suite: captain-phil
   host: [dev.cwd, dev.start, dev.url, surfaces.root, surfaces.route, surfaces.seam, surfaces.harnessMarkers, surfaces.receiveDoc, records.design, checks.typecheck]
 ---
 
