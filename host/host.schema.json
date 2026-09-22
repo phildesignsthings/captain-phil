@@ -1,0 +1,353 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/goji-phil/phil-d-skills/host/host.schema.json",
+  "title": "phil-d-skills host file",
+  "description": "One repo's answers to the questions the suite's skills ask. Lives at .agents/host.json in the repo root and is found by walking up from cwd. A slot carrying a value is the answer; a slot set to null says the repo has none of that thing, and the skill skips the step; an absent slot means nobody answered, and the skill runs its compatibility fallback.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "template": {
+      "type": "string",
+      "description": "Which host/templates/ file this was filled from. Recorded so a suite update can tell what a repo started from.",
+      "enum": ["minimal", "react-web", "react-native-expo", "ideation-sandbox"]
+    },
+
+    "dev": {
+      "type": "object",
+      "description": "Running the app. Read by verify-ui, decision-request, wrap-gate, new-screen, add-primitive and receive-prototype.",
+      "additionalProperties": false,
+      "properties": {
+        "cwd": {
+          "type": ["string", "null"],
+          "description": "Directory the dev command runs in, relative to the repo root. Null or absent means the repo root."
+        },
+        "start": {
+          "type": ["string", "null"],
+          "description": "Shell command that starts the app for review, run from dev.cwd. Null means the repo has no runnable app, and every skill that would look at a screen says so instead."
+        },
+        "url": {
+          "type": ["string", "null"],
+          "description": "Base URL the started app is expected to bind. Every quoted link hangs off it, and the port the server ACTUALLY bound overrides it — a dev server walks up from its default whenever another holds the port."
+        },
+        "platform": {
+          "type": ["string", "null"],
+          "description": "Which harness can see the app. `web` means a browser and a URL; `native` means a simulator and a screenshot, so a measured number is reported as looked at rather than measured.",
+          "enum": ["web", "native", null]
+        }
+      }
+    },
+
+    "checks": {
+      "type": ["object", "null"],
+      "description": "The typecheck, lint, test and format commands with the count each one is allowed to return. Read by wrap-gate/scripts/check-baseline.mjs, which also writes baselines back here under --record. Null means the repo has no automated checks.",
+      "additionalProperties": false,
+      "properties": {
+        "cwd": {
+          "type": ["string", "null"],
+          "description": "Directory every check runs in, relative to the repo root. A check's own `cwd` overrides it."
+        },
+        "guard": {
+          "allOf": [{ "$ref": "#/definitions/check" }],
+          "description": "The repo's own prose or convention guard, where it has one beyond the four below. check-baseline runs it like any other check; write-doc and freeze-memory read its `cmd` to run it deliberately."
+        },
+        "typecheck": { "$ref": "#/definitions/check" },
+        "lint": { "$ref": "#/definitions/check" },
+        "test": { "$ref": "#/definitions/check" },
+        "format": { "$ref": "#/definitions/check" }
+      }
+    },
+
+    "git": {
+      "type": "object",
+      "description": "Branches and who merges. Read by open-pr, start-engagement and ask-issue-status.",
+      "additionalProperties": false,
+      "properties": {
+        "trunk": {
+          "type": ["string", "null"],
+          "description": "Branch a finished piece of work is raised against by default."
+        },
+        "release": {
+          "type": ["string", "null"],
+          "description": "Branch the trunk is caught up to, where the repo separates the two. Null means the trunk is also the release branch, and open-pr's § Variants does not run."
+        },
+        "engagementBranch": {
+          "type": ["string", "null"],
+          "description": "Branch one client engagement's work lives on, where the repo carries per-engagement branches. Null means every branch is the same kind."
+        },
+        "doc": {
+          "type": ["string", "null"],
+          "description": "Repo file holding the branch table, the pull-request templates and who merges. Cited rather than quoted."
+        }
+      }
+    },
+
+    "docs": {
+      "type": "object",
+      "description": "Where written rules live. Read by write-doc, new-screen, record-design, paper and ask-issue-status.",
+      "additionalProperties": false,
+      "properties": {
+        "root": {
+          "type": ["string", "null"],
+          "description": "Folder holding the repo's docs. Null means the repo keeps no docs folder, and a doc is written where the reader who needs it will be."
+        },
+        "glossary": {
+          "type": ["string", "null"],
+          "description": "File defining the repo's internal terms. A term with no entry gets one before its first use elsewhere."
+        },
+        "gotchas": {
+          "type": ["string", "null"],
+          "description": "Index file routing to the repo's lessons-learned rules. Read before any interface work and written to when a correction produces a mechanism."
+        },
+        "local": {
+          "type": ["string", "null"],
+          "description": "Folder for notes true on one branch only, which the trunk never takes. Null means every note is repo-wide."
+        },
+        "retired": {
+          "type": ["string", "null"],
+          "description": "Folder holding retirement records — what is gone and why. Dated language is legal there and nowhere else."
+        },
+        "index": {
+          "type": ["string", "null"],
+          "description": "File carrying the read-when index a planning agent reads first, usually AGENTS.md or CLAUDE.md. A doc added without a line here is a doc nobody finds."
+        }
+      }
+    },
+
+    "records": {
+      "type": "object",
+      "description": "The product record and the design records. Read by record-design, audit-design, ingest-theme, paper, start-engagement and receive-prototype.",
+      "additionalProperties": false,
+      "properties": {
+        "product": {
+          "type": ["string", "null"],
+          "description": "File stating what the product is, who it serves and what its copy standard is. audit-design quotes its six criteria from here."
+        },
+        "productTemplate": {
+          "type": ["string", "null"],
+          "description": "Stub the product record is filled from. Absent means start-engagement uses its own bundled template."
+        },
+        "design": {
+          "type": "array",
+          "description": "Every design record in the repo, most general first. Each entry names one surface and the file recording the system that surface landed.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["surface", "path"],
+            "properties": {
+              "surface": { "type": "string", "description": "What the record covers, in the words the repo uses for it." },
+              "path": { "type": "string", "description": "The record file, relative to the repo root." },
+              "sidecar": { "type": ["string", "null"], "description": "Machine-readable mirror of the record's rules, where a tool keeps one. Written LAST, because a staleness check compares modification times." }
+            }
+          }
+        },
+        "designDoc": {
+          "type": ["string", "null"],
+          "description": "File stating the canonical headings, their order and any length cap a design record owes. Absent means record-design uses its own bundled format."
+        },
+        "driftWatch": {
+          "type": ["string", "null"],
+          "description": "Command reporting which design records have fallen behind the code. Null means drift is noticed by reading."
+        }
+      }
+    },
+
+    "memory": {
+      "type": "object",
+      "description": "One engagement's project notes. Read by write-doc, freeze-memory and start-engagement.",
+      "additionalProperties": false,
+      "properties": {
+        "root": {
+          "type": ["string", "null"],
+          "description": "Folder holding the project notes. Null means the repo keeps none, and freeze-memory exits in one line."
+        },
+        "archive": {
+          "type": ["string", "null"],
+          "description": "Folder a retired note moves to, carrying a pointer at whatever replaced it."
+        },
+        "doc": {
+          "type": ["string", "null"],
+          "description": "File defining the note statuses and how each one is edited. Absent means freeze-memory uses its own bundled four."
+        },
+        "gloss": {
+          "type": ["string", "null"],
+          "description": "Source file holding the one-line gloss per note that a listing renders. A note with no gloss lists blank."
+        },
+        "connectors": {
+          "type": ["string", "null"],
+          "description": "Note recording which external services this engagement's material comes from, and which space or project inside each."
+        }
+      }
+    },
+
+    "issues": {
+      "type": "object",
+      "description": "The tracker and the per-surface issue ladder. Read by ask-issue-status, open-pr, new-surface and start-engagement.",
+      "additionalProperties": false,
+      "properties": {
+        "tracker": {
+          "type": ["string", "null"],
+          "description": "Which issue tracker the repo's work answers to, named as the agent would reach it. Null means work is tracked outside any tool a skill can read."
+        },
+        "ladder": {
+          "type": ["string", "null"],
+          "description": "Source file declaring which issues each surface's screens answer to, and each one's status. Null means the repo tracks status somewhere a skill does not write, and ask-issue-status exits in one line."
+        },
+        "doc": {
+          "type": ["string", "null"],
+          "description": "File stating the rung shape, the status words and how a surface declares its issues."
+        },
+        "ask": {
+          "type": ["string", "null"],
+          "description": "Command that prints the rungs to put to the designer. Absent means read the ladder file directly."
+        },
+        "retired": {
+          "type": ["boolean", "null"],
+          "description": "True where the branch dropped the ladder on purpose. ask-issue-status then says so once and never asks again."
+        }
+      }
+    },
+
+    "verify": {
+      "type": "object",
+      "description": "Proving a rendered value rather than assuming it. Read by verify-ui, wrap-gate, decision-request, record-design and add-primitive.",
+      "additionalProperties": false,
+      "properties": {
+        "mcp": {
+          "type": ["string", "null"],
+          "description": "Which browser-driving tool the repo uses to LOOK at a screen. Null means nothing can drive the app, and every number is reported as looked at rather than measured."
+        },
+        "probes": {
+          "type": ["string", "null"],
+          "description": "Folder holding the scripts that MEASURE the rendered page. Null means no number can be asserted, and a write-up says which values went unmeasured."
+        },
+        "doc": {
+          "type": ["string", "null"],
+          "description": "File holding the repo's probe table and the traps each probe has already paid for. Absent means verify-ui uses its own bundled measuring rules."
+        },
+        "agent": {
+          "type": ["string", "null"],
+          "description": "Sub-agent file that runs one route's measurement and returns the numbers with its exit codes. Absent means verify-ui offers to install its own."
+        }
+      }
+    },
+
+    "theme": {
+      "type": "object",
+      "description": "Colour, tokens and the brand slot. Read by ingest-theme, record-design, add-primitive and paper.",
+      "additionalProperties": false,
+      "properties": {
+        "dir": {
+          "type": ["string", "null"],
+          "description": "Folder holding the theme files. Null means the repo has one hardcoded look and ingest-theme writes a stylesheet instead."
+        },
+        "registry": {
+          "type": ["string", "null"],
+          "description": "Source file listing every theme with its id and role. A theme absent from it is a theme no surface can pin."
+        },
+        "contract": {
+          "type": ["string", "null"],
+          "description": "File declaring which tokens every theme owes. A gap is a token that silently inherits the enclosing surface."
+        },
+        "generator": {
+          "type": ["string", "null"],
+          "description": "Command that emits a theme file from a source palette. Null means ingest-theme transcribes the supplied variables by hand."
+        },
+        "doc": {
+          "type": ["string", "null"],
+          "description": "File stating the token contract, the theme roles and which modes a theme has."
+        }
+      }
+    },
+
+    "components": {
+      "type": "object",
+      "description": "The primitive layer and its catalogue. Read by add-primitive, new-screen, record-design and paper.",
+      "additionalProperties": false,
+      "properties": {
+        "dir": {
+          "type": ["string", "null"],
+          "description": "Folder holding the primitives a screen composes. Checked before any interface is built, because the primitive usually exists."
+        },
+        "install": {
+          "type": ["string", "null"],
+          "description": "Command that installs one primitive, with the component name appended. Null means a missing primitive is written by hand."
+        },
+        "registry": {
+          "type": ["string", "null"],
+          "description": "Hand-maintained file listing the installed primitives a catalogue page renders. Null means the repo shows no catalogue, and add-primitive skips registration and says so."
+        },
+        "showcase": {
+          "type": ["string", "null"],
+          "description": "Route where the catalogue renders, appended to dev.url to check an entry landed."
+        },
+        "doc": {
+          "type": ["string", "null"],
+          "description": "File stating what a registry entry owes and which layer a component file belongs in."
+        }
+      }
+    },
+
+    "surfaces": {
+      "type": "object",
+      "description": "Where a screen goes and what its folder owes. Read by new-surface, new-screen, record-design, paper and receive-prototype.",
+      "additionalProperties": false,
+      "properties": {
+        "root": {
+          "type": ["string", "null"],
+          "description": "Folder holding the surfaces, one per folder. Null means the repo has a single application and a screen goes wherever its route lives."
+        },
+        "unit": {
+          "type": ["string", "null"],
+          "description": "What the repo calls one of them, in the words it uses. new-surface asks once where none is declared.",
+          "examples": ["prototype", "feature", "screen", "route"]
+        },
+        "doc": {
+          "type": ["string", "null"],
+          "description": "File stating a surface folder's structure, its mandatory files and its import direction."
+        },
+        "route": {
+          "type": ["string", "null"],
+          "description": "Url pattern one surface renders at, with the surface's folder name substituted for `<name>`.",
+          "examples": ["/prototypes/<name>"]
+        },
+        "compositionDoc": {
+          "type": ["string", "null"],
+          "description": "File holding the layout archetypes, the hierarchy rules and the four data states. Absent means new-screen uses its own bundled menu."
+        },
+        "limits": {
+          "type": ["string", "null"],
+          "description": "Command that reports a file which has outgrown its size or component budget. Null means file shape is judged by reading."
+        },
+        "seam": {
+          "type": ["string", "null"],
+          "description": "Folder holding the one path a surface's data goes through, which a real interface swaps for its own client. Null means data is fetched at the call site."
+        },
+        "harnessMarkers": {
+          "type": "array",
+          "description": "Strings that mark demo-only machinery, so a receiving developer can find every file to strip by grep rather than by memory.",
+          "items": { "type": "string" },
+          "examples": [["@demo-harness"]]
+        },
+        "receiveDoc": {
+          "type": ["string", "null"],
+          "description": "File stating what survives a handoff into a real application and what stays behind. Absent means receive-prototype uses its own bundled list."
+        }
+      }
+    }
+  },
+
+  "definitions": {
+    "check": {
+      "type": ["object", "null"],
+      "description": "One check: the command and the count it is allowed to return. Null means the repo has no check of this kind.",
+      "additionalProperties": false,
+      "required": ["cmd"],
+      "properties": {
+        "cmd": { "type": "string", "description": "Shell command that runs the check. A typecheck command must build the project rather than only parse it — a parse-only flag is a false pass." },
+        "baseline": { "type": "integer", "minimum": 0, "description": "Count this check returns today and is allowed to keep returning. Anything above it is new." },
+        "cwd": { "type": ["string", "null"], "description": "Directory this check runs in, relative to the repo root. Overrides checks.cwd." }
+      }
+    }
+  }
+}

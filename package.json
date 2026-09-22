@@ -1,0 +1,10 @@
+{
+  "name": "phil-d-skills",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Phil Davies's portable agent-skill suite",
+  "type": "module",
+  "scripts": {
+    "guard": "node scripts/skills-guard.mjs"
+  }
+}

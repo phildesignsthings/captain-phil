@@ -1,0 +1,47 @@
+{
+  "$comment": "Ready-made Paper MCP calls per sweep. Fill <fileId> and any <angle-bracket> value from the records, then send every phase-B call in ONE message. Replace nothing else. `parallel: false` means one call per message, alone.",
+  "version": 3,
+  "phases": {
+    "A": {
+      "parallel": true,
+      "calls": [
+        { "sweep": 20, "tool": "get_tree_summary", "args": { "fileId": "<fileId>", "nodeId": "root_node_<pageId>", "depth": 10 }, "note": "Once. Yields the board inventory, root frame widths and positions, and every node id phase C needs." },
+        { "sweep": 2, "tool": "read", "args": { "paths": ["<product record>", "<design record or rules board id>"] }, "note": "Read before raising anything; every candidate finding is checked against these." }
+      ]
+    },
+    "B": {
+      "parallel": true,
+      "calls": [
+        { "sweep": 7, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*←*" }, "criterion": 5 },
+        { "sweep": 7, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*‹*" }, "criterion": 5 },
+        { "sweep": 7, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*›*" }, "criterion": 5 },
+        { "sweep": 7, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*–*" }, "criterion": 5 },
+        { "sweep": 7, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*—*" }, "criterion": 5 },
+        { "sweep": 22, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*✓*" }, "criterion": 5 },
+        { "sweep": 22, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*✗*" }, "criterion": 5 },
+        { "sweep": 8, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*<ruled-out word>*" }, "criterion": 3, "note": "One call per word the records rule out. Expect zero." },
+        { "sweep": 9, "tool": "find_nodes", "args": { "fileId": "<fileId>", "filters": [{ "styleValue": "--<semantic colour token>" }] }, "criterion": 4, "note": "One call per semantic token: destructive, warning, success, muted-foreground and the rest the theme declares. The result is the usage map sweeps 14 and 16 read." },
+        { "sweep": 10, "tool": "find_nodes", "args": { "fileId": "<fileId>", "filters": [{ "styleName": "font-family", "styleValue": "*<off-system family>*" }] }, "criterion": 5, "note": "One call per suspect family: system-ui, -apple-system, Arial, Helvetica, Inter, and any family the type system does not name. Expect zero, or the clock node alone." },
+        { "sweep": 11, "tool": "find_nodes", "args": { "fileId": "<fileId>", "filters": [{ "styleName": "line-height", "styleValue": "*px" }] }, "criterion": 5, "note": "A token-bound value reports as var(--…), so a px match is a literal." },
+        { "sweep": 11, "tool": "find_nodes", "args": { "fileId": "<fileId>", "filters": [{ "styleName": "letter-spacing", "styleValue": "*em" }] }, "criterion": 5 },
+        { "sweep": 11, "tool": "find_nodes", "args": { "fileId": "<fileId>", "filters": [{ "styleName": "letter-spacing", "styleValue": "*px" }] }, "criterion": 5 },
+        { "sweep": 12, "tool": "find_nodes", "args": { "fileId": "<fileId>", "textValue": "*<placeholder name>*" }, "criterion": 2, "note": "One call per placeholder fact: the sample user's name, email, code, organisation. Compare the returned spellings across boards." }
+      ]
+    },
+    "C": {
+      "parallel": true,
+      "batch": 10,
+      "calls": [
+        { "sweep": 24, "tool": "get_jsx", "args": { "fileId": "<fileId>", "nodeId": "<board id>" }, "note": "One call per screen board, from the phase A inventory. Skip furniture, stickies and record boards. Answers sweeps 3, 4, 5, 6, 13, 14, 15, 16, 17, 18, 19, 21, 23." },
+        { "sweep": 6, "tool": "get_jsx", "args": { "fileId": "<fileId>", "nodeId": "<icon-set board id>" }, "note": "The contract the glyphs are measured against, and the source for sweeps 17 and 23." },
+        { "sweep": 3, "tool": "get_computed_styles", "args": { "fileId": "<fileId>", "nodeId": "<node id>" }, "note": "Only for a value the JSX leaves ambiguous." }
+      ]
+    },
+    "D": {
+      "parallel": false,
+      "calls": [
+        { "sweep": "composition", "tool": "get_screenshot", "args": { "fileId": "<fileId>", "nodeId": "<board id>" }, "criterion": 5, "note": "One hero board per band, then every board a phase C finding names. One call per message, after phase C." }
+      ]
+    }
+  }
+}

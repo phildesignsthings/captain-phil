@@ -1,0 +1,81 @@
+{
+  "$schema": "../host.schema.json",
+  "template": "ideation-sandbox",
+  "dev": { "cwd": "ideation-sandbox", "start": "npm run dev", "url": "http://localhost:5173", "platform": "web" },
+  "checks": {
+    "cwd": "ideation-sandbox",
+    "guard": { "cmd": "node scripts/sandbox-guard.mjs --docs --shape --stage", "baseline": 0, "cwd": "." },
+    "typecheck": { "cmd": "npm run typecheck", "baseline": 0 },
+    "lint": { "cmd": "npm run lint", "baseline": 5 },
+    "test": { "cmd": "npm test", "baseline": 0 },
+    "format": { "cmd": "npx prettier --check .", "baseline": 0 }
+  },
+  "git": {
+    "trunk": "staging",
+    "release": "main",
+    "engagementBranch": "<client>-vibes",
+    "doc": "docs/git-and-prs.md"
+  },
+  "docs": {
+    "root": "docs",
+    "glossary": "docs/glossary.md",
+    "gotchas": "docs/frontend-gotchas.md",
+    "local": "docs/local",
+    "retired": "docs/retired",
+    "index": "CLAUDE.md"
+  },
+  "records": {
+    "product": ".agents/context/PRODUCT.md",
+    "productTemplate": ".agents/context/PRODUCT.template.md",
+    "design": [
+      { "surface": "the sandbox chassis", "path": "ideation-sandbox/src/tooling/DESIGN.md", "sidecar": null }
+    ],
+    "designDoc": "docs/prototypes.md",
+    "driftWatch": "node scripts/context-record-watch.mjs"
+  },
+  "memory": {
+    "root": "ideation-sandbox/memory",
+    "archive": "ideation-sandbox/memory/archive",
+    "doc": "ideation-sandbox/memory/CLAUDE.md",
+    "gloss": "ideation-sandbox/src/content/guide.ts",
+    "connectors": "ideation-sandbox/memory/connectors.md"
+  },
+  "issues": {
+    "tracker": "linear",
+    "ladder": "ideation-sandbox/src/prototypes/issue-ladder.ts",
+    "doc": "docs/prototypes.md",
+    "ask": "node scripts/issue-status-ask.mjs",
+    "retired": false
+  },
+  "verify": {
+    "mcp": "playwright",
+    "probes": "scripts/probes",
+    "doc": "docs/visual-verification.md",
+    "agent": ".claude/agents/ui-prober.md"
+  },
+  "theme": {
+    "dir": "ideation-sandbox/src/themes",
+    "registry": "ideation-sandbox/src/themes/registry.ts",
+    "contract": "ideation-sandbox/src/themes/contract.mjs",
+    "generator": "node scripts/generate-theme-tokens.mjs",
+    "doc": "docs/theming.md"
+  },
+  "components": {
+    "dir": "ideation-sandbox/src/components/ui",
+    "install": "npx shadcn@latest add",
+    "registry": "ideation-sandbox/src/tooling/library-registry.tsx",
+    "showcase": "/library",
+    "doc": "docs/components-and-design-system.md"
+  },
+  "surfaces": {
+    "root": "ideation-sandbox/src/prototypes",
+    "unit": "prototype",
+    "doc": "docs/prototypes.md",
+    "route": "/prototypes/<name>",
+    "compositionDoc": "docs/composition.md",
+    "limits": "node scripts/sandbox-limits.mjs",
+    "seam": "ideation-sandbox/src/shared/api",
+    "harnessMarkers": ["@demo-harness", "@demo-wiring"],
+    "receiveDoc": "docs/receiving-a-prototype.md"
+  }
+}
