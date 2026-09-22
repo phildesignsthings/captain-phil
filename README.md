@@ -85,8 +85,9 @@ mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/te
   --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
 ```
 
-**Anything else.** Every slot empty except the three check commands and a trunk of `main`. Start
-here when no other template is close, then fill the slots the repo can answer.
+**Anything else.** Every slot empty but a trunk of `main`, including the checks, which are left
+unanswered rather than guessed. Start here when no other template is close, then fill the slots the
+repo can answer.
 
 ```bash
 mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \

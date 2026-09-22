@@ -2,11 +2,7 @@
   "$schema": "../host.schema.json",
   "template": "minimal",
   "dev": { "cwd": null, "start": null, "url": null, "platform": null },
-  "checks": {
-    "typecheck": { "cmd": "npm run typecheck", "baseline": 0 },
-    "lint": { "cmd": "npm run lint", "baseline": 0 },
-    "test": { "cmd": "npm test", "baseline": 0 }
-  },
+  "checks": { "cwd": null },
   "git": { "trunk": "main", "release": null, "engagementBranch": null, "doc": null },
   "docs": { "root": null, "glossary": null, "gotchas": null, "local": null, "retired": null, "index": "AGENTS.md" },
   "records": { "product": null, "productTemplate": null, "design": [], "designDoc": null, "driftWatch": null },

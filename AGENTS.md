@@ -12,7 +12,9 @@ because a mistake here lands in a repo the author never sees.
 - `skills/<name>/SKILL.md` is one skill. Its `references/`, `scripts/` and `assets/` folders install
   with it and are the only things it can read off disk.
 - `host/` is the questionnaire a consuming repo fills in at `.agents/host.json`, its schema, and four
-  filled templates. Read [the host file spec](host/README.md) before touching a slot.
+  filled templates. **The installer copies skills and nothing else, so `host/` never reaches a
+  consuming repo** — that is why the README's install is two steps, and why a template is fetched
+  rather than copied. Read [the host file spec](host/README.md) before touching a slot.
 - `scripts/skills-guard.mjs` enforces the invariants. Run `npm run guard` before every commit.
 - `README.md` indexes the skills. A skill and its table row land in the same commit.
 
@@ -39,6 +41,14 @@ because a mistake here lands in a repo the author never sees.
   that walks out of the folder. An installed skill is one directory and nothing above it exists.
 - **Write to the house style.** `skills/write-doc/scripts/house-style.mjs` is the single copy of the
   mechanical rules; the guard runs it over every markdown file in the repo.
+- **Run a command verbatim before writing it down.** Every command this repo hands a user gets
+  pasted into an empty directory first, and the result read. Two rounds shipped a command nobody had
+  run: a `cp` whose path only resolves inside captain-phil, and a single-agent install that writes
+  twenty-four real copies instead of symlinks. Both die in ten seconds in a scratch directory.
+- **The install command has one home, and it is `README.md`.** Anywhere else cites step 1 or step 2
+  by name rather than repeating the flags. A second copy is a copy that keeps the old flags: the
+  commit that took `--all` out of the README left it in this file, and the whole subject of that
+  commit was removing `--all`.
 
 ## Adding a skill
 
@@ -59,8 +69,7 @@ because a mistake here lands in a repo the author never sees.
 The guard never runs in a consuming repo, so a rule about how an installed skill behaves has to be
 tested by installing it:
 
-1. Create a scratch repo and run step 1 of the README's install in it:
-   `npx skills add phildesignsthings/captain-phil --skill '*' --agent universal --agent claude-code -y`.
+1. Create a scratch repo and run step 1 of [the README's install](README.md#step-1-the-skills) in it.
 2. Confirm `.claude/skills/<name>` is a symlink into `.agents/skills/`.
-3. Run step 2 of the README's install, picking the block whose template matches the scratch repo.
+3. Run [step 2](README.md#step-2-the-host-file), picking the block whose template matches the scratch repo.
 4. Invoke the skill in a fresh session and read what it does with an absent slot and a `null` one.
