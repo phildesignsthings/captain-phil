@@ -59,7 +59,8 @@ because a mistake here lands in a repo the author never sees.
 The guard never runs in a consuming repo, so a rule about how an installed skill behaves has to be
 tested by installing it:
 
-1. Create a scratch repo and run `npx skills add phildesignsthings/captain-phil --all` in it.
+1. Create a scratch repo and run step 1 of the README's install in it:
+   `npx skills add phildesignsthings/captain-phil --skill '*' --agent universal --agent claude-code -y`.
 2. Confirm `.claude/skills/<name>` is a symlink into `.agents/skills/`.
-3. Drop the matching `host/templates/*.json` in as `.agents/host.json`.
+3. Run step 2 of the README's install, picking the block whose template matches the scratch repo.
 4. Invoke the skill in a fresh session and read what it does with an absent slot and a `null` one.
