@@ -31,6 +31,11 @@ mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/te
 `react-native-expo` and `ideation-sandbox`. Each one declares the template it came from in its
 `template` field, so a suite update can tell what a repo started from.
 
+`minimal` leaves every `checks` leaf absent on purpose. It is the template for a repo that matches
+none of the others, so any command it named would be a guess, and a guessed command is worse than an
+absent one — absent sends the skill to its fallback and makes it offer to write the real answer,
+where a wrong `cmd` just fails. The other three name commands that hold for their stack.
+
 ## The three-state rule
 
 Every slot has three states, and the difference between the second and the third is the whole point
