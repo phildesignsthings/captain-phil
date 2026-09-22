@@ -10,6 +10,12 @@ claimed as rendered until something looked at it.
 
 ## Install
 
+Installing captain-phil takes two commands, not one. `npx skills add` installs skills and nothing
+else, and the host file is not a skill, so step 2 is a separate fetch. Skip it and every skill runs
+its own degraded fallback instead of reading the repo's answers.
+
+### Step 1. The skills
+
 Into one project:
 
 ```bash
@@ -45,23 +51,53 @@ body once and links to it. `--all` is shorthand for `--skill '*' --agent '*' -y`
 wildcard installs into every agent the tool knows rather than the ones present, which drops an
 unprefixed `agent/` folder for Eve into repos that have never heard of it.
 
-## The host file
+### Step 2. The host file
 
 Several skills need to know things only the repo can answer: which command starts the app, which
 branch a pull request goes to, where the design records live. The repo answers once in
 `.agents/host.json`, and every skill reads its answers by slot.
 
-The templates live in this repo rather than inside the skills, so `npx skills add` does not bring
-them down. Fetch the one that matches and edit it:
+Four templates ship in `host/templates/`. Pick the one that matches the repo and paste its block.
+Each writes `.agents/host.json` and prints the template name it wrote, so a wrong pick is visible
+straight away.
+
+**Expo, React Native.** Starts with `npx expo start --ios`, checks with `tsc --build` and
+`npx expo lint`, screens under `app/`.
+
+```bash
+mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-native-expo.json \
+  --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
+```
+
+**React on the web.** Starts with `npm run dev` on port 5173, adds a Prettier check, routes under
+`src/routes/`, shadcn components under `src/components/ui/`.
+
+```bash
+mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-web.json \
+  --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
+```
+
+**Ideation sandbox.** The design repo layout: prototypes under `ideation-sandbox/src/prototypes/`,
+a theme registry, a component catalogue, a sandbox guard, and a lint baseline of 5 rather than 0.
+
+```bash
+mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/ideation-sandbox.json \
+  --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
+```
+
+**Anything else.** Every slot empty except the three check commands and a trunk of `main`. Start
+here when no other template is close, then fill the slots the repo can answer.
 
 ```bash
 mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
-  --jq .content | base64 -d > .agents/host.json
+  --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
 ```
 
-Four templates ship in `host/templates/`: `minimal`, `react-web`, `react-native-expo` and
-`ideation-sandbox`. Swap the filename in that command for the one the repo needs. Every slot's meaning, the three states a slot can be in, and which skills read
-which slot are in [the host file spec](host/README.md).
+A template is a starting point, not an answer. Open the file afterwards and correct the paths the
+repo does not match, most often `surfaces.root`, `components.dir` and `theme.dir`, and the
+`checks` commands, which must name scripts the repo really has. Every slot's meaning, the three
+states a slot can be in, and which skills read which slot are in
+[the host file spec](host/README.md).
 
 A repo with no host file loses nothing outright. Each skill states its own fallback in its
 `compatibility` frontmatter, runs the degraded path, and offers to write the answer into
