@@ -19,10 +19,12 @@ working directory, so a skill invoked from a subfolder reads the same answers as
 root. A monorepo carries one file at its root and answers `dev.cwd` and `checks.cwd` with the package
 that runs.
 
-Fill it by copying a template and editing it:
+Fill it by fetching a template and editing it. The templates live beside the skills in captain-phil
+rather than inside them, so an install does not put them in the consuming repo:
 
 ```bash
-mkdir -p .agents && cp <skill dir>/../../host/templates/minimal.json .agents/host.json
+mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
+  --jq .content | base64 -d > .agents/host.json
 ```
 
 `host/templates/` carries four filled starting points: `minimal`, `react-web`,

@@ -13,13 +13,13 @@ claimed as rendered until something looked at it.
 Into one project:
 
 ```bash
-npx skills add phildesignsthings/captain-phil --all
+npx skills add phildesignsthings/captain-phil --skill '*' --agent universal --agent claude-code -y
 ```
 
 Globally, for every session on the machine:
 
 ```bash
-npx skills add phildesignsthings/captain-phil -g --all
+npx skills add phildesignsthings/captain-phil -g --skill '*' --agent universal --agent claude-code -y
 ```
 
 List what the repo publishes without installing any of it:
@@ -37,20 +37,30 @@ npx skills update -p -y
 The installer writes `.agents/skills/<name>/` with a symlink from `.claude/skills/<name>/`, and
 records each skill's content hash in `skills-lock.json`.
 
+**Name both `universal` and `claude-code`, and do not use `--all`.** The installer picks its layout
+from how many distinct directories it is writing to. Name one agent and it sees a single
+destination, skips the shared folder, and writes twenty-four real copies into `.claude/skills/`
+instead. Naming `universal` alongside gives it the second directory it needs, so it writes each
+body once and links to it. `--all` is shorthand for `--skill '*' --agent '*' -y`, and that second
+wildcard installs into every agent the tool knows rather than the ones present, which drops an
+unprefixed `agent/` folder for Eve into repos that have never heard of it.
+
 ## The host file
 
 Several skills need to know things only the repo can answer: which command starts the app, which
 branch a pull request goes to, where the design records live. The repo answers once in
 `.agents/host.json`, and every skill reads its answers by slot.
 
-Copy a starting point and edit it:
+The templates live in this repo rather than inside the skills, so `npx skills add` does not bring
+them down. Fetch the one that matches and edit it:
 
 ```bash
-mkdir -p .agents && cp .agents/skills/../../host/templates/minimal.json .agents/host.json
+mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
+  --jq .content | base64 -d > .agents/host.json
 ```
 
 Four templates ship in `host/templates/`: `minimal`, `react-web`, `react-native-expo` and
-`ideation-sandbox`. Every slot's meaning, the three states a slot can be in, and which skills read
+`ideation-sandbox`. Swap the filename in that command for the one the repo needs. Every slot's meaning, the three states a slot can be in, and which skills read
 which slot are in [the host file spec](host/README.md).
 
 A repo with no host file loses nothing outright. Each skill states its own fallback in its
@@ -95,7 +105,7 @@ next `npx skills update -p -y` pulls the change.
 
 **`update` refreshes what a repo installed; it does not add what the suite gained.** The lock file
 is the list it walks, so a skill merged to `main` after a repo's install stays invisible to it. A
-consumer picks up a new skill by running `npx skills add phildesignsthings/captain-phil --all` again,
+consumer picks up a new skill by running the install command again,
 which adds the missing folders and leaves the rest alone. Say which of the two a release needs.
 
 - **Version history** is the consuming repo's own git log. Commit `.agents/skills/` and
