@@ -1,0 +1,52 @@
+{
+  "surface": "<file id> · <page name>",
+  "kind": "paper-boards",
+  "sweep_version": 3,
+  "bar": "Good",
+  "loading_in_scope": false,
+  "assumptions": [],
+  "criteria_na": [],
+  "findings": [
+    {
+      "id": "F1",
+      "criterion": 4,
+      "severity": null,
+      "board": "A2b · Expired link (1030 / 6440)",
+      "finding": "The centred figure is the same icon path, size and stroke as the sibling error board's, and only the stroke token differs.",
+      "evidence": "get_jsx on both boards: identical path data, 72×72, stroke-width 1.2; A2b stroke var(--color-border-strong), B2a stroke var(--color-destructive).",
+      "sweep": 4,
+      "status": "open"
+    },
+    {
+      "id": "F2",
+      "criterion": 2,
+      "severity": null,
+      "board": "C3 · Long form (1500 / 10640)",
+      "finding": "REQUIRED / OPTIONAL markers appear on this board's family and on no other board carrying required fields.",
+      "evidence": "find_nodes textValue REQUIRED → 3 boards; required fields without a marker on 5 boards in the JSX read.",
+      "sweep": 15,
+      "status": "open"
+    },
+    {
+      "id": "F3",
+      "criterion": 5,
+      "severity": null,
+      "board": "A6a · Destructive confirm (560 / 5240)",
+      "finding": "The destructive action is drawn as the plain dark primary.",
+      "evidence": "Rules board, line 7: a destructive action's button is the plain primary and the friction does the work.",
+      "sweep": 2,
+      "status": "withdrawn",
+      "reason": "The surface's own rule states this treatment; the rules board wins."
+    },
+    {
+      "id": "F4",
+      "criterion": 5,
+      "severity": null,
+      "board": "C5a · Toast (1500 / 12040)",
+      "finding": "The toast shadow is a literal #0000001F where a shadow token exists.",
+      "evidence": "get_jsx box-shadow literal; token --color-shadow-ink declared in the file's token set.",
+      "sweep": null,
+      "status": "open"
+    }
+  ]
+}
