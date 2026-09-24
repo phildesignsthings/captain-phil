@@ -83,7 +83,8 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 |---|---|
 | `dev.cwd`, `dev.start`, `dev.url` | `verify-ui`, `decision-request`, `wrap-gate`, `add-primitive` |
 | `dev.platform` | `verify-ui`, `new-screen` |
-| `checks.cwd`, `checks.typecheck`, `checks.lint`, `checks.test`, `checks.format` | `wrap-gate`, `clean-done`, `open-pr` |
+| `checks.cwd`, `checks.typecheck`, `checks.lint`, `checks.test` | `wrap-gate`, `clean-done`, `open-pr` |
+| `checks.format` | `wrap-gate`, `clean-done`, `open-pr`, `tidy-comments` |
 | `checks.guard` | `wrap-gate`, `write-doc`, `freeze-memory`, `ingest-theme` |
 | `git.trunk`, `git.release`, `git.engagementBranch` | `open-pr`, `start-engagement` |
 | `git.doc` | `open-pr`, `ask-issue-status` |
