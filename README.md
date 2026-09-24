@@ -45,7 +45,7 @@ records each skill's content hash in `skills-lock.json`.
 
 **Name both `universal` and `claude-code`, and do not use `--all`.** The installer picks its layout
 from how many distinct directories it is writing to. Name one agent and it sees a single
-destination, skips the shared folder, and writes twenty-four real copies into `.claude/skills/`
+destination, skips the shared folder, and writes twenty-five real copies into `.claude/skills/`
 instead. Naming `universal` alongside gives it the second directory it needs, so it writes each
 body once and links to it. `--all` is shorthand for `--skill '*' --agent '*' -y`, and that second
 wildcard installs into every agent the tool knows rather than the ones present, which drops an
@@ -110,7 +110,7 @@ The second column is the moment the skill runs, not what it contains.
 
 | Skill | Runs when |
 |---|---|
-| `phil-mode` | Somebody asks to work the way Phil does, or a session needs a house standard for planning in gates, asking for a decision, reporting back and handing off |
+| `phil-mode` | Somebody asks to work the way Phil does, or a session needs a checklist for opening, sending a message, calling work done, and committing |
 | `gate` | A fresh chat picks up a gate a previous session wrapped, or a handoff names a gate to start |
 | `wrap-gate` | A gate's build work is finished and needs review, or the session has run long enough to hand off to a forked chat |
 | `confirm-scope` | A session opens with prose describing a want rather than a handoff, a gate number or a named plan |
@@ -122,6 +122,7 @@ The second column is the moment the skill runs, not what it contains.
 | `open-pr` | Finished work is being raised, a review comes back, or shared work is being synced out to another branch |
 | `freeze-memory` | An external document has taken over what a project note holds, or somebody asks which notes are stale |
 | `unslop` | A piece of writing is going to a human, or a draft reads as machine-written |
+| `tidy-comments` | A commit or a pull request adds or changes a code comment, or somebody asks for comments to be cleaned up |
 | `get-creative` | Somebody asks for random or off-the-wall directions, or rejects a round as safe, boring or samey |
 | `audit-design` | A designed surface is finished enough to be scored, a fix round has landed and it has to be re-scored, or two scores are about to be compared |
 | `new-screen` | A screen goes into an existing surface, a screen is being redesigned, or a screen is coming out as a stack of same-sized cards |

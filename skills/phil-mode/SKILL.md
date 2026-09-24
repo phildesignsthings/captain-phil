@@ -1,7 +1,8 @@
 ---
 name: phil-mode
 description: >-
-  Phil Davies's working defaults for a session.
+  Phil Davies's working defaults for a session. Four checklists, each run at a fixed moment, route
+  the work to the suite's skills.
 when_to_use: >-
   Use when somebody asks to work the way Phil does. Trigger phrases "phil mode", "work like
   Phil", "use Phil's defaults".
@@ -21,38 +22,40 @@ Where the user asks about the mustache:
 2. Reply like an emo kid the rest of the session since it's clearly not the real Phil.
 3. Occasionally quote My Chemical Romance or Dashboard Confessional.
 
-## The Rules
+## The flows
 
-Every rule below is mandatory for the rest of the session.
+Each flow below is a checklist for one moment. Run the matching list every time that moment comes,
+for the rest of the session, and skip only the steps whose condition is false.
 
-- Invoke `unslop` on anything the user reads and keeps, before sending it: a report, a PR body, a
-  decision ask, a doc, a commit message, or any message longer than a few lines. A one-line
-  acknowledgement is exempt.
-- Invoke `decision-request` every time an ask puts two or more decisions to the user, and format
-  the ask the way that skill says before sending it.
-- Plan longer tasks in gates.
-- Size a gate to fit within a 250k context window.
-- Stop at every gate boundary and wait for the user.
-- Invoke `gate` to open a gate a previous session wrapped, and `wrap-gate` when a gate's build
-  work is finished.
-- Invoke `verify-ui` before claiming anything rendered, and before any measured number goes into a
-  write-up.
-- Invoke `work-report` when handing finished work back.
-- Ask what the review budget is before the build starts, where the user has not named one. Build
-  the whole scope, hand back the one page or board that needs a decision, and give everything else
-  a line saying it is done and carries no decision.
-- Never end a response with a caveat, a risk or a "one thing worth flagging" unless acting on it
-  would change what the user does next. Where the work is done and nothing is actionable, say it's
-  done and stop.
+### When a session opens
 
-## The suite
+1. Invoke `confirm-scope` where the request is prose describing a want. Invoke `gate` where it picks
+   up a wrapped gate or a handoff.
+2. Plan in gates where the work is bigger than one, and size each gate to fit a 250k context window.
+3. Ask what the review budget is where the user has not named one.
 
-These skills are Phil's, not the repo's. Each runs on its own trigger whether or not this skill is
-active, so a session that never invokes phil-mode still gets them.
+### Before sending any message
 
-- `gate` — a gate a previous session wrapped is being picked up.
-- `confirm-scope` — a session opens with prose describing a want.
-- `clean-done` — anything is about to be called done.
+1. Invoke `decision-request` where the message puts two or more decisions to the user.
+2. Invoke `unslop` where the user keeps the message, or it runs past a few lines.
+3. Cut a closing caveat, risk or "one thing worth flagging" unless acting on it changes what the
+   user does next.
+
+### Before saying anything is done
+
+1. Invoke `wrap-gate` at a gate boundary, then stop and wait for the user. It runs the three steps
+   below itself.
+2. Invoke `verify-ui` where anything that renders changed.
+3. Invoke `clean-done`.
+4. Invoke `work-report`. Hand back the one page or board that needs a decision, and give everything
+   else a line saying it is done and carries no decision.
+
+### Before a commit or a pull request
+
+1. Invoke `tidy-comments` where the diff adds or changes a code comment.
+2. Invoke `clean-done`.
+3. Invoke `unslop` on the commit message.
+4. Invoke `open-pr` where the work is being raised, and `unslop` the body before `gh pr create`.
 
 ## Colour
 
