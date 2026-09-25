@@ -46,7 +46,8 @@ A `-foreground` formula puts near-white type on a status colour, which works on 
 disappears on a pastel.
 
 **The correction:** use the theme's own ink, written as a variable reference rather than a literal,
-so it resolves on the element that wears it. Check the pair at whatever page prints resolved values.
+so it resolves on the element that wears it. Check the pair at whatever page prints resolved values. Where the repo has no such page, read the
+pair out of the file, then confirm it on a screenshot of a screen that wears it.
 
 **Threshold:** lightness above 0.85 in oklch.
 

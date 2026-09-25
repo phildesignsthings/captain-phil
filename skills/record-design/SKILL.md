@@ -14,13 +14,15 @@ when_to_use: >-
 argument-hint: "[surface]"
 compatibility: >-
   Reads records.design, records.designDoc, records.driftWatch, surfaces.root, surfaces.unit,
-  theme.registry, docs.gotchas, verify.mcp and verify.probes from .agents/host.json. Without
-  records.designDoc, the format in references/design-record-format.md applies. With
-  records.design empty, ask which file records this surface and offer to record the answer.
-  With records.driftWatch null, drift is noticed by reading rather than reported.
+  theme.registry, docs.gotchas, dev.platform, verify.mcp and verify.probes from
+  .agents/host.json. Without records.designDoc, the format in references/design-record-format.md
+  applies. With records.design empty, ask which file records this surface and offer to record the
+  answer. With records.driftWatch null, drift is noticed by reading rather than reported. With
+  dev.platform native the screens are read off simulator screenshots, so every value in the record
+  is marked as looked at rather than measured.
 metadata:
   suite: captain-phil
-  host: [records.design, records.designDoc, records.driftWatch, surfaces.root, surfaces.unit, theme.registry, docs.gotchas, verify.mcp, verify.probes]
+  host: [records.design, records.designDoc, records.driftWatch, surfaces.root, surfaces.unit, theme.registry, docs.gotchas, dev.platform, verify.mcp, verify.probes]
 ---
 
 # Record a surface's design
@@ -71,13 +73,25 @@ rather than of what these screens took.
 2. Drive each screen through its four data states, so the record covers loading, empty and error
    rather than the happy path alone.
 3. Measure rather than eyeball. The `verify-ui` skill runs the probe from `verify.probes` and
-   carries the rule for a number that looks too clean. Where `verify.mcp` is `null`, nothing can
-   drive the app: derive from the source, and say in the record's first line that it was read off
+   carries the rule for a number that looks too clean. Where `verify.mcp` is `null` on the web,
+   nothing can drive the app. Derive from the source, and say in the record's first line that it was read off
    code rather than off screens.
 4. Read computed values off the rendered DOM, not out of the stylesheet. A token declared and never
    spent belongs in no section of this record.
 5. Note where a screen departs from the theme's default. A departure is the most useful line a
    record carries, and it is invisible to anyone reading the theme file.
+
+**Where `dev.platform` is `native`, there is no rendered DOM to read.** Steps 3 and 4 change shape:
+
+- Open each screen and state on the simulator through the `verify-ui` skill, and keep every
+  screenshot path.
+- Read a colour off the screenshot, then find the token that carries it in the theme file. The
+  token name goes in the record; the pixel only proves the screen spent it.
+- Read sizes, spacing and type off the source the screen renders, and confirm on the screenshot that
+  nothing overrides them. A pixel count off a screenshot is scaled by the device, so it is never
+  recorded as a size.
+- Say in the record's first line that its values were looked at on a simulator, not measured, and
+  name the device. A reader who takes a native record's numbers as measured takes them as settled.
 
 ## 3. Write the record
 

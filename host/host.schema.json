@@ -279,7 +279,7 @@
         },
         "showcase": {
           "type": ["string", "null"],
-          "description": "Route where the catalogue renders, appended to dev.url to check an entry landed."
+          "description": "Route where the catalogue renders, appended to dev.url to check an entry landed. On the web that makes a URL; where `dev.platform` is `native`, it makes a deep link the simulator opens. Null means the repo has no catalogue route, and a primitive is checked in the screen that uses it."
         },
         "doc": {
           "type": ["string", "null"],
@@ -308,7 +308,7 @@
         },
         "route": {
           "type": ["string", "null"],
-          "description": "Url pattern one surface renders at, with the surface's folder name substituted for `<name>`.",
+          "description": "Url pattern one surface renders at, with the surface's folder name substituted for `<name>`. Where `dev.platform` is `native`, it is the deep-link path appended to `dev.url`.",
           "examples": ["/prototypes/<name>"]
         },
         "compositionDoc": {

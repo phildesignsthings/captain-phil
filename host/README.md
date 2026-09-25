@@ -87,7 +87,7 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 | Slot | Read by |
 |---|---|
 | `dev.cwd`, `dev.start`, `dev.url` | `verify-ui`, `decision-request`, `wrap-gate`, `add-primitive`, `new-surface`, `receive-prototype` |
-| `dev.platform` | `verify-ui`, `wrap-gate`, `decision-request`, `new-screen`, `new-surface`, `receive-prototype` |
+| `dev.platform` | `verify-ui`, `wrap-gate`, `decision-request`, `new-screen`, `new-surface`, `receive-prototype`, `record-design`, `add-primitive`, `open-pr`, `ingest-theme`, `paper` |
 | `checks.cwd`, `checks.typecheck`, `checks.lint`, `checks.test` | `wrap-gate`, `clean-done`, `open-pr` |
 | `checks.format` | `wrap-gate`, `clean-done`, `open-pr`, `tidy-comments` |
 | `checks.guard` | `wrap-gate`, `write-doc`, `freeze-memory`, `ingest-theme` |
@@ -114,7 +114,8 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 | `theme.dir`, `theme.registry`, `theme.contract`, `theme.generator` | `ingest-theme`, `new-surface` |
 | `theme.doc` | `ingest-theme`, `record-design`, `paper` |
 | `components.dir`, `components.install` | `add-primitive`, `new-screen` |
-| `components.registry`, `components.showcase` | `add-primitive` |
+| `components.registry` | `add-primitive`, `paper` |
+| `components.showcase` | `add-primitive`, `ingest-theme`, `paper` |
 | `components.doc` | `add-primitive`, `paper` |
 | `surfaces.root`, `surfaces.unit`, `surfaces.route` | `new-surface`, `new-screen`, `record-design` |
 | `surfaces.doc` | `new-surface`, `record-design` |

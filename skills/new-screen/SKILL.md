@@ -48,7 +48,9 @@ Put three values in front of the designer and stop.
 > **Hero:** the profile header band with display-type name · **Reference:** a well-known issue view
 
 1. Name one archetype from the menu in `references/composition.md` § Choose the skeleton first.
-   Two screens in one surface can take different archetypes, and that is usually a feature.
+   Two screens in one surface can take different archetypes, and that is usually a feature. Where
+   `dev.platform` is `native`, also name where the screen lives. The choices are a tab stack, a
+   sheet or a pushed screen, from § On a phone, the navigation is part of the skeleton.
 2. Name the density once, for the whole screen. The unchosen middle — medium padding on everything
    — is where the generic look lives.
 3. Name the single element that carries the screen, and keep everything else quiet.

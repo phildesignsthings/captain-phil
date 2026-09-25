@@ -29,10 +29,15 @@ problems handed to the next person.
 - **The deliverable** is anything the user asked for: a dev server behind a review link, a watcher
   they wanted left up. It stays, and it gets named.
 
-Killing the second class is the same failure as leaving the first class running. Three things are
-always the second class: a dev server behind a review link, a browser an MCP server drives, and
-anything started before this session. An MCP browser is shared across every open workspace, so
-killing it breaks somebody else's session.
+Killing the second class is the same failure as leaving the first class running. Four things are
+always the second class: a dev server behind a review link, a browser an MCP server drives, a native
+app's bundler and its booted simulator, and anything started before this session. An MCP browser is
+shared across every open workspace, so killing it breaks somebody else's session.
+
+**On a native app, the bundler and the simulator are the review link.** A deep link opens nothing
+without a booted simulator. The app on it shows no change without its bundler, such as Metro on
+port 8081. Leave both running and name them, even where only a screenshot was asked for. The
+designer checks a screenshot by opening the same screen.
 
 ## When it does not run
 

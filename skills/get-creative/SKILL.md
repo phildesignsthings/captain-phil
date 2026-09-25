@@ -33,7 +33,8 @@ Check these before the offer, and say the sentence when one is missing.
 |---|---|---|
 | Node 18 or newer | every round, for the dice | "Node isn't installed, so I can't roll. Install it from nodejs.org and say roll again." |
 | Paper Desktop MCP | only when the directions land on a Paper board | "Paper isn't connected. I can build the directions as HTML boards instead, or you connect Paper and say go." |
-| Playwright MCP | only when a coded direction needs a screenshot | "I can't capture a screenshot, so I'll hand you the link and skip the capture." |
+| Playwright MCP | only when a coded direction on the web needs a screenshot | "I can't capture a screenshot, so I'll hand you the link and skip the capture." |
+| a booted simulator | only when a coded direction in a native app needs a screenshot | "No simulator is booted, so I'll hand you the deep link and the taps and skip the capture." |
 | the `audit-design` skill | step 8 | "audit-design isn't installed, so there is no scoring step. The directions stand as built." |
 
 ## 1. Ask, and wait

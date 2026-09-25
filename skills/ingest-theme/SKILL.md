@@ -11,16 +11,18 @@ when_to_use: >-
   this theme", "these are their brand colours", "fill in the brand theme".
 compatibility: >-
   Reads theme.dir, theme.registry, theme.contract, theme.generator, theme.doc,
-  components.showcase, records.product, checks.guard, dev.start and verify.mcp from
+  components.showcase, records.product, checks.guard, dev.start, dev.platform and verify.mcp from
   .agents/host.json. With theme.generator null the values are transcribed by hand and the four
   traps in references/theme-traps.md are checked by hand rather than reported. With theme.dir
   null the repo carries one hardcoded look, so the ingest writes a single stylesheet and steps 4
   and 6 collapse. With theme.registry null there is no list to register in: the file is the whole
-  theme. With verify.mcp null nothing can drive the app, so step 6 reads the file instead of the
-  screen and says so.
+  theme. With components.showcase null there is no token page, so step 6 checks the theme on real
+  screens alone. With dev.platform native the simulator does step 6's looking, and every value is
+  looked at. With verify.mcp null on the web nothing can drive the app, so step 6 reads the file
+  instead of the screen and says so.
 metadata:
   suite: captain-phil
-  host: [theme.dir, theme.registry, theme.contract, theme.generator, theme.doc, components.showcase, records.product, checks.guard, dev.start, verify.mcp]
+  host: [theme.dir, theme.registry, theme.contract, theme.generator, theme.doc, components.showcase, records.product, checks.guard, dev.start, dev.platform, verify.mcp]
 ---
 
 # Ingest a theme
@@ -32,6 +34,10 @@ appear, and look at it.
 Read `theme.doc` once rather than once per ingest. It holds the repo's own token contract, its theme
 roles and which modes a theme carries. `references/theme-traps.md` holds the four traps, which are
 the repo-independent part and the part this skill spends a whole step on.
+
+**On a NativeWind stack, read `references/nativewind.md` before writing a value.** Its tokens are
+space-separated RGB triplets, and a dark theme is one token set written in three blocks. A value in
+the wrong shape, or a token missing from one block, renders plausibly and wrong.
 
 **Where the repo ships an unfilled theme slot, fill it rather than adding one beside it.** A slot
 that ships at neutral values, registered under a placeholder label, is the thing an engagement
@@ -63,6 +69,7 @@ Where `theme.generator` is `null`, the repo has no generator and the values are 
 3. Fill every slot `theme.contract` names. A slot left out inherits whatever encloses the surface, renders plausibly, and is the failure the contract exists to catch.
 4. Derive each follower by the formula the sibling file uses, then read `references/theme-traps.md` and check all four by hand. Nothing reports them where no generator ran.
 5. Where `theme.contract` is `null`, read the slot list off a sibling theme file, because a theme with fewer slots than its siblings is a theme with silent gaps.
+6. On a NativeWind stack, convert each anchor to a triplet and write every token into all three blocks, per `references/nativewind.md`.
 
 **Read the generator's own diagnostics.** They report every trap that fired, and one thing an
 export makes easy to miss: an anchor the export moved in the light block and left alone in the dark
@@ -109,13 +116,18 @@ marks a real engagement, so `records.product` owes a file describing that client
 ## 6. Verify
 
 Start the app with `dev.start` and look at it with `verify.mcp`, per the `verify-ui` skill. Where
-`verify.mcp` is `null`, nothing can drive the app: read the file, say the theme is unverified, and
-name the diff as the only evidence.
+`verify.mcp` is `null` on the web, nothing can drive the app: read the file, say the theme is
+unverified, and name the diff as the only evidence.
 
-1. Open `components.showcase` and confirm the theme renders every token group. A page that reads live values off the rendered DOM is where a wrong or missing token surfaces, and it is the only place all four traps are visible at once.
+Where `dev.platform` is `native`, the simulator does the looking, by deep link and screenshot through
+`verify-ui`. Every value is looked at rather than measured, so check each trap's value in the file and
+use the screenshot to confirm the screen spent it. Switch the simulator's appearance with
+`xcrun simctl ui booted appearance dark` to see the second face.
+
+1. Open `components.showcase` and confirm the theme renders every token group. A page that reads live values off the rendered DOM is where a wrong or missing token surfaces, and it is the only place all four traps are visible at once. Where the slot is `null`, the repo has no token page, so say so in one line. Read the four trap values out of the file by hand, and let items 2 to 4 carry the check on real screens.
 2. Check both modes where the theme carries both, and confirm a single-mode theme renders its one face rather than an empty specimen.
 3. Put the theme on a real screen, because a token page proves the values and a screen proves the pairings.
-4. Spot-check one narrow-width surface. Device chrome stays on the repo's own tokens rather than the client's, and a stepped token has to carry its narrow half.
+4. Spot-check one narrow-width surface. On native, boot the smallest phone the app supports. Device chrome stays on the repo's own tokens rather than the client's, and a stepped token has to carry its narrow half.
 5. Run `checks.guard` again, then whatever test holds the generator's output where the repo has one.
 
 ## Before handing back

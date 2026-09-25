@@ -117,9 +117,9 @@ Two declarations are conditional.
 
 With `dev.start` running, confirm four things at `surfaces.route` under `dev.url`: the surface
 renders, it wears the theme it pins, it comes up in the frame its viewport answer asked for, and it
-appears wherever the repo lists its surfaces. Drive it with `verify.mcp` and read the accessibility tree rather than
-trusting a screenshot. Where `verify.mcp` is `null`, say that the surface was read rather than
-driven, and name what went unchecked.
+appears wherever the repo lists its surfaces. On the web, drive it with `verify.mcp` and read the accessibility tree
+rather than trusting a screenshot. Where `verify.mcp` is `null` on the web, say that the surface was
+read rather than driven, and name what went unchecked.
 
 Where `dev.platform` is `native`, `dev.url` is the deep-link base, and no accessibility tree is
 there to read. Open `surfaces.route` by deep link, check the four things on a simulator screenshot

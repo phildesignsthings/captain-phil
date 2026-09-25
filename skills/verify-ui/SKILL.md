@@ -45,7 +45,8 @@ exists to prevent.
    in one line and stop, because nothing here can be verified by looking.
 2. Read the URL the server prints, rather than trusting `dev.url`. A dev server walks up from its
    default port whenever another process holds it, so the printed URL is the one that answers and
-   the slot is the expectation.
+   the slot is the expectation. On native, keep `dev.url`. A bundler such as Metro prints the
+   address its own client connects to, and that address is no deep-link base.
 3. Where `dev.start` is absent, ask once for the command, and offer to record it in
    `.agents/host.json`.
 4. Where `dev.platform` is `native`, boot a simulator before starting, and read `dev.url` as the
@@ -89,6 +90,9 @@ Use a probe from `verify.probes` wherever the value lands somewhere a reader act
 a pull-request body, a gate write-up, a verification table. `references/measuring.md` § Two tiers
 states which tier answers which question.
 
+**Where `dev.platform` is `native`, no probe runs.** The probes measure a DOM, and a simulator has
+none, so steps 3 and 4 are skipped. Say so in one line, and report every value as looked at.
+
 **Where `verify.probes` is `null`, no number can be asserted.** Say which values went unmeasured,
 and report what you looked at as what it is. A scratch probe written for one run is legal where the
 repo keeps none, and it owes the same control as a permanent one.
@@ -97,8 +101,9 @@ repo keeps none, and it owes the same control as a permanent one.
 3 the number does not exist: fix the control and run again.
 
 Where `verify.agent` names a sub-agent, hand one route's measurement to it and read its return.
-Where the slot is absent, offer to copy `assets/ui-prober.agent.md` into the repo's agent folder
-with its slots filled in, rather than driving every route from this session.
+Where the slot is absent on the web, offer to copy `assets/ui-prober.agent.md` into the repo's agent
+folder with its slots filled in, rather than driving every route from this session. Make no offer on
+native, because that agent drives a browser.
 
 ## 4. Control the probe before trusting the sweep
 

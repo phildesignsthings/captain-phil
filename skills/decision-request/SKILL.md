@@ -87,6 +87,14 @@ Only if two or more decisions share a starting state. One URL, then the clicks t
 2. Click **Edit** (top right, the only `Edit` on the screen)
 ```
 
+On native, the first line is the deep link as the command that opens it, and the taps follow the same
+way:
+
+```markdown
+1. Run `xcrun simctl openurl booted myapp://teams/northside/settings`
+2. Tap **Edit** (top right, the only `Edit` on the screen)
+```
+
 Disambiguate the control the way that parenthetical does. "Click Edit" is useless on a screen with
 six of them.
 
@@ -156,7 +164,8 @@ Close with the file path where the full reasoning lives, if there is one.
 ## Reaching state that has no URL
 
 Session state, a record switcher, a popover: say plainly that there is no direct link, then give
-the clicks. Do not imply a deep link exists.
+the clicks. Do not imply a deep link exists. On native, the same holds for a state no deep link
+reaches. Give the deep link that lands closest, then the taps from there.
 
 ```markdown
 There's no direct link — the selected team is session state, not a URL param.

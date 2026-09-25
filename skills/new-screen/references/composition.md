@@ -36,6 +36,27 @@ Never default silently. The menu, roughly:
 
 Two screens in the same surface can use different archetypes. That is usually a feature.
 
+## On a phone, the navigation is part of the skeleton
+
+A native screen sits inside a navigator, and the navigator decides as much of the layout as the
+archetype does. Name both in the design intent, the archetype for the content and one of these for
+where the screen lives.
+
+- **Tab stack.** A bottom tab bar of three to five top-level sections, each tab holding its own
+  stack of pushed screens. The tab bar stays put while a tab's stack pushes and pops, so a screen
+  inside a tab owns only the area above the bar. A section that needs no tab of its own is a pushed
+  screen, never a sixth tab.
+- **Sheet.** A panel rises over the current screen for one task, then returns to it. Filters,
+  pickers, confirmations and short forms fit a sheet. The screen underneath stays visible at the top edge, which
+  tells the user where closing goes. A task with its own navigation, or one longer than a scroll, is
+  a pushed screen rather than a sheet.
+- **Pushed screen.** A full screen on the current stack, with a back control where the stack has
+  one. On a phone, a split-pane becomes a list that pushes its detail.
+
+Keep the one primary action within thumb reach, at the bottom of the screen above any tab bar,
+rather than in a header corner. Respect the device's safe areas at both edges; a layout that runs
+under the home indicator or the status bar renders plausibly and cannot be tapped.
+
 ## Hierarchy comes from type and space, not boxes
 
 - The heading ramp plus whitespace is the primary hierarchy tool. A **section is a heading and

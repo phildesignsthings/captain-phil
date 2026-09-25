@@ -60,5 +60,16 @@ whether one is wired.
 - **Write a measured value, never an adjective.** A row nobody can reproduce proves nothing.
 - **Read each before and after off the running app, or off a check's output.** A value recalled from
   the session is a value that moved while nobody looked.
+- **A row read off a screenshot says so in its own cells.** On a native app, or anywhere no probe
+  ran, the value is a reading of a picture rather than a measurement. Write it as `looked at ·
+  <what you saw>`, and put the screenshot path in the same cell, so the row can be checked without
+  booting anything:
+
+  | | before | after |
+  |---|---|---|
+  | Sign in, "Forgot password?" | looked at · text link, `.context/before.png` | looked at · full-width outline button, `.context/after.png` |
+
+  Never turn such a row into a number. A hex read off a screenshot is the screenshot's hex, and a
+  reader treats a number in this table as measured.
 - **Name the ticket the change closes**, and say so where it closes none — including where the close
   happens instead.

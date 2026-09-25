@@ -11,13 +11,16 @@ when_to_use: >-
   "it is missing from the library", "add it to the catalogue".
 compatibility: >-
   Reads components.dir, components.install, components.registry, components.showcase,
-  components.doc, theme.contract, verify.mcp and dev.start from .agents/host.json. With
-  components.install null the repo writes a missing primitive by hand, so steps 2 and 4 change
-  shape. With components.registry null the repo shows no catalogue: registration is skipped and
-  said so in one line, and step 5 has one route to check instead of two.
+  components.doc, theme.contract, dev.platform, dev.url, verify.mcp and dev.start from
+  .agents/host.json. With components.install null the repo writes a missing primitive by hand, so
+  steps 2 and 4 change shape. With components.registry null the repo shows no catalogue:
+  registration is skipped and said so in one line, and step 5 has one route to check instead of
+  two. With components.showcase null there is no catalogue route, so step 5 checks the primitive in
+  the screen that uses it. With dev.platform native, step 5 opens each route by deep link on a
+  simulator and reports what it saw as looked at.
 metadata:
   suite: captain-phil
-  host: [components.dir, components.install, components.registry, components.showcase, components.doc, theme.contract, verify.mcp, dev.start]
+  host: [components.dir, components.install, components.registry, components.showcase, components.doc, theme.contract, dev.platform, dev.url, verify.mcp, dev.start]
 ---
 
 # Add a primitive
@@ -83,8 +86,18 @@ A primitive that introduces tokens needs those tokens declared, and declared in 
 ## 5. Verify
 
 Start the app with `dev.start` and check the routes with `verify.mcp`, per the `verify-ui` skill.
-Where `verify.mcp` is `null`, nothing can drive the app: say the entry is unverified and name the
-diff as the only evidence.
+Where `verify.mcp` is `null` on the web, nothing can drive the app: say the entry is unverified and
+name the diff as the only evidence.
+
+`components.showcase` is a route, the same on either platform. On the web it hangs off `dev.url` as
+a URL. On native it hangs off `dev.url` as a deep link, and `verify-ui` opens it on the simulator.
+Where `components.showcase` is `null`, the repo has no catalogue route. Check item 1 in the screen
+that uses the primitive instead, and skip item 2.
+
+**Where `dev.platform` is `native`, no DOM exists to snapshot.** Take a screenshot of each route and
+of each state item 3 drives, and report every one as looked at. Item 3's warning still holds. A
+screenshot of a closed sheet proves only that the trigger rendered, so tap the trigger and take a
+second screenshot.
 
 1. `components.showcase` — the entry appears in the catalogue, with its specimen rendered.
 2. The entry's own route — the sandbox, the variant matrix, the states, the props table and the

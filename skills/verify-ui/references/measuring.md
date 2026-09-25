@@ -19,7 +19,9 @@ however confident it looks.
 ## Two tiers
 
 **A browser tool for looking, a probe for asserting.** The tool named by `verify.mcp` answers "does
-this route render, did the dialog open, is this clipped". Use a probe from `verify.probes` when a
+this route render, did the dialog open, is this clipped". Where `dev.platform` is `native`, the
+simulator's screenshot answers those questions, and no probe runs, because there is no DOM to
+measure. Use a probe from `verify.probes` when a
 number will be **asserted** — a pull-request body, a gate write-up, anywhere someone acts on it
 unchecked.
 

@@ -77,11 +77,13 @@ Paper's token types: colour, font family, font weight, font size, line height, l
 
 - **Give the incoming set its own namespace.** A file's existing ramp is sized for its boards; an app's is UI type in a browser. Two scales for two media must not share a name, or restoring one breaks the other.
 - **Never hand-convert a value.** Read resolved values live from the running app, and read the correct variant — whatever theme / mode / density axes the app has, all of them apply. Check what the board itself is showing before picking.
+- **On a native app, read the theme file instead.** A simulator has no DOM to resolve a value from. A pixel read off its screenshot is scaled by the device. Take each value from the token's declaration in the theme file, for the mode the board shows. A NativeWind colour is an RGB triplet there, such as `80 105 232`, so write it into Paper as `rgb(80 105 232)`.
+- **A line-height is px in Paper and a ratio in code.** Paper stores leading as literal px. React Native's CSS parser reads a bare number in a paired `--text-*--line-height` token as a multiple of the font size. So a `20px` read off a board and written into that token as `20` renders at twenty times the size. Write it back as a ratio, such as `calc(20 / 16)` for 20px leading on 16px type, which keeps both of the board's numbers legible.
 - **Tokens Paper has no type for** (shadows, z-index, opacity, `env()`) — document them on the board rather than forcing them under a nearest-fit type.
 - **Do token writes in one call, sequentially.** Don't split token work across parallel agents, and don't let another agent touch the file mid-write.
 
 - **A synced colour set is no evidence the rest of the set is synced.** Read the radius ladder off
-  the running app like every other value, and resync the ladder in place rather than adding a
+  the running app like every other value, or off the theme file on native, and resync the ladder in place rather than adding a
   parallel `--radius-ui-*` namespace.
 - **A corner with no rung stays a literal.** Bare Tailwind `rounded` is 4px off the *framework*
   default, not off `--radius`, so it has no token to bind to and is the one place a literal is
