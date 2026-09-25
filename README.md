@@ -127,6 +127,7 @@ The second column is the moment the skill runs, not what it contains.
 | `audit-design` | A designed surface is finished enough to be scored, a fix round has landed and it has to be re-scored, or two scores are about to be compared |
 | `new-screen` | A screen goes into an existing surface, a screen is being redesigned, or a screen is coming out as a stack of same-sized cards |
 | `add-primitive` | A component the interface needs is absent from the repo's primitives folder, or a catalogue entry is incomplete |
+| `run-spike` | A gate asks how something behaves rather than asking for a build, two tools have to be compared on numbers, or a spike report cannot say what was tested |
 | `verify-ui` | A UI change has to be proved rendered, or a number is going into a pull-request body or a gate write-up |
 | `record-design` | A surface's design record is unfilled or stale, or a surface is going to somebody who was not in the session |
 | `ingest-theme` | A designer brings generated theme CSS or brand colours, or a repo has to be rebranded to a client identity |
