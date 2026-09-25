@@ -23,8 +23,8 @@ Fill it by fetching a template and editing it. The templates live beside the ski
 rather than inside them, so an install does not put them in the consuming repo:
 
 ```bash
-mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
-  --jq .content | base64 -d > .agents/host.json
+(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
+  --jq .content | base64 -d > .agents/host.json)
 ```
 
 `host/templates/` carries four filled starting points: `minimal`, `react-web`,

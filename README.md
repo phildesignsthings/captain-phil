@@ -59,30 +59,31 @@ branch a pull request goes to, where the design records live. The repo answers o
 
 Four templates ship in `host/templates/`. Pick the one that matches the repo and paste its block.
 Each writes `.agents/host.json` and prints the template name it wrote, so a wrong pick is visible
-straight away.
+straight away. Each refuses to overwrite a host file that already exists, because the one there
+carries answers the template does not; move it aside first to start again.
 
 **Expo, React Native.** Starts with `npx expo start --ios`, checks with `tsc --build` and
-`npx expo lint`, screens under `app/`.
+`npx expo lint`, screens under `src/app/`, primitives under `src/components/ui/`.
 
 ```bash
-mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-native-expo.json \
-  --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
+(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-native-expo.json \
+  --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
 ```
 
 **React on the web.** Starts with `npm run dev` on port 5173, adds a Prettier check, routes under
 `src/routes/`, shadcn components under `src/components/ui/`.
 
 ```bash
-mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-web.json \
-  --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
+(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-web.json \
+  --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
 ```
 
 **Ideation sandbox.** The design repo layout: prototypes under `ideation-sandbox/src/prototypes/`,
 a theme registry, a component catalogue, a sandbox guard, and a lint baseline of 5 rather than 0.
 
 ```bash
-mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/ideation-sandbox.json \
-  --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
+(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/ideation-sandbox.json \
+  --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
 ```
 
 **Anything else.** Every slot empty but a trunk of `main`, including the checks, which are left
@@ -90,8 +91,8 @@ unanswered rather than guessed. Start here when no other template is close, then
 repo can answer.
 
 ```bash
-mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
-  --jq .content | base64 -d > .agents/host.json && grep '"template"' .agents/host.json
+(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
+  --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
 ```
 
 A template is a starting point, not an answer. Open the file afterwards and correct the paths the
