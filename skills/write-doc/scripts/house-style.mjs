@@ -1,27 +1,28 @@
 #!/usr/bin/env node
 // The mechanical half of the house style, as an importable module.
 //
-// One home for the rules, two callers. This repo's guard runs it over every
-// SKILL.md and reference in the suite; a consuming repo's own guard imports the
-// installed copy rather than keeping a second set of regexes that drift from it.
+// This file is the only copy of the rules. This repo's guard runs it over
+// every markdown file in the repo. A consuming repo's guard imports the
+// installed copy, so it keeps no second set of regexes to drift from this one.
 //
 // The caller supplies the file list and the two predicates that decide scope,
-// because scope is the one thing that differs per repo: which files opt into the
-// prose rules, and which are allowed to be dated. Everything else — what counts
-// as prose, what the rules are, and what a finding says — lives here.
+// because scope is the only thing that differs per repo. One predicate picks
+// the files that opt into the prose rules, and the other picks the files
+// allowed dated language. What counts as prose, the rules, and the wording of
+// each finding all live here.
 //
-// Standalone: node house-style.mjs <file>...
+// Usage: node house-style.mjs <file>...
 import { readFileSync, realpathSync } from "node:fs";
 import { basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Only the mechanical half of the "no anchoring words" rule. The written
-// standard also bans `new`, `existing` and `old`; those three are deliberately
-// NOT here, because no regex separates the dating sense from the ordinary one.
-// "the new registry" ages and "leave it under the new name" — three words into
-// a rename procedure — does not. A check that fired on all three would be wrong
-// most of the time, and a check that is wrong most of the time is one everybody
-// learns to scroll past. Those three stay a reading rule.
+// The regex half of the "no anchoring words" rule. The written standard also
+// bans `new`, `existing` and `old`, and this list leaves those three out on
+// purpose, because no regex separates the dating sense from the ordinary one.
+// "The new registry" goes stale, while "leave it under the new name" in a
+// rename procedure does not. A check that fired on all three would be wrong
+// most of the time, and people learn to skip a check like that. The reader
+// applies those three by hand.
 export const ANCHORING_WORDS = [
   /\bcurrently\b/gi,
   /\bnow\b/gi,
@@ -32,24 +33,23 @@ export const ANCHORING_WORDS = [
   /\bthe latest\b/gi,
 ];
 
-// A run of three or more capped words is the finding; these are subtracted
-// first, because an acronym is not shouting. Token names and code spans are
-// already masked out before the match runs.
+// The all-caps check fires on a run of three or more capitalised words. It
+// removes these acronyms first, because an acronym is not shouting. maskProse
+// has already blanked code spans, which covers token names.
 export const HOUSE_STYLE_ACRONYMS =
   /\b(?:FSD|CDP|MCP|CSS|HTML|JSX|API|CLI|DOM|PR|PRD|UI|UX|URL|CSV|JSON|YAML|SVG|AST|CMD|QA|CI|MVP|KPI|SSR|TSX|RHF|GIF|PNG)\b/g;
 
-// All caps stays legal on a prohibition or on a trap that already cost time,
-// which is this standard's narrowing of Google's flat ban. A line carrying one
-// of these is making exactly that kind of statement.
+// The standard narrows Google's flat ban on all caps, allowing it on a
+// prohibition or on a trap that already cost time. A line carrying one of
+// these words counts as a prohibition.
 export const PROHIBITION_MARKER =
   /\b(?:never|nothing|cannot|can't|don't|do not|must not|may not|no)\b/i;
 
 // Both are canonical headings in a schema another tool reads, and renaming
-// either one breaks the file for that tool. They are exempt here rather than in
-// a caller so that a repo which starts keeping design records or product
-// records under this check cannot quietly break a heading nobody is allowed to
-// fix. `Elevation & Depth` is a design record's; `Accessibility & Inclusion` is
-// a product record's.
+// either one breaks the file for that tool. `Elevation & Depth` belongs to a
+// design record and `Accessibility & Inclusion` to a product record. The
+// exemption lives here rather than in a caller, so a repo that brings those
+// records under this check gets no finding it is forbidden to fix.
 export const HEADING_AMPERSAND_EXEMPT = new Set([
   "Elevation & Depth",
   "Accessibility & Inclusion",
@@ -60,18 +60,17 @@ export const EMPTY_LINK_TEXT =
   /^(?:click here|here|this|this link|link|read more|more|see this)$/i;
 
 /*
-  Blank out everything that is not prose, preserving every line break and every
-  column so a finding's line number is the line the author sees.
+  Blanks out everything that is not prose. It keeps every line break and
+  column, so a finding's line number is the line the author sees.
 
-  What gets masked, and why each one would otherwise fire:
-    · frontmatter — exempt by rule, and it is where a skill's `description`
-      legitimately says "new prototype".
-    · fenced blocks and inline code spans — a token name, a shell flag and a
-      slot name are not prose. Every banned-word list in this corpus is written
-      in backticks for exactly this reason, so the standard does not fail
-      itself.
-    · link targets — a URL carrying `latest` or a path carrying `new-surface`
-      is a path, not a claim about time.
+  What gets masked, and why each would otherwise fire:
+    · Frontmatter. The rules exempt it, and a skill's `description` can say
+      "new prototype" there.
+    · Fenced blocks and inline code spans. A token name, a shell flag and a
+      slot name are not prose. This corpus writes every banned-word list in
+      backticks for this reason, so the standard does not fail itself.
+    · Link targets and autolinks. A URL carrying `latest` or a path carrying
+      `new-surface` is a path, not a claim about time.
 */
 export function maskProse(text) {
   const blank = (m) => m.replace(/[^\n]/g, " ");
@@ -90,9 +89,9 @@ export function maskProse(text) {
     .replace(/<https?:\/\/[^>\n]*>/g, blank);
 }
 
-// `house_style: true` in frontmatter. A markdown file that is not a SKILL.md
-// opts in by carrying the line, so a file can land, be counted as outstanding,
-// and be brought to the style in its own commit.
+// A markdown file other than a SKILL.md opts into the prose rules with
+// `house_style: true` in its frontmatter. A file can then land, show as
+// pending in the count, and reach the style in a later commit.
 export function optedIntoHouseStyle(text) {
   if (!text.startsWith("---\n")) return false;
   const end = text.indexOf("\n---\n", 3);
@@ -110,7 +109,7 @@ export function optedIntoHouseStyle(text) {
   opts.datedLanguageOk  (rel) → whether anchoring words are legal in this file
 
   Returns { findings, prose, pending, longSentences, total }. `longSentences` is
-  advisory and carries no finding: the 26-word rule is a reading guide, and a
+  a count with no finding attached. The 26-word rule is a reading guide, and a
   finding per long sentence would bury the rules that bind.
 */
 export function checkHouseStyle(files, opts = {}) {
@@ -188,9 +187,9 @@ export function checkHouseStyle(files, opts = {}) {
       if (!checkProse) return;
 
       // ── Anchoring words ──
-      // A retirement record is carved out by the written standard: a record's
-      // job is to be dated, and one that cannot say when something was removed
-      // is not a record. Which files qualify is the caller's call.
+      // The written standard exempts a retirement record, an append-only note
+      // and a design record, because each one has to say when something
+      // happened. The caller's datedLanguageOk decides which files those are.
       for (const pattern of dated ? [] : ANCHORING_WORDS) {
         for (const [hit] of maskedLine.matchAll(pattern)) {
           findings.push(
@@ -231,8 +230,8 @@ export function checkHouseStyle(files, opts = {}) {
         );
       }
 
-      // Advisory only. Counted on the masked line so a table row of token names
-      // does not read as a 40-word sentence.
+      // Counts on the masked line, so a sentence full of code spans does not
+      // read as a 40-word sentence.
       if (!/^\s*[#|>]/.test(maskedLine)) {
         for (const sentence of maskedLine.split(/(?<=[.!?])\s+/)) {
           if (sentence.trim().split(/\s+/).filter(Boolean).length > 26)
@@ -245,14 +244,14 @@ export function checkHouseStyle(files, opts = {}) {
 }
 
 /*
-  Whether this file is the one node was told to run.
+  Whether node was told to run this file.
 
-  Compares REAL paths. A skill installs as `.agents/skills/<name>/`, and the
-  harness symlinks `.claude/skills/<name>` at it — so the entry path a user
-  types goes through the symlink while `import.meta.url` is already resolved.
-  Comparing the two unresolved strings makes this branch false whenever the
-  script is invoked by the path the skill's own instructions name, and the run
-  exits 0 having done nothing. A check that silently passes is worse than none.
+  Compares REAL paths. A skill installs as `.agents/skills/<name>/` with
+  `.claude/skills/<name>` symlinked at it. The entry path a user types goes
+  through the symlink, while `import.meta.url` is already resolved. Compared
+  unresolved, the two never match when a user runs the script by the path the
+  skill's own instructions name, and the run exits 0 having done nothing. A
+  check that silently passes is worse than none.
 */
 function invokedDirectly(moduleUrl) {
   const entry = process.argv[1];

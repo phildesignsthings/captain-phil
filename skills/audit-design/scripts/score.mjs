@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// The arithmetic and the writing for a design audit. Applies
-// ../references/criteria.md § From findings to a score — that file owns the
-// two tables, this file applies them, and --self-test proves the application
-// against every row so a printed score is one the mapping produced.
+// Scores a design audit and writes its record. references/criteria.md
+// § From findings to a score owns the two tables, and this file applies them.
+// --self-test checks the code against every row of both, so a printed score is
+// one the tables produce.
 //
 //   score.mjs --skeleton --surface "<s>" [--kind paper-boards] [--sweep 3]
 //             [--bar Good] [--loading-in-scope false]   → empty findings.json
@@ -11,8 +11,8 @@
 //   score.mjs <findings.json> --record                    → the run record
 //   score.mjs --self-test
 //
-// Exit codes: 0 ok · 1 the file failed validation or usage · 3 the self-test
-// disagreed with criteria.md (the mapping is lying; fix it before scoring).
+// Exit codes: 0 ok · 1 a usage error or a file that failed validation · 3 the
+// self-test disagreed with criteria.md, so fix the mapping before scoring.
 
 import { readFileSync, realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -29,7 +29,8 @@ const SEVERITIES = new Set(["P0", "P1", "P2", "P3"]);
 const BANDS = new Set(["Excellent", "Good", "Acceptable", "Poor", "Critical"]);
 const MAX_PER_CRITERION = 4;
 
-// § From findings to a score — read top down, first match wins.
+// criteria.md § From findings to a score. The rows read top down, and the
+// first match wins.
 export function scoreCriterion(counts) {
   const p0 = counts.P0 ?? 0;
   const p1 = counts.P1 ?? 0;
@@ -188,9 +189,9 @@ export function renderMarkdown(result) {
   return lines.join("\n");
 }
 
-// The run record: everything a later reader needs, with two sections left as
-// headings because only the auditor can fill them — what the sweep caught that
-// a read would not have, and what it missed (filled after the fix round).
+// Leaves two sections as placeholders, because only the auditor can fill them.
+// One is what the sweep caught that a read would not have. The other is what
+// the sweep missed, filled after the fix round.
 export function renderRecord(result, date = new Date().toISOString().slice(0, 10)) {
   const lines = [];
   const scores = result.rows.map((r) => r.score).join(" | ");
@@ -255,7 +256,7 @@ export function renderRecord(result, date = new Date().toISOString().slice(0, 10
   return lines.join("\n");
 }
 
-// Every row of both criteria.md tables as a fixture, plus the writing modes.
+// Tests every row of both criteria.md tables, and the writing modes.
 function selfTest() {
   const cases = [
     [{ P0: 2 }, 0, "two P0 → 0"],
@@ -284,7 +285,7 @@ function selfTest() {
     if (got !== expected) failures.push(`band: ${percent}% → ${expected}, got ${got}`);
   }
 
-  // Renormalisation: two n/a criteria make the maximum 16.
+  // Two n/a criteria cut the maximum from 24 to 16.
   const fixture = {
     ...skeleton({ surface: "self-test", sweep: 3 }),
     criteria_na: [{ criterion: 5, reason: "t" }, { criterion: 6, reason: "t" }],
@@ -304,7 +305,6 @@ function selfTest() {
   if (renorm.withdrawn.length !== 1) failures.push("withdrawn finding was scored or dropped");
   if (renorm.rows[3].score !== 4) failures.push("a withdrawn P0 changed a score");
 
-  // Skeleton: validates empty, and carries the run parameters.
   const sk = skeleton({ surface: "s", sweep: "3", bar: "Good", loadingInScope: "true" });
   if (validate(sk).length) failures.push(`skeleton fails validation: ${validate(sk).join("; ")}`);
   if (sk.loading_in_scope !== true || sk.sweep_version !== 3) failures.push("skeleton dropped a parameter");
@@ -313,7 +313,6 @@ function selfTest() {
   if (validate({ ...sk, findings: [{ ...fixture.findings[0], evidence: "" }] }).length === 0)
     failures.push("a finding without evidence passed");
 
-  // Record: every finding, withdrawal and off-list check appears once; pipes are escaped.
   const piped = { ...fixture, findings: [{ ...fixture.findings[0], finding: "a | b" }, ...fixture.findings.slice(1)] };
   const record = renderRecord(score(piped), "2000-01-01");
   for (const needle of ["| a | 1 | P1 |", "| d | b | r |", "| c | b | off |", "a \\| b", "## Missed", "| self-test | 2000-01-01 | v3 |"]) {
@@ -338,14 +337,14 @@ function flag(args, name) {
 
 const args = process.argv.slice(2);
 /*
-  Whether this file is the one node was told to run.
+  Whether node was told to run this file.
 
-  Compares REAL paths. A skill installs as `.agents/skills/<name>/`, and the
-  harness symlinks `.claude/skills/<name>` at it — so the entry path a user
-  types goes through the symlink while `import.meta.url` is already resolved.
-  Comparing the two unresolved strings makes this branch false whenever the
-  script is invoked by the path the skill's own instructions name, and the run
-  exits 0 having done nothing. A check that silently passes is worse than none.
+  Compares REAL paths. A skill installs as `.agents/skills/<name>/` with
+  `.claude/skills/<name>` symlinked at it. The entry path a user types goes
+  through the symlink, while `import.meta.url` is already resolved. Compared
+  unresolved, the two never match when a user runs the script by the path the
+  skill's own instructions name, and the run exits 0 having done nothing. A
+  check that silently passes is worse than none.
 */
 function invokedDirectly(moduleUrl) {
   const entry = process.argv[1];
