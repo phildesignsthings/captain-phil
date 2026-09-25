@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-// Greps a direction's presentation text for the words that betray the method.
-// The deliverable argues for itself or it is unfinished; a hit names the word
-// and the line so the player can rewrite it.
+// Searches a direction's presentation text for words that reveal the dice
+// method. A direction has to make its case without the method, so each hit
+// prints the word and the line for the player to rewrite.
 //
 //   leak-check.mjs <file> [<file>...] [--allow word,word]
 //
-// --allow exempts a word the subject owns (a tide table, a data table).
+// --allow exempts a word the subject uses in its own sense, such as "table"
+// for a tide table.
 // Exit codes: 0 clean · 1 a hit or usage.
 
 import { existsSync, readFileSync } from "node:fs";

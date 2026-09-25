@@ -1,47 +1,47 @@
 #!/usr/bin/env node
 // Run a project's checks in parallel and print one plain-language line per check,
-// compared against a recorded baseline. The output is written for a designer, so the
-// agent can paste it into the report without translating it.
+// compared against a recorded baseline. The output addresses a designer, so the agent
+// can paste it into the report without translating it.
 //
-// Config, in the order the script looks for it, each found by walking up from cwd:
-//   1. <project>/.agents/host.json  →  its "checks" object
+// The script looks for config in this order, walking up from cwd for each:
+//   1. <project>/.agents/host.json, reading its "checks" object
 //        { "checks": { "cwd": "app",                   // optional, relative to the repo root
 //                      "lint": { "cmd": "npm run lint", "baseline": 5, "cwd": "." }, ... } }
-//   2. <project>/.claude/checks-baseline.json  →  the same shape one level deeper
+//   2. <project>/.claude/checks-baseline.json, with the checks one level deeper
 //        { "cwd": "app", "checks": { ... } }
 //   A check's own "cwd" overrides the top-level one. Both are relative to the config's project root,
 //   which is the host file's grandparent and the baseline file's grandparent alike.
-// Without either, the script reads package.json for typecheck / lint / test scripts and runs them
-// against a baseline of 0, and says so.
+// Without either, the script runs package.json's typecheck, lint, test and format scripts against
+// a baseline of 0, and says so.
 //
-// --record writes the counts back into whichever file it read, leaving every other key untouched:
-// the host file carries answers no check produced, so a rewrite that dropped them would take the
-// repo's whole configuration with it.
+// --record writes the counts back into whichever file it read and leaves every other key alone.
+// The host file carries answers no check produced, and a rewrite that dropped them would delete the
+// repo's whole configuration.
 //
-// Usage: node check-baseline.mjs [--record]   --record rewrites every baseline to today's count.
+// Usage: node check-baseline.mjs [--record]
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 const RECORD = process.argv.includes("--record");
 
-// Returns { path, kind, root } or null. `kind` decides where "checks" sits in the parsed file and
-// where --record writes it back; `root` is the project directory every relative cwd hangs off.
-// The host file wins over the legacy one on a repo carrying both, so migrating is one file move.
+// Returns { path, kind, root } or null, plus `checks` for a host file. `kind` says where the checks
+// sit in the parsed file, and `root` is the directory every relative cwd resolves against. In each
+// directory the host file wins over the legacy one, so migrating a repo is one file move.
 function findConfig(dir) {
   for (;;) {
     const host = join(dir, ".agents", "host.json");
     if (existsSync(host)) {
       try {
         const parsed = JSON.parse(readFileSync(host, "utf8"));
-        // `checks: null` is an ANSWER — the repo says it runs no automated checks — so it stops
-        // the search rather than falling through. Only an absent key means nobody answered, and
-        // a fallback on a null would ask the repo a question it already declined.
+        // `checks: null` is an answer, meaning the repo runs no automated checks, so it stops the
+        // search. Only an absent key means nobody answered. Falling back on a null would ask the
+        // repo a question it has already answered.
         if ("checks" in parsed)
           return { path: host, kind: "host", root: dir, checks: parsed.checks };
       } catch {
-        // A malformed host file is not this script's business to report. Fall through
-        // to the legacy file rather than dying on somebody else's syntax error.
+        // Reporting a malformed host file is another tool's job, so fall through to the
+        // legacy file rather than exit on its syntax error.
       }
     }
     const legacy = join(dir, ".claude", "checks-baseline.json");
@@ -53,9 +53,9 @@ function findConfig(dir) {
   }
 }
 
-// The four labels check-baseline runs, and the keys that are settings rather than checks. A host
-// file's "checks" carries "cwd" alongside the checks themselves, so the settings are subtracted
-// rather than the checks enumerated — a label added to the schema then needs no edit here.
+// Keys in a "checks" block that are settings rather than checks. A host file's "checks" carries
+// "cwd" beside the checks, so the script removes the settings instead of listing the check labels.
+// A label added to the schema then needs no edit here.
 const NOT_A_CHECK = new Set(["cwd"]);
 
 function findPackageRoot(dir) {
@@ -101,10 +101,9 @@ if (config?.kind === "host" && config.checks === null) {
   note = "No recorded baseline. Every count is compared against 0; run with --record to keep today's numbers.";
 }
 
-// A missing node_modules is only a finding where the manifest declares something
-// to install. A zero-dependency repo — which every check here runs on the
-// standard library alone — has nothing to install, and refusing to run its
-// checks blocks the gate over a folder it never needed.
+// A missing node_modules matters only where the manifest declares something to
+// install. A repo with no dependencies has nothing to install, and refusing to
+// run its checks would block the gate over a folder it never needed.
 const manifest = existsSync(join(cwd, "package.json"))
   ? JSON.parse(readFileSync(join(cwd, "package.json"), "utf8"))
   : {};
@@ -116,8 +115,8 @@ if (declaresDependencies && !existsSync(join(cwd, "node_modules"))) {
   process.exit(2);
 }
 
-// Each counter reads a tool's own summary line first and falls back to counting error lines,
-// so a tool that prints no summary still produces a number rather than a crash.
+// Reads a tool's own summary line first and falls back to counting error lines, so a tool that
+// prints no summary still yields a number rather than a crash.
 function count(output, exitCode) {
   const m =
     output.match(/✖ \d+ problems? \((\d+) errors?/) || // eslint

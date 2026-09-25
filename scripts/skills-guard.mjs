@@ -2,15 +2,15 @@
 // Guards the suite's own invariants. Run it with `npm run guard`; CI runs the
 // same command on every push, and a branch cannot merge to main without it.
 //
-// The checks are sorted by what each one reads:
+// Each check reads one of three things:
 //
-//   the skill folders   → checkNoStraySkillMd, checkFrontmatter, checkSkillIndex,
-//                         checkSkillReferences, checkHostSlots, checkNoHostPaths
-//   the host schema     → checkHostSlots, checkTemplates
-//   every markdown file → checkHouseStyle, delegated to the single copy of the
-//                         rules at skills/write-doc/scripts/house-style.mjs
+//   the skill folders:   checkNoStraySkillMd, checkFrontmatter, checkSkillIndex,
+//                        checkSkillReferences, checkHostSlots, checkNoHostPaths
+//   the host schema:     checkHostSlots, checkTemplates
+//   every markdown file: checkHouseStyle, which imports the only copy of the
+//                        rules from skills/write-doc/scripts/house-style.mjs
 //
-// Nothing here reads a consuming repo. A rule about how an INSTALLED skill
+// Nothing here reads a consuming repo. A rule about how an installed skill
 // behaves belongs in that skill's own body, because this script never runs there.
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, relative, basename, dirname, resolve, sep } from "node:path";
@@ -21,25 +21,24 @@ const SKILLS = join(root, "skills");
 const SCHEMA_PATH = join(root, "host", "host.schema.json");
 const TEMPLATES = join(root, "host", "templates");
 const README = join(root, "README.md");
-// What a house-style finding cites as the written rule — the file a reader opens to find the rule
-// they just broke, rather than the name of a standard they have to go looking for.
+// A house-style finding cites this file as the written rule. A path gives the reader a file to
+// open, where the name of a standard leaves them searching for it.
 const STANDARD = "skills/write-doc/references/house-style.md";
 
 /*
-  A folder under skills/ that carries no SKILL.md yet.
+  Folders under skills/ allowed to have no SKILL.md, each mapped to its reason.
 
-  The suite is converted one cluster at a time, and a shared script can land
-  before the skill that documents it. Both directions are findings: a folder
-  absent from this map and missing its SKILL.md fails, and an entry naming a
-  folder that HAS one fails too, so the map empties itself as the conversion
-  finishes rather than quietly permitting a skill with no instructions.
+  The suite converts one cluster at a time, so a shared script can land before
+  the skill that documents it. A folder missing its SKILL.md and absent from
+  this map fails. An entry naming a folder that has a SKILL.md fails too, so
+  each entry goes in the commit that lands its skill, and the map cannot
+  quietly permit a skill with no instructions.
 */
 const PENDING_SKILLS = new Map();
 
-// A body outside references/ that names one of these is naming ONE repo's
-// layout. The whole point of the host file is that a portable skill cites a
-// slot instead. references/ is exempt because a bundled reference is allowed to
-// quote the corpus it was extracted from.
+// A skill body outside references/ that matches one of these names one repo's
+// layout, where a portable skill cites a host slot. references/ is exempt
+// because a bundled reference can quote the corpus it came from.
 const HOST_PATH_PATTERNS = [
   [/ideation-sandbox\//, "names the sandbox's app folder"],
   [/sandbox-guard/, "names the sandbox's guard script"],
@@ -48,8 +47,9 @@ const HOST_PATH_PATTERNS = [
   [/(?<![\w.])memory\//, "names a project-notes folder — read `memory.root`"],
   [/\.agents\/context\//, "names a record folder — read the matching `records.*` slot"],
   [/(?<![\w-])meta\.ts/, "names the sandbox's per-surface config file"],
-  // Also fires on the gerund ("staging a file"), which is the price of catching
-  // a bare branch name. Reword the sentence rather than loosening the pattern.
+  // This also matches the gerund, as in "staging a file". Catching a bare
+  // branch name needs that, so reword the sentence rather than loosening the
+  // pattern.
   [/(?<![\w-])staging(?![\w-])/, "names a branch — read `git.trunk`"],
   [/-vibes(?![\w-])/, "names a branch convention — read `git.engagementBranch`"],
 ];
@@ -82,11 +82,11 @@ function skillFolders() {
 }
 
 /*
-  Enough YAML for a skill's frontmatter and no more.
+  A YAML parser for a skill's frontmatter and nothing more.
 
-  Handles what this corpus uses: scalars, `>-` folded blocks, flow arrays, and a
-  one-level-deep `metadata:` map. A dependency would buy nothing — the guard
-  runs on every push and the whole grammar here is four shapes.
+  It handles the four shapes this corpus uses: scalars, `>-` folded blocks,
+  flow arrays, and a `metadata:` map one level deep. A YAML package would be
+  the repo's first dependency, and four shapes are not worth one.
 */
 function frontmatter(text) {
   if (!text.startsWith("---\n")) return null;
@@ -141,8 +141,8 @@ function parseScalar(value) {
   return v.replace(/^["']|["']$/g, "");
 }
 
-// Strip frontmatter, fenced blocks and link targets — the same masking the
-// prose rules use, for the same reason: a path inside a fence is an example.
+// Drops frontmatter and fenced blocks, because a path inside a fence is an
+// example rather than a citation.
 function bodyProse(text) {
   let out = text;
   if (out.startsWith("---\n")) {
@@ -184,9 +184,10 @@ function checkNoStraySkillMd() {
 
 /*
   The harness picks a skill by matching its `description` and `when_to_use`, so
-  a missing or badly folded one is a skill that never triggers. `>-` is required
-  on all three because a bare multi-line scalar breaks the parse and a
-  single-line one wraps past every editor's margin.
+  a skill missing either one, or folding it badly, never triggers. The guard
+  requires `>-` on both and on `compatibility`, because a bare multi-line
+  scalar breaks the parse and a single-line one runs past every editor's
+  margin.
 */
 function checkFrontmatter() {
   for (const folder of skillFolders()) {
@@ -244,10 +245,9 @@ function checkFrontmatter() {
 // ── 3. The skills index ─────────────────────────────────────────────────────
 
 /*
-  Same both-directions shape the sandbox guard uses for its own index: the
-  filesystem is the truth, README.md's `## Skills` table is the claim, and
-  either one drifting is a finding. A skill absent from the table is invisible
-  to anybody deciding whether to install the suite.
+  The skill folders on disk are the truth and README.md's `## Skills` table is
+  the claim, and the check fails a mismatch in either direction. A skill absent
+  from the table is invisible to anybody deciding whether to install the suite.
 */
 function checkSkillIndex() {
   if (!existsSync(README)) {
@@ -313,9 +313,9 @@ function checkSkillIndex() {
 // ── 4. References resolve inside the skill ──────────────────────────────────
 
 /*
-  A skill is installed as one folder, so a citation that walks outside it
-  resolves to nothing in every consuming repo — and the failure is silent,
-  because the reader reads a dead lead rather than an error.
+  A skill installs as one folder, so a citation that walks outside it resolves
+  to nothing in every consuming repo. Nothing reports the failure, because the
+  reader meets a dead path rather than an error.
 */
 function checkSkillReferences() {
   for (const folder of skillFolders()) {
@@ -347,18 +347,18 @@ function schemaGroups() {
   const schema = JSON.parse(readFileSync(SCHEMA_PATH, "utf8"));
   const groups = new Map();
   for (const [group, def] of Object.entries(schema.properties)) {
-    if (def.type === "string") continue; // `$schema`, `template`
+    if (def.type === "string") continue; // `$schema` and `template` are strings, not slot groups
     groups.set(group, new Set(Object.keys(def.properties ?? {})));
   }
   return { schema, groups };
 }
 
 /*
-  Ties the three declarations together. A slot written in a body has to exist in
-  the schema and appear in that skill's `metadata.host`; a slot declared in
-  frontmatter has to exist in the schema too. The failure this prevents is a
-  skill reading a slot whose fallback nobody wrote, which behaves correctly in
-  the repo it was written in and silently does nothing everywhere else.
+  A slot a body reads must exist in the schema and appear in that skill's
+  `metadata.host`. A slot the frontmatter declares must exist in the schema
+  too. Without this check, a skill can read a slot whose fallback nobody wrote.
+  It works in the repo it was written in and silently does nothing everywhere
+  else.
 */
 function checkHostSlots() {
   const { groups } = schemaGroups();
@@ -431,10 +431,9 @@ function checkNoHostPaths() {
 // ── 7. The templates validate ───────────────────────────────────────────────
 
 /*
-  Hand-rolled validation of the subset of JSON Schema the host file uses. The
-  suite ships zero dependencies on purpose: a consuming repo installs the skills
-  as files, and a guard that needed an install step is a guard that stops
-  running.
+  A hand-written validator for the subset of JSON Schema the host file uses.
+  The suite ships no dependencies, because a consuming repo installs the skills
+  as files and a guard that needs an install step stops running.
 */
 function validate(value, schema, path, schemaRoot, out) {
   if (schema.$ref) {

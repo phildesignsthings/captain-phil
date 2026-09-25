@@ -1,16 +1,17 @@
 #!/usr/bin/env node
-// The dice for get-creative. Throws N draws of four dice, looks every number up
-// in its table, refuses an exact repeat of a draw already kept in this log, and
-// appends the throw sheet to the log so the designer can read what forced each
-// direction. Nothing here judges a draw; the only rejections are mechanical.
+// Throws the dice for get-creative. Each of N draws throws four dice and looks
+// every number up in its table. The script rethrows a draw the log already
+// keeps, or one sharing its object or composition with another draw in the set.
+// It appends the throw sheet to the log, so the designer can read what forced
+// each direction. Nothing here judges a draw, and every rethrow is mechanical.
 //
 //   roll.mjs --subject "<s>" --log <abs path> [--n 3] [--out "<where it lands>"]
 //            [--objects <path>] [--record <DESIGN.md>]
 //   roll.mjs --self-test
 //
-// Tables: ../references/{descriptors,objects,compositions,rules}.md. A product's
-// own object table (--objects) replaces the generic one; a DESIGN.md (--record)
-// supplies rule entries 2–6 from the bold leads under "## Named Rules".
+// Tables: references/{descriptors,objects,compositions,rules}.md. --objects
+// replaces the generic object table with a product's own. --record reads rule
+// entries 2 to 6 from the bold leads under "## Named Rules" in a DESIGN.md.
 //
 // Exit codes: 0 rolled · 1 usage or a table that failed its count · 2 a
 // prerequisite is missing, with the sentence to say to the designer.
