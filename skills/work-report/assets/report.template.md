@@ -4,6 +4,27 @@
 
 ---
 
+<!-- Middle, SPIKE shape: once, then one item per question id -->
+## How I tested
+- <what was built, and what it holds>
+- <what stood in for the network>
+- <what recorded the evidence, one item per instrument>
+- <how many runs, and the runner's settings>
+
+## What each test showed
+- **Q<id> · <the answer, in a few words>.** <what was done>. <what happened>. <the number>. (`<case>`)
+- **Q<id> · not measured.** <why no case reached it>.
+
+## Findings that conflict with the <spec | plan>
+- <what was done, and what happened> (`<case>`). The <spec | plan> says <the sentence it breaks>.
+
+## Files
+- `<results file>` has one row per question.
+- `<fixtures folder>` has <what each fixture shows>.
+- <what is left running, or "No processes are left running.">
+
+---
+
 <!-- Middle, CODE shape: repeat per route -->
 ## <Screen name> — <clickable URL>
 <One line under 15 words, starting with a verb: "Check…", "Compare…", "Tap…">
