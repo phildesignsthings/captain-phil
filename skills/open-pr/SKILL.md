@@ -11,13 +11,15 @@ when_to_use: >-
   up".
 compatibility: >-
   Reads git.trunk, git.release, git.engagementBranch, git.doc, checks.typecheck, checks.lint,
-  checks.test, issues.ladder, issues.doc and verify.doc from .agents/host.json. Without
+  checks.test, issues.ladder, issues.doc, verify.doc and dev.platform from .agents/host.json.
+  With dev.platform native, the verification table's rows are looked at off simulator screenshots
+  and written in the looked-at row format. Without
   git.trunk, read the repo's default branch from `gh repo view` and say which base you picked.
   With git.release null, the trunk is also the release branch and the § Variants catch-up does
   not run. With issues.ladder null, no rung changes and the status ask is skipped in one line.
 metadata:
   suite: captain-phil
-  host: [git.trunk, git.release, git.engagementBranch, git.doc, checks.typecheck, checks.lint, checks.test, issues.ladder, issues.doc, verify.doc]
+  host: [git.trunk, git.release, git.engagementBranch, git.doc, checks.typecheck, checks.lint, checks.test, issues.ladder, issues.doc, verify.doc, dev.platform]
 ---
 
 # Open a PR
@@ -85,6 +87,9 @@ body that the baseline was zero because nobody recorded one.
 5. Read every before and after value off the running app or off a check's output, per the repo's
    measuring rules at `verify.doc`. Where that slot is `null` or absent, the `verify-ui` skill's own
    bundled rules apply.
+6. Where `dev.platform` is `native`, or no probe ran, write each screen row in the looked-at format
+   from `references/pr-templates.md` § The verification table, with the deep link and the taps that
+   reach the screen. A check's output is still a measured row.
 
 ## 5. Open it, and keep it true
 

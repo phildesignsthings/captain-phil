@@ -17,9 +17,9 @@
 
 <paste the check-baseline script's output verbatim>
 
-### Verified in the browser
+### Verified on screen
 
-- <route> — measured: <what>. Not measured: <what>.
+- <route or deep link> — measured: <what>. Looked at: <what, and the screenshot path on native>. Not measured: <what>.
 
 ### Next gate starts from
 

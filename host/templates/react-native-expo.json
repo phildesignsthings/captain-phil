@@ -1,11 +1,10 @@
 {
   "$schema": "../host.schema.json",
   "template": "react-native-expo",
-  "dev": { "cwd": null, "start": "npx expo start --ios", "url": null, "platform": "native" },
+  "dev": { "cwd": null, "start": "npx expo start --ios", "platform": "native" },
   "checks": {
     "typecheck": { "cmd": "tsc --build", "baseline": 0 },
-    "lint": { "cmd": "npx expo lint", "baseline": 0 },
-    "test": { "cmd": "npm test", "baseline": 0 }
+    "lint": { "cmd": "npx expo lint", "baseline": 0 }
   },
   "git": { "trunk": "main", "release": null, "engagementBranch": null, "doc": null },
   "docs": { "root": "docs", "glossary": null, "gotchas": null, "local": null, "retired": null, "index": "AGENTS.md" },
@@ -13,10 +12,10 @@
   "memory": { "root": null, "archive": null, "doc": null, "gloss": null, "connectors": null },
   "issues": { "tracker": null, "ladder": null, "doc": null, "ask": null, "retired": true },
   "verify": { "mcp": null, "probes": null, "doc": null, "agent": null },
-  "theme": { "dir": "constants", "registry": null, "contract": null, "generator": null, "doc": null },
-  "components": { "dir": "components/ui", "install": null, "registry": null, "showcase": null, "doc": null },
+  "theme": { "dir": "src/constants", "registry": null, "contract": null, "generator": null, "doc": null },
+  "components": { "dir": "src/components/ui", "install": null, "registry": null, "showcase": null, "doc": null },
   "surfaces": {
-    "root": "app",
+    "root": "src/app",
     "unit": "screen",
     "doc": null,
     "route": "/<name>",

@@ -23,8 +23,8 @@ Fill it by fetching a template and editing it. The templates live beside the ski
 rather than inside them, so an install does not put them in the consuming repo:
 
 ```bash
-mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
-  --jq .content | base64 -d > .agents/host.json
+(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
+  --jq .content | base64 -d > .agents/host.json)
 ```
 
 `host/templates/` carries four filled starting points: `minimal`, `react-web`,
@@ -35,6 +35,11 @@ mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/te
 none of the others, so any command it named would be a guess, and a guessed command is worse than an
 absent one — absent sends the skill to its fallback and makes it offer to write the real answer,
 where a wrong `cmd` just fails. The other three name commands that hold for their stack.
+
+`react-native-expo` leaves `dev.url` absent for the same reason. On native the slot is the app's
+deep-link base, and every Expo app declares its own scheme, so any value the template shipped would
+be a placeholder that opens nothing. Absent sends `verify-ui` to the app's config for the real
+scheme, and it offers to record what it finds. A `null` there would say the app takes no deep links.
 
 ## The three-state rule
 
@@ -81,8 +86,8 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 
 | Slot | Read by |
 |---|---|
-| `dev.cwd`, `dev.start`, `dev.url` | `verify-ui`, `decision-request`, `wrap-gate`, `add-primitive` |
-| `dev.platform` | `verify-ui`, `new-screen` |
+| `dev.cwd`, `dev.start`, `dev.url` | `verify-ui`, `decision-request`, `wrap-gate`, `add-primitive`, `new-surface`, `receive-prototype` |
+| `dev.platform` | `verify-ui`, `wrap-gate`, `decision-request`, `new-screen`, `new-surface`, `receive-prototype`, `record-design`, `add-primitive`, `open-pr`, `ingest-theme`, `paper` |
 | `checks.cwd`, `checks.typecheck`, `checks.lint`, `checks.test` | `wrap-gate`, `clean-done`, `open-pr` |
 | `checks.format` | `wrap-gate`, `clean-done`, `open-pr`, `tidy-comments` |
 | `checks.guard` | `wrap-gate`, `write-doc`, `freeze-memory`, `ingest-theme` |
@@ -109,7 +114,8 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 | `theme.dir`, `theme.registry`, `theme.contract`, `theme.generator` | `ingest-theme`, `new-surface` |
 | `theme.doc` | `ingest-theme`, `record-design`, `paper` |
 | `components.dir`, `components.install` | `add-primitive`, `new-screen` |
-| `components.registry`, `components.showcase` | `add-primitive` |
+| `components.registry` | `add-primitive`, `paper` |
+| `components.showcase` | `add-primitive`, `ingest-theme`, `paper` |
 | `components.doc` | `add-primitive`, `paper` |
 | `surfaces.root`, `surfaces.unit`, `surfaces.route` | `new-surface`, `new-screen`, `record-design` |
 | `surfaces.doc` | `new-surface`, `record-design` |

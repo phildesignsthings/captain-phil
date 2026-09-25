@@ -25,9 +25,11 @@
 
 ---
 
-<!-- Middle, CODE shape: repeat per route -->
-## <Screen name> — <clickable URL>
+<!-- Middle, CODE shape: repeat per route. On native, the deep link replaces the URL, and the
+taps and the screenshot follow the line -->
+## <Screen name> — <clickable URL | `xcrun simctl openurl booted <deep link>`>
 <One line under 15 words, starting with a verb: "Check…", "Compare…", "Tap…">
+<native only: the taps from where the link lands, then ![<screen name>](<screenshot path>)>
 
 **Checks:** <paste the check-baseline lines, joined with " · ">
 

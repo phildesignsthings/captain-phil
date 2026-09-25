@@ -16,8 +16,9 @@ compatibility: >-
   single application, so the surface is a route folder and step 3 asks once where it lives. With
   surfaces.doc absent the structure is read off a sibling surface rather than a document. With
   theme.registry null the repo has one look, so the theme question is not asked. With issues.ladder
-  null, or issues.retired true, no issue declaration is written. With verify.mcp null step 4 reads
-  the files rather than the screen and says so.
+  null, or issues.retired true, no issue declaration is written. With dev.platform native step 4
+  drives the simulator by deep link and keeps a screenshot, or by taps from launch where dev.url is
+  null. With verify.mcp null on the web step 4 reads the files rather than the screen and says so.
 metadata:
   suite: captain-phil
   host: [surfaces.root, surfaces.unit, surfaces.doc, surfaces.route, surfaces.limits, theme.registry, memory.connectors, records.design, issues.ladder, issues.doc, issues.retired, components.dir, dev.platform, dev.start, dev.url, verify.mcp]
@@ -116,9 +117,14 @@ Two declarations are conditional.
 
 With `dev.start` running, confirm four things at `surfaces.route` under `dev.url`: the surface
 renders, it wears the theme it pins, it comes up in the frame its viewport answer asked for, and it
-appears wherever the repo lists its surfaces. Drive it with `verify.mcp` and read the accessibility tree rather than
-trusting a screenshot. Where `verify.mcp` is `null`, say that the surface was read rather than
-driven, and name what went unchecked.
+appears wherever the repo lists its surfaces. On the web, drive it with `verify.mcp` and read the accessibility tree
+rather than trusting a screenshot. Where `verify.mcp` is `null` on the web, say that the surface was
+read rather than driven, and name what went unchecked.
+
+Where `dev.platform` is `native`, `dev.url` is the deep-link base, and no accessibility tree is
+there to read. Open `surfaces.route` by deep link, check the four things on a simulator screenshot
+through `verify-ui`, and report them as looked at. The deep link, the taps and the screenshot path
+take the URL's place in the hand-back.
 
 A theme pin that was never registered, and a mode pin that widens its theme, both render as a
 plausible screen rather than as an error. Where the surface narrows its mode, walk out of it too:

@@ -14,13 +14,14 @@ compatibility: >-
   Requires Paper Desktop running with the paper MCP server connected. Without it no step here
   can run, so say so rather than describing a board from memory. Reads records.design,
   surfaces.root, theme.dir, theme.registry, components.dir, components.registry,
-  components.showcase and docs.local from .agents/host.json. Every one of those is read in step
-  2 alone, and a null or absent slot drops its line from the brief rather than stopping the
+  components.showcase, docs.local and dev.platform from .agents/host.json. Every one of those is
+  read in step 2 alone, and a null or absent slot drops its line from the brief rather than stopping the
   work. With no slot answered at all, step 2 reads the shipped screens directly and the brief
-  says which components it could not check.
+  says which components it could not check. With dev.platform native, values come from the theme
+  file rather than from the running app, because a simulator has no DOM to read them off.
 metadata:
   suite: captain-phil
-  host: [records.design, surfaces.root, theme.dir, theme.registry, components.dir, components.registry, components.showcase, docs.local]
+  host: [records.design, surfaces.root, theme.dir, theme.registry, components.dir, components.registry, components.showcase, docs.local, dev.platform]
 ---
 
 # Work in Paper
@@ -62,7 +63,7 @@ Skip this step only where the surface is not in this repo.
 
 1. Read the surface's design record, found through `records.design`. The section holding its named rules is the list of designs the surface has already rejected.
 2. Read the theme the surface pins, out of `theme.registry` and the file it names in `theme.dir`, for the values behind the tokens the board spends.
-3. Read `components.registry` for which primitives are installed, and open `components.showcase` where a variant's real range matters. Where `components.registry` is `null`, list `components.dir` instead.
+3. Read `components.registry` for which primitives are installed, and open `components.showcase` where a variant's real range matters. Where `components.registry` is `null`, list `components.dir` instead. Where `dev.platform` is `native`, the showcase is a deep link, opened on the simulator through `verify-ui`.
 4. Open the screens that ship under `surfaces.root`, and read the components the new board sits beside.
 5. Check `docs.local` for the repo's own reference board before drawing the first one from scratch.
 6. Name in the brief every component the board reuses, and every one it invents. An invented component is a decision the designer makes knowingly, and `add-primitive` is what answers it.
@@ -139,9 +140,9 @@ undifferentiated field of boards, which is the state this convention exists to f
 - **From scratch** — run the step 3 gate, then build section by section.
 - **Iterating on coded screens** — run step 2 against the screen, mock variations on the canvas, and screenshot-compare. Touch no code until the designer picks a direction.
 - **Reproducing coded UI** — build it 1:1 as labelled cards, with no invented variants, grouped by screen, in gated passes the designer reviews between.
-- **Reading a design into code** — take exact values from `get_jsx`, `get_computed_styles` and `get_fill_image`, and translate Paper's CSS output into this repo's conventions rather than pasting it. **Never build code from a screenshot**; a screenshot verifies a result.
-- **Generated or shader-driven visuals** — capture rather than approximate. Screenshot the live element at the frame's exact height and place it as a `paper-asset://` image. A rebuild out of `radial-gradient()` stacks will not converge.
-- **Syncing tokens between the app and a board** — follow `references/paper.md` § Tokens, and do token writes in one call, sequentially. Never split token work across parallel agents.
+- **Reading a design into code** — take exact values from `get_jsx`, `get_computed_styles` and `get_fill_image`, and translate Paper's CSS output into this repo's conventions rather than pasting it. **Never build code from a screenshot**; a screenshot verifies a result. A line-height comes out of Paper as px and goes into a React Native theme as a ratio, per `references/paper.md` § Tokens.
+- **Generated or shader-driven visuals** — capture rather than approximate. Screenshot the live element at the frame's exact height and place it as a `paper-asset://` image. A simulator captures the whole screen, so on native crop the capture to the element before placing it. A rebuild out of `radial-gradient()` stacks will not converge.
+- **Syncing tokens between the app and a board** — follow `references/paper.md` § Tokens, and do token writes in one call, sequentially. Never split token work across parallel agents. Where `dev.platform` is `native`, the values come from the theme file, never from a simulator screenshot.
 
 ## 7. Work the comment threads
 

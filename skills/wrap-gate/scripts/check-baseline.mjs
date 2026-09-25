@@ -21,7 +21,7 @@
 // Usage: node check-baseline.mjs [--record]
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { basename, delimiter, dirname, join, resolve } from "node:path";
 
 const RECORD = process.argv.includes("--record");
 
@@ -130,13 +130,61 @@ function count(output, exitCode) {
   return exitCode === 0 ? 0 : 1;
 }
 
+// Every node_modules/.bin from the check's directory up to the filesystem root, nearest first. npm
+// scripts get these on PATH for free; a bare `tsc -b` spawned from here does not, and fails with
+// "command not found" in every repo that installs TypeScript locally rather than globally.
+function binPath(dir) {
+  const bins = [];
+  for (;;) {
+    const bin = join(dir, "node_modules", ".bin");
+    if (existsSync(bin)) bins.push(bin);
+    const up = dirname(dir);
+    if (up === dir) return bins;
+    dir = up;
+  }
+}
+
+// A command that never started reports no issues, only its own absence. Counting its error lines
+// turns "npm test has no script" into "5 NEW issues", which sends the reader after bugs that do not
+// exist.
+//
+// Returns null where the check ran, or { bin, line }: the name the shell could not find, or null
+// where no shell line names one, and the output line that says so. The name matters because
+// `npm run lint` failing on a missing `prettier` inside the script is an install to do, not a
+// host-file entry to fix, and the report has to tell those two apart.
+const NOT_FOUND = [
+  /^(?:\/bin\/)?(?:ba|da)?sh: (?:line )?(?:\d+: )?([^\s:]+): (?:command )?not found/, // sh, bash, dash
+  /^zsh: command not found: (\S+)/,
+  /^'([^']+)' is not recognized as an internal or external command/, // cmd.exe
+];
+
+function didNotRun(out, code) {
+  const lines = out.split("\n").map((l) => l.trim());
+  const script = lines.find((l) => /^npm (error|ERR!) Missing script/.test(l));
+  if (script) return { bin: null, line: script };
+  for (const line of lines) {
+    for (const re of NOT_FOUND) {
+      const m = line.match(re);
+      if (m) return { bin: m[1], line };
+    }
+  }
+  return code === 127 ? { bin: null, line: lines.find(Boolean) ?? "" } : null;
+}
+
 function run(label, cmd, dir) {
   return new Promise((done) => {
-    const child = spawn(cmd, { cwd: dir, shell: true, env: { ...process.env, FORCE_COLOR: "0", CI: "1" } });
+    const PATH = [...binPath(dir), process.env.PATH].filter(Boolean).join(delimiter);
+    const env = { ...process.env, PATH, FORCE_COLOR: "0", CI: "1" };
+    const child = spawn(cmd, { cwd: dir, shell: true, env });
     let out = "";
     child.stdout.on("data", (d) => (out += d));
     child.stderr.on("data", (d) => (out += d));
-    child.on("close", (code) => done({ label, cmd, code, out, count: count(out, code) }));
+    // `tsc -b` colours its output whatever FORCE_COLOR says, and escape codes pasted into a report
+    // read as noise.
+    child.on("close", () => (out = out.replace(/\x1b\[[0-9;]*m/g, "")));
+    child.on("close", (code) =>
+      done({ label, cmd, code, out, count: count(out, code), missing: didNotRun(out, code) }),
+    );
   });
 }
 
@@ -150,7 +198,22 @@ for (const r of results) {
   const base = checks[r.label].baseline ?? 0;
   const name = phrase[r.label] ?? r.label;
   let line;
-  if (/unresolved|Cannot find module/i.test(r.out) && r.count > base) {
+  if (r.missing) {
+    const { bin, line: evidence } = r.missing;
+    if (bin && bin !== basename(r.cmd.trim().split(/\s+/)[0])) {
+      line = `${name}: did not run. \`${r.cmd}\` calls \`${bin}\`, which is not installed; install it, or take it out of the script.`;
+    } else {
+      line = `${name}: did not run. \`${r.cmd}\` is not a command this project has; fix or remove \`checks.${r.label}\` in ${configPath ?? "the host file"}.`;
+    }
+    console.log(line);
+    console.log("    " + evidence);
+    worst = Math.max(worst, 1);
+    continue;
+  }
+  // A missing package shows as an unresolved bare specifier. A path alias or a relative import that
+  // fails to resolve — `@/global.css` under TypeScript 6, say — is a config gap that `npm ci` will
+  // not fix, so it is counted as an ordinary issue.
+  if (/unresolved|Cannot find module '(?![./]|@\/|~\/)/i.test(r.out) && r.count > base) {
     line = `${name}: ${r.count} errors, and some are missing packages. Run \`npm ci\` in ${cwd} and rerun before reading these.`;
     worst = Math.max(worst, 1);
   } else if (r.count === 0 && base === 0) line = `${name}: clean.`;
@@ -171,7 +234,8 @@ if (RECORD && config) {
   const cfg = JSON.parse(readFileSync(configPath, "utf8"));
   // Both shapes carry the checks under a top-level `checks` key, so the write-back is the same
   // for either. Only the read differs, because the legacy file also keeps `cwd` a level up.
-  for (const r of results) cfg.checks[r.label].baseline = r.count;
+  // A check that did not run has no count to keep, and recording one would bless the failure.
+  for (const r of results) if (!r.missing) cfg.checks[r.label].baseline = r.count;
   writeFileSync(configPath, JSON.stringify(cfg, null, 2) + "\n");
   console.log(`Baselines recorded in ${configPath}.`);
 }

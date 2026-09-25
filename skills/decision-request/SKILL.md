@@ -11,11 +11,14 @@ when_to_use: >-
   "the X looks like Y" or "you'll see that…" in a question, because that sentence is the thing
   this skill replaces.
 compatibility: >-
-  Reads dev.start, dev.url and verify.mcp from .agents/host.json. Without them, start the server
-  the way the repo's readme says and drive every path in a browser before quoting it.
+  Reads dev.start, dev.url, dev.platform and verify.mcp from .agents/host.json. Without them, start
+  the server the way the repo's readme says and drive every path in a browser before quoting it.
+  With dev.platform native, a deep link off dev.url plus the taps and a screenshot path stands in
+  for the URL. With dev.url absent on native, the scheme comes from the app's config as in
+  verify-ui's step 1; with it null, every screen is reached by taps from launch.
 metadata:
   suite: captain-phil
-  host: [dev.start, dev.url, verify.mcp]
+  host: [dev.start, dev.url, dev.platform, verify.mcp]
 ---
 
 # Asking for a decision
@@ -45,6 +48,15 @@ three, start the server the way its readme says and drive the path in a browser.
 server **actually bound**, never the one the config asks for: a dev server walks up from its default
 whenever another one holds the port, and a link to the wrong port looks like a broken app.
 
+**Where `dev.platform` is `native`, there is no URL to click.** Drive the path on the simulator
+instead, and give the designer three things in the place of a link:
+
+- The deep link, built from `dev.url` and the route, as the command that opens it:
+  `xcrun simctl openurl booted myapp://settings`.
+- The taps from where that link lands, written the same way as the clicks below.
+- The path of the screenshot you took at the end of the taps, so the designer can judge the decision
+  before booting anything. The screenshot goes beside the steps, never in their place.
+
 ## The second rule — the record may already answer it
 
 **Read the record the question belongs to before you write a decision block.** A ruling already
@@ -73,6 +85,14 @@ Only if two or more decisions share a starting state. One URL, then the clicks t
 
 1. Open **http://localhost:3000/teams/northside/settings**
 2. Click **Edit** (top right, the only `Edit` on the screen)
+```
+
+On native, the first line is the deep link as the command that opens it, and the taps follow the same
+way:
+
+```markdown
+1. Run `xcrun simctl openurl booted myapp://teams/northside/settings`
+2. Tap **Edit** (top right, the only `Edit` on the screen)
 ```
 
 Disambiguate the control the way that parenthetical does. "Click Edit" is useless on a screen with
@@ -144,7 +164,8 @@ Close with the file path where the full reasoning lives, if there is one.
 ## Reaching state that has no URL
 
 Session state, a record switcher, a popover: say plainly that there is no direct link, then give
-the clicks. Do not imply a deep link exists.
+the clicks. Do not imply a deep link exists. On native, the same holds for a state no deep link
+reaches. Give the deep link that lands closest, then the taps from there.
 
 ```markdown
 There's no direct link — the selected team is session state, not a URL param.
@@ -160,7 +181,8 @@ the file path **as well as** the steps, never instead of them.
 ## Before you send
 
 - Every note frame on the page was read, and nothing being asked is a question a sticky answers.
-- Every link opens, on the port the server actually bound.
+- Every link opens, on the port the server actually bound. On native, every deep link was opened
+  on the simulator, and every screenshot path exists.
 - Every click path was driven, not remembered.
 - Every decision has a recommendation, and a **Talk it through** option under it.
 - Nothing in the ask is a description of something they could have looked at instead.
