@@ -21,7 +21,8 @@ compatibility: >-
   machinery is identified by reading and named before it is cut. With surfaces.seam null the source
   fetched at the call site, so step 4 edits each call rather than one file. With dev.platform
   native, dev.url is a deep-link base, and each screen is opened on a simulator rather than in a
-  browser.
+  browser; with dev.url null there are no deep links, so each screen is reached by taps from
+  launch.
 metadata:
   suite: captain-phil
   host: [dev.cwd, dev.start, dev.url, dev.platform, surfaces.root, surfaces.route, surfaces.seam, surfaces.harnessMarkers, surfaces.receiveDoc, records.design, checks.typecheck]

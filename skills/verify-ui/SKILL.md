@@ -13,8 +13,10 @@ compatibility: >-
   Reads dev.start, dev.cwd, dev.url, dev.platform, verify.mcp, verify.probes, verify.doc,
   verify.agent and checks.typecheck from .agents/host.json. With dev.platform native the
   simulator does the looking, dev.url is the app's deep-link base, and every value is looked at
-  rather than measured. With verify.mcp null on the web nothing can drive the app, so the change
-  is reported as unverified rather than inferred from the diff.
+  rather than measured. With dev.url absent on native the scheme is read from the app's config;
+  with it null the app takes no deep links, so every route is reached by taps from launch. With
+  verify.mcp null on the web nothing can drive the app, so the change is reported as unverified
+  rather than inferred from the diff.
   With verify.probes null no number can be asserted and every value is reported as looked at
   rather than measured. Without verify.doc, the rules in references/measuring.md apply.
 metadata:
@@ -47,8 +49,9 @@ exists to prevent.
 3. Where `dev.start` is absent, ask once for the command, and offer to record it in
    `.agents/host.json`.
 4. Where `dev.platform` is `native`, boot a simulator before starting, and read `dev.url` as the
-   app's deep-link base, such as `myapp://`. Where that slot is `null`, read the URL scheme from the
-   app's own config, and offer to record it.
+   app's deep-link base, such as `myapp://`. Where that slot is absent, read the URL scheme from the
+   app's own config, and offer to record it. Where it is `null`, the app takes no deep links: say so
+   in one line, and reach every route by tapping from launch.
 
 ## 2. Look
 
@@ -59,14 +62,18 @@ Which tool asks them depends on `dev.platform`, so read it before `verify.mcp`.
 does not stop the check. There is no accessibility tree to snapshot, so the screenshot is the evidence.
 
 1. Open the route by deep link: `xcrun simctl openurl booted <dev.url><route>`. A route no link
-   reaches is opened by tapping from the nearest one that does. Write each tap down.
-2. Wait for the screen to settle, then take the screenshot:
+   reaches is opened by tapping from the nearest one that does, and with `dev.url` `null` every
+   route is tapped to from launch. Write each tap down.
+2. Keep screenshots in the project root's `.context/` folder, out of the working tree. Run
+   `mkdir -p .context`, then `git check-ignore -q .context/<screen>.png`. Exit 1 means the folder
+   is not ignored: add `.context/` to `.gitignore` before writing anything.
+3. Wait for the screen to settle, then take the screenshot:
    `xcrun simctl io booted screenshot .context/<screen>.png`. A capture taken during a launch or a
    transition shows colours that look right and are not, so check one pixel you know the value of
    before reading the rest.
-3. Read the screenshot, and keep its path. The deep link, the taps and that path stand in for the
+4. Read the screenshot, and keep its path. The deep link, the taps and that path stand in for the
    URL wherever a later step asks for one.
-4. Report every value as looked at, never measured. A pixel read off a simulator screenshot is a
+5. Report every value as looked at, never measured. A pixel read off a simulator screenshot is a
    reading of a screenshot.
 
 **Where `dev.platform` is `web`:** point `verify.mcp` at the URL.

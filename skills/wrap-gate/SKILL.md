@@ -13,7 +13,8 @@ compatibility: >-
   Reads checks.typecheck, dev.url, dev.platform and verify.mcp from .agents/host.json. Without a
   checks block the script falls back to the package manifest's own scripts against a baseline of
   zero and says so. With dev.platform native the simulator takes the browser's place, so step 2
-  runs without verify.mcp. On the web, step 2 cannot run without verify.mcp, and the report calls
+  runs without verify.mcp, and a null dev.url means each screen is reached by taps from launch
+  rather than by deep link. On the web, step 2 cannot run without verify.mcp, and the report calls
   the gate unverified.
 metadata:
   suite: captain-phil

@@ -17,8 +17,8 @@ compatibility: >-
   surfaces.doc absent the structure is read off a sibling surface rather than a document. With
   theme.registry null the repo has one look, so the theme question is not asked. With issues.ladder
   null, or issues.retired true, no issue declaration is written. With dev.platform native step 4
-  drives the simulator by deep link and keeps a screenshot. With verify.mcp null on the web step 4
-  reads the files rather than the screen and says so.
+  drives the simulator by deep link and keeps a screenshot, or by taps from launch where dev.url is
+  null. With verify.mcp null on the web step 4 reads the files rather than the screen and says so.
 metadata:
   suite: captain-phil
   host: [surfaces.root, surfaces.unit, surfaces.doc, surfaces.route, surfaces.limits, theme.registry, memory.connectors, records.design, issues.ladder, issues.doc, issues.retired, components.dir, dev.platform, dev.start, dev.url, verify.mcp]

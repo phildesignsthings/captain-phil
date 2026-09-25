@@ -14,7 +14,8 @@ compatibility: >-
   Reads dev.start, dev.url, dev.platform and verify.mcp from .agents/host.json. Without them, start
   the server the way the repo's readme says and drive every path in a browser before quoting it.
   With dev.platform native, a deep link off dev.url plus the taps and a screenshot path stands in
-  for the URL.
+  for the URL. With dev.url absent on native, the scheme comes from the app's config as in
+  verify-ui's step 1; with it null, every screen is reached by taps from launch.
 metadata:
   suite: captain-phil
   host: [dev.start, dev.url, dev.platform, verify.mcp]

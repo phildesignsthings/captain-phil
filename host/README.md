@@ -36,6 +36,11 @@ none of the others, so any command it named would be a guess, and a guessed comm
 absent one — absent sends the skill to its fallback and makes it offer to write the real answer,
 where a wrong `cmd` just fails. The other three name commands that hold for their stack.
 
+`react-native-expo` leaves `dev.url` absent for the same reason. On native the slot is the app's
+deep-link base, and every Expo app declares its own scheme, so any value the template shipped would
+be a placeholder that opens nothing. Absent sends `verify-ui` to the app's config for the real
+scheme, and it offers to record what it finds. A `null` there would say the app takes no deep links.
+
 ## The three-state rule
 
 Every slot has three states, and the difference between the second and the third is the whole point

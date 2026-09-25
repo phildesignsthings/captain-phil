@@ -1,7 +1,7 @@
 {
   "$schema": "../host.schema.json",
   "template": "react-native-expo",
-  "dev": { "cwd": null, "start": "npx expo start --ios", "url": null, "platform": "native" },
+  "dev": { "cwd": null, "start": "npx expo start --ios", "platform": "native" },
   "checks": {
     "typecheck": { "cmd": "tsc --build", "baseline": 0 },
     "lint": { "cmd": "npx expo lint", "baseline": 0 }
