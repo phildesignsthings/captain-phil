@@ -1,8 +1,9 @@
 ---
 name: verify-ui
 description: >-
-  Prove a UI change rendered — look with the repo's browser tool, assert with a probe, control
-  the probe before trusting its numbers, and report what was measured alongside what was not.
+  Prove a UI change rendered — look with the repo's browser tool or the simulator, assert with a
+  probe, control the probe before trusting its numbers, and report what was measured alongside
+  what was not.
 when_to_use: >-
   Use when a screen has to be confirmed rendered rather than assumed, when a number is going
   into a pull-request body or a gate write-up, or when a measured value comes back too clean to
@@ -10,8 +11,10 @@ when_to_use: >-
   contrast", "prove this works", "the probe looks wrong".
 compatibility: >-
   Reads dev.start, dev.cwd, dev.url, dev.platform, verify.mcp, verify.probes, verify.doc,
-  verify.agent and checks.typecheck from .agents/host.json. With verify.mcp null nothing can
-  drive the app, so the change is reported as unverified rather than inferred from the diff.
+  verify.agent and checks.typecheck from .agents/host.json. With dev.platform native the
+  simulator does the looking, dev.url is the app's deep-link base, and every value is looked at
+  rather than measured. With verify.mcp null on the web nothing can drive the app, so the change
+  is reported as unverified rather than inferred from the diff.
   With verify.probes null no number can be asserted and every value is reported as looked at
   rather than measured. Without verify.doc, the rules in references/measuring.md apply.
 metadata:
@@ -21,8 +24,9 @@ metadata:
 
 # Verify a UI change
 
-The short version: start the app, look with `verify.mcp`, assert with a probe from
-`verify.probes`, control the probe before believing a sweep, and say what you left unmeasured.
+The short version: start the app, look with `verify.mcp` or the simulator, assert with a probe
+from `verify.probes`, control the probe before believing a sweep, and say what you left
+unmeasured.
 
 `references/measuring.md` holds the payload — the two tiers, the exit codes, the measuring
 mechanisms and the constants that masquerade as measurements. The file named by `verify.doc`
@@ -42,19 +46,35 @@ exists to prevent.
    the slot is the expectation.
 3. Where `dev.start` is absent, ask once for the command, and offer to record it in
    `.agents/host.json`.
+4. Where `dev.platform` is `native`, boot a simulator before starting, and read `dev.url` as the
+   app's deep-link base, such as `myapp://`. Where that slot is `null`, read the URL scheme from the
+   app's own config, and offer to record it.
 
 ## 2. Look
 
-Point `verify.mcp` at the URL and ask the looking questions: does the route render, did the dialog
-open, is the content clipped.
+Ask the looking questions: does the route render, did the dialog open, is the content clipped.
+Which tool asks them depends on `dev.platform`, so read it before `verify.mcp`.
+
+**Where `dev.platform` is `native`, the simulator does the looking,** so a `null` `verify.mcp`
+does not stop the check. There is no accessibility tree to snapshot, so the screenshot is the evidence.
+
+1. Open the route by deep link: `xcrun simctl openurl booted <dev.url><route>`. A route no link
+   reaches is opened by tapping from the nearest one that does. Write each tap down.
+2. Wait for the screen to settle, then take the screenshot:
+   `xcrun simctl io booted screenshot .context/<screen>.png`. A capture taken during a launch or a
+   transition shows colours that look right and are not, so check one pixel you know the value of
+   before reading the rest.
+3. Read the screenshot, and keep its path. The deep link, the taps and that path stand in for the
+   URL wherever a later step asks for one.
+4. Report every value as looked at, never measured. A pixel read off a simulator screenshot is a
+   reading of a screenshot.
+
+**Where `dev.platform` is `web`:** point `verify.mcp` at the URL.
 
 - Take the text snapshot rather than a screenshot. An image costs tokens, so spend one on a
   specific layout concern you can name.
 - Where `verify.mcp` is `null`, nothing can drive the app. Report the change as unverified and
   name the diff as the only evidence. Never infer a rendered result from source.
-- Where `dev.platform` is `native`, there is no URL and no accessibility tree: drive the simulator,
-  take a screenshot, and report every value as looked at rather than measured. A pixel read off a
-  simulator screenshot is a reading of a screenshot.
 
 ## 3. Reach for a probe the moment a number gets asserted
 
@@ -85,6 +105,9 @@ with its slots filled in, rather than driving every route from this session.
    clean before reporting it.
 
 ## 5. Measure the running app honestly
+
+This section is about the DOM, so it does not apply where `dev.platform` is `native`. There, the
+screenshot from step 2 is the only evidence.
 
 The mechanism behind each of these is in `references/measuring.md` § Measuring the rendered DOM,
 along with the traps this list does not name.

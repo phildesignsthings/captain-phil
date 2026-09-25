@@ -2,35 +2,43 @@
 name: wrap-gate
 description: >-
   Close out a plan's gate so the designer can review it — run the checks against their recorded
-  baselines, verify what changed in the browser, post one clickable URL per screen, update the
-  gate-state record, and offer a forked-chat handoff.
+  baselines, verify what changed on screen, post one clickable URL per screen (or a deep link and
+  a screenshot on native), update the gate-state record, and offer a forked-chat handoff.
 when_to_use: >-
   Use when a gate's build work is finished, when a plan step reaches its review pause, or when a
   session has run long enough to hand off. Trigger phrases "wrap the gate", "gate 3 is done",
   "close this gate out", "ready for review", "hand this off to a fresh chat".
 argument-hint: "[gate-id]"
 compatibility: >-
-  Reads checks.typecheck, dev.url and verify.mcp from .agents/host.json. Without a checks block the
-  script falls back to the package manifest's own scripts against a baseline of zero and says so;
-  without verify.mcp, step 2 cannot run and the gate is reported unverified.
+  Reads checks.typecheck, dev.url, dev.platform and verify.mcp from .agents/host.json. Without a
+  checks block the script falls back to the package manifest's own scripts against a baseline of
+  zero and says so. With dev.platform native the simulator takes the browser's place, so step 2
+  runs without verify.mcp. On the web, step 2 cannot run without verify.mcp, and the report calls
+  the gate unverified.
 metadata:
   suite: captain-phil
-  host: [checks.typecheck, dev.url, verify.mcp]
+  host: [checks.typecheck, dev.url, dev.platform, verify.mcp]
 ---
 
 # Wrap a gate
 
 A gate is a checkpoint where the designer reviews finished work before the next step starts. A
-wrapped gate has three artifacts: a check result against a baseline, one clickable URL per changed
+wrapped gate has three artifacts: a check result against a baseline, a way to reach each changed
 screen, and a state record a fresh chat can read in place of the transcript. Missing any one, the
 gate is not wrapped.
 
+A way to reach a screen is a clickable URL on the web. Where `dev.platform` is `native` there is
+no URL, so it is the deep link, the taps from where that link lands, and the path of the screenshot
+`verify-ui` took. Wherever this skill says URL, a native gate reads those three.
+
 ## Requirements
 
-- **The browser tool named in `verify.mcp`**, for step 2. Where the slot is absent or the tool is
-  not connected, run steps 1, 3 and 4, mark the report heading `Needs a call`, and print: "I could
-  not check the screens in a browser because the tool isn't connected. Connect it and say 'wrap the
-  gate' again." Never report an unverified gate as done.
+- **Something that can see the app**, for step 2. Where `dev.platform` is `native`, that is the
+  simulator, and `verify.mcp` is not needed. On the web it is the browser tool named in
+  `verify.mcp`. Where that slot is absent or the tool is not connected, run steps 1, 3 and 4, mark
+  the report heading `Needs a call`, and print: "I could not check the screens in a browser because
+  the tool isn't connected. Connect it and say 'wrap the gate' again." Never report an unverified
+  gate as done.
 - **Bundled skills:** `verify-ui` (step 2), `clean-done` (step 5) and `work-report` (step 7).
 - **Node**, for the script in step 1. A project with no `package.json` skips step 1 and the report
   says "No automated checks in this project."
@@ -56,12 +64,17 @@ is empty, ask which gate is being wrapped before running anything.
    it, confirm silence.
 3. Close with two lists headed **Measured** and **Not measured**, one route per item. Whether it looks
    right is the designer's call.
+4. On native, a screen is looked at rather than measured. List it under **Not measured** with the
+   words "looked at" and its screenshot path. A gate whose every changed screen has a screenshot
+   reaches `verified`, and one with a screen nobody captured stays `built`.
 
 ## 3. Keep the review path open
 
-1. Leave the dev server running. The end of a gate is when the designer clicks through.
+1. Leave the dev server running. The end of a gate is when the designer clicks through. On
+   native, leave the simulator booted too.
 2. Note the base URL every screen URL hangs off — `dev.url` where the repo declares one, and the
-   port the server actually bound wherever that differs.
+   port the server actually bound wherever that differs. On native, `dev.url` is the deep-link
+   base, and every link in the report hangs off it.
 
 ## 4. Write the gate-state record
 

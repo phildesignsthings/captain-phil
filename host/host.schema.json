@@ -28,11 +28,11 @@
         },
         "url": {
           "type": ["string", "null"],
-          "description": "Base URL the started app is expected to bind. Every quoted link hangs off it, and the port the server ACTUALLY bound overrides it — a dev server walks up from its default whenever another holds the port."
+          "description": "Base URL the started app is expected to bind. Every quoted link hangs off it, and the port the server ACTUALLY bound overrides it — a dev server walks up from its default whenever another holds the port. Where `dev.platform` is `native`, this is the app's deep-link base instead, such as `myapp://`, and every deep link a skill quotes hangs off it."
         },
         "platform": {
           "type": ["string", "null"],
-          "description": "Which harness can see the app. `web` means a browser and a URL; `native` means a simulator and a screenshot, so a measured number is reported as looked at rather than measured.",
+          "description": "Which harness can see the app. `web` means a browser and a URL; `native` means a simulator, a deep link and a screenshot, so a measured number is reported as looked at rather than measured, and the deep link plus a screenshot path stands in wherever a skill asks for a URL.",
           "enum": ["web", "native", null]
         }
       }

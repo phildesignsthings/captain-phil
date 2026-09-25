@@ -12,17 +12,19 @@ when_to_use: >-
 argument-hint: "[path to the source checkout]"
 compatibility: >-
   Takes $1 as the path to the source checkout and reads THAT repo's .agents/host.json for dev.cwd,
-  dev.start, dev.url, surfaces.root, surfaces.route, surfaces.seam, surfaces.harnessMarkers,
+  dev.start, dev.url, dev.platform, surfaces.root, surfaces.route, surfaces.seam, surfaces.harnessMarkers,
   surfaces.receiveDoc and records.design; checks.typecheck is read from the receiving repo's own
   host file. With no $1 the folder arrived on its own, so step 1 is skipped and the reading is done
   from the files. With no host file in the source, every path is found by grep and proposed before
   anything is deleted. With surfaces.receiveDoc absent the keep-and-discard list is
   references/what-survives.md. With surfaces.harnessMarkers empty nothing is marked, so the demo
   machinery is identified by reading and named before it is cut. With surfaces.seam null the source
-  fetched at the call site, so step 4 edits each call rather than one file.
+  fetched at the call site, so step 4 edits each call rather than one file. With dev.platform
+  native, dev.url is a deep-link base, and each screen is opened on a simulator rather than in a
+  browser.
 metadata:
   suite: captain-phil
-  host: [dev.cwd, dev.start, dev.url, surfaces.root, surfaces.route, surfaces.seam, surfaces.harnessMarkers, surfaces.receiveDoc, records.design, checks.typecheck]
+  host: [dev.cwd, dev.start, dev.url, dev.platform, surfaces.root, surfaces.route, surfaces.seam, surfaces.harnessMarkers, surfaces.receiveDoc, records.design, checks.typecheck]
 ---
 
 # Receive a prototype
@@ -40,6 +42,11 @@ told you, proposing each deletion before making it.
 Run `dev.start` from `dev.cwd` inside the source checkout, and open the folder at `surfaces.route`
 under `dev.url`. Drive every screen and every state before reading a line of its code. A prototype's
 value is in the decisions you can see, and half of them are invisible in the source.
+
+Where `dev.platform` is `native`, open each screen on a simulator by deep link, the way the
+`verify-ui` skill's step 2 does. The taps from where the link lands reach the states no link
+does. Take a screenshot of each state, because the receiving repo's build is compared
+against those in step 6.
 
 What renders around the screens — the frame, the palette, the theme switcher — is the source repo's
 own harness rather than part of the work. Step 5 is what takes it off.
@@ -112,7 +119,9 @@ demo-only is sometimes the only thing arranging the fixture a screen still needs
 ## 6. Verify
 
 1. Confirm each screen renders against the real endpoint, including its loading, empty and error
-   states. All four were designed, and three of them are invisible unless you force them.
+   states. All four were designed, and three of them are invisible unless you force them. On
+   native, open each one by the same deep link and taps as step 1, and set its screenshot beside
+   the one step 1 took.
 2. Confirm a grep for every marker returns nothing.
 3. Run `checks.typecheck` in the receiving repo. A deleted seam that a screen still imports fails
    there and nowhere else.
@@ -120,5 +129,5 @@ demo-only is sometimes the only thing arranging the fixture a screen still needs
 ## Before handing back
 
 Name the entities pointed at a real endpoint and the ones still on fixtures. A half-migrated folder
-looks identical to a finished one in the browser, which is the one failure this whole procedure
+looks identical to a finished one on screen, which is the one failure this whole procedure
 exists to make visible.

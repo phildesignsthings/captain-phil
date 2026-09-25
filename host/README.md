@@ -81,8 +81,8 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 
 | Slot | Read by |
 |---|---|
-| `dev.cwd`, `dev.start`, `dev.url` | `verify-ui`, `decision-request`, `wrap-gate`, `add-primitive` |
-| `dev.platform` | `verify-ui`, `new-screen` |
+| `dev.cwd`, `dev.start`, `dev.url` | `verify-ui`, `decision-request`, `wrap-gate`, `add-primitive`, `new-surface`, `receive-prototype` |
+| `dev.platform` | `verify-ui`, `wrap-gate`, `decision-request`, `new-screen`, `new-surface`, `receive-prototype` |
 | `checks.cwd`, `checks.typecheck`, `checks.lint`, `checks.test` | `wrap-gate`, `clean-done`, `open-pr` |
 | `checks.format` | `wrap-gate`, `clean-done`, `open-pr`, `tidy-comments` |
 | `checks.guard` | `wrap-gate`, `write-doc`, `freeze-memory`, `ingest-theme` |

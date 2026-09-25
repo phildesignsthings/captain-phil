@@ -47,7 +47,7 @@ Read the most recent entry in the record and act on its `**State:**` line.
 | The line reads | What it means | What to do |
 | --- | --- | --- |
 | `verified` or `committed` | The gate is closed | Continue to step 3 |
-| `built` | Verification is owed | Refuse, and name the routes the entry lists under **Verified in the browser** as unmeasured |
+| `built` | Verification is owed | Refuse, and name the routes the entry lists under **Verified on screen** (**Verified in the browser** where the record uses that heading) as unmeasured |
 | `built \| verified \| committed` | The template placeholder survived, so nobody filled it | Refuse, and say the record is unfilled |
 | No `**State:**` line | The entry is part-written | Refuse, and name the headings the template owes |
 
