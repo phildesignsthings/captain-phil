@@ -61,13 +61,16 @@ whether one is wired.
 - **Read each before and after off the running app, or off a check's output.** A value recalled from
   the session is a value that moved while nobody looked.
 - **A row read off a screenshot says so in its own cells.** On a native app, or anywhere no probe
-  ran, the value is a reading of a picture rather than a measurement. Write it as `looked at ·
-  <what you saw>`, and put the screenshot path in the same cell, so the row can be checked without
-  booting anything:
+  ran, the value is a reading of a picture rather than a measurement. Write each cell as
+  `looked at · <what you saw>`. Put what reaches the screen in the row's first cell, so a reviewer
+  can open it and look: on native, the deep link and the taps from where it lands.
 
   | | before | after |
   |---|---|---|
-  | Sign in, "Forgot password?" | looked at · text link, `.context/before.png` | looked at · full-width outline button, `.context/after.png` |
+  | `xcrun simctl openurl booted myapp://signin`, then tap **Forgot password?** | looked at · text link | looked at · full-width outline button |
+
+  Leave out a screenshot's local path. A gitignored file opens nothing on the page where the pull
+  request is read.
 
   Never turn such a row into a number. A hex read off a screenshot is the screenshot's hex, and a
   reader treats a number in this table as measured.

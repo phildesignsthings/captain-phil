@@ -88,8 +88,8 @@ body that the baseline was zero because nobody recorded one.
    measuring rules at `verify.doc`. Where that slot is `null` or absent, the `verify-ui` skill's own
    bundled rules apply.
 6. Where `dev.platform` is `native`, or no probe ran, write each screen row in the looked-at format
-   from `references/pr-templates.md` § The verification table, with its screenshot path. A check's
-   output is still a measured row.
+   from `references/pr-templates.md` § The verification table, with the deep link and the taps that
+   reach the screen. A check's output is still a measured row.
 
 ## 5. Open it, and keep it true
 
