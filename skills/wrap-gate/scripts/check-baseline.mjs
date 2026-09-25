@@ -21,7 +21,7 @@
 // Usage: node check-baseline.mjs [--record]
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { delimiter, dirname, join, resolve } from "node:path";
+import { basename, delimiter, dirname, join, resolve } from "node:path";
 
 const RECORD = process.argv.includes("--record");
 
@@ -147,12 +147,28 @@ function binPath(dir) {
 // A command that never started reports no issues, only its own absence. Counting its error lines
 // turns "npm test has no script" into "5 NEW issues", which sends the reader after bugs that do not
 // exist.
+//
+// Returns null where the check ran, or { bin, line }: the name the shell could not find, or null
+// where no shell line names one, and the output line that says so. The name matters because
+// `npm run lint` failing on a missing `prettier` inside the script is an install to do, not a
+// host-file entry to fix, and the report has to tell those two apart.
+const NOT_FOUND = [
+  /^(?:\/bin\/)?(?:ba|da)?sh: (?:line )?(?:\d+: )?([^\s:]+): (?:command )?not found/, // sh, bash, dash
+  /^zsh: command not found: (\S+)/,
+  /^'([^']+)' is not recognized as an internal or external command/, // cmd.exe
+];
+
 function didNotRun(out, code) {
-  return (
-    code === 127 ||
-    /command not found|is not recognized as an internal or external command/i.test(out) ||
-    /npm (error|ERR!) Missing script/.test(out)
-  );
+  const lines = out.split("\n").map((l) => l.trim());
+  const script = lines.find((l) => /^npm (error|ERR!) Missing script/.test(l));
+  if (script) return { bin: null, line: script };
+  for (const line of lines) {
+    for (const re of NOT_FOUND) {
+      const m = line.match(re);
+      if (m) return { bin: m[1], line };
+    }
+  }
+  return code === 127 ? { bin: null, line: lines.find(Boolean) ?? "" } : null;
 }
 
 function run(label, cmd, dir) {
@@ -183,9 +199,14 @@ for (const r of results) {
   const name = phrase[r.label] ?? r.label;
   let line;
   if (r.missing) {
-    line = `${name}: did not run. \`${r.cmd}\` is not a command this project has; fix or remove \`checks.${r.label}\` in ${configPath ?? "the host file"}.`;
+    const { bin, line: evidence } = r.missing;
+    if (bin && bin !== basename(r.cmd.trim().split(/\s+/)[0])) {
+      line = `${name}: did not run. \`${r.cmd}\` calls \`${bin}\`, which is not installed; install it, or take it out of the script.`;
+    } else {
+      line = `${name}: did not run. \`${r.cmd}\` is not a command this project has; fix or remove \`checks.${r.label}\` in ${configPath ?? "the host file"}.`;
+    }
     console.log(line);
-    console.log(r.out.trim().split("\n").slice(0, 3).map((l) => "    " + l).join("\n"));
+    console.log("    " + evidence);
     worst = Math.max(worst, 1);
     continue;
   }
