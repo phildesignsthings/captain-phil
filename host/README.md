@@ -33,8 +33,8 @@ rather than inside them, so an install does not put them in the consuming repo:
 
 `minimal` leaves every `checks` leaf absent on purpose. It is the template for a repo that matches
 none of the others, so any command it named would be a guess, and a guessed command is worse than an
-absent one — absent sends the skill to its fallback and makes it offer to write the real answer,
-where a wrong `cmd` just fails. The other two name commands that hold for their stack.
+absent one. Absent sends the skill to its fallback and makes it offer to write the real answer,
+where a wrong `cmd` fails the run. The other two name commands that hold for their stack.
 
 `react-native-expo` leaves `dev.url` absent for the same reason. On native the slot is the app's
 deep-link base, and every Expo app declares its own scheme, so any value the template shipped would
@@ -96,7 +96,7 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 | `docs.root`, `docs.index` | `write-doc` |
 | `docs.glossary` | `write-doc` |
 | `docs.gotchas` | `new-screen`, `record-design`, `audit-design` |
-| `docs.local` | `ask-issue-status`, `paper`, `start-project` |
+| `docs.local` | `ask-issue-status`, `paper`, `write-doc` |
 | `docs.retired` | `write-doc`, `freeze-memory` |
 | `records.product` | `audit-design`, `ingest-theme`, `start-project` |
 | `records.productTemplate` | `start-project` |

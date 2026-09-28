@@ -1,10 +1,9 @@
 ---
 name: start-project
 description: >-
-  Set up a new product's home in this repo — branch from the trunk, wire the connectors, digest
-  the material that already exists into the project notes, write the product record, seed the
-  branch-local notes, ingest the brand or record it as pending, scaffold the first surface, and
-  seed its issue ladder.
+  Set up a new product in this repo: branch from the trunk, wire the connectors, digest
+  the material that already exists into the project notes, write the product record, ingest the
+  brand or record it as pending, scaffold the first surface, and seed its issue ladder.
 when_to_use: >-
   Use when a new product or project starts in the repo, when the repo carries no product record,
   when the first brief, deck or research arrives, when work has to start unbranded because no
@@ -13,30 +12,29 @@ when_to_use: >-
   brief", "stakeholders sent us their deck", "we have no brand yet", "where does this work go".
 compatibility: >-
   Reads git.trunk, git.release, git.doc, memory.root, memory.connectors, memory.doc,
-  records.product, records.productTemplate, docs.local, theme.registry, issues.tracker,
+  records.product, records.productTemplate, theme.registry, issues.tracker,
   issues.ladder, issues.doc, issues.retired and checks.guard from .agents/host.json. With
   memory.root null there are no project notes, so steps 2 and 3 do not run and the product record
   comes from the interview alone. With records.product null the repo has no product record yet,
   which is the absence step 4 exists to end: the path is agreed in one question and written back
   into the host file. With records.productTemplate absent the record is filled from
-  assets/product-record.template.md. With docs.local null every note is repo-wide and step 5
-  does not run. With theme.registry null the repo lists no themes and step 6 asks only whether
-  an identity exists. With issues.ladder null, or issues.retired true, step 8 does not run.
+  assets/product-record.template.md. With theme.registry null the repo lists no themes and step 5
+  asks only whether an identity exists. With issues.ladder null, or issues.retired true, step 7
+  does not run.
 metadata:
   suite: captain-phil
-  host: [git.trunk, git.release, git.doc, memory.root, memory.connectors, memory.doc, records.product, records.productTemplate, docs.local, theme.registry, issues.tracker, issues.ladder, issues.doc, issues.retired, checks.guard]
+  host: [git.trunk, git.release, git.doc, memory.root, memory.connectors, memory.doc, records.product, records.productTemplate, theme.registry, issues.tracker, issues.ladder, issues.doc, issues.retired, checks.guard]
 ---
 
 # Start a project
 
-Run the eight steps in order, and the order is the substance. Steps 2 and 3 fill the project notes
-under `memory.root`, and every step after them reads what those two put there.
+Run the seven steps in order. Steps 2 and 3 fill the project notes under `memory.root`, and every
+later step reads what those two wrote.
 
-**Three steps fork, and every fork is legitimate.** Step 3 handles a project with nothing to ingest
-yet, step 6 handles one with no identity yet, and step 8 handles one with no issue tracker project
-yet. None of the three is a degraded path. The phase before anybody has decided anything is a real
-phase, and a branch running unbranded against half-empty notes is the work in its right order rather
-than a setup somebody abandoned.
+**Three steps have a route for when their input does not exist yet, and each route is a normal
+path.** Step 3 handles a project with nothing to ingest, step 5 one with no identity, and step 7 one
+with no tracker project. A project running unbranded against half-empty notes is early, not
+abandoned.
 
 ## 1. Branch from the trunk
 
@@ -56,7 +54,7 @@ meeting recorder or the chat tool, and none of them can run against a placeholde
 2. Record the tracker's team, project name and project id, plus the ids of the documents the
    project reads from.
 3. Copy a project link in the form the tool hands out rather than assembling one. A link whose slug
-   ends in a hash nothing derives is a link step 8 can only paste.
+   ends in a hash nothing derives is a link step 7 can only paste.
 4. Record the meeting folder and the chat channels.
 5. Delete a connector block the project does not use, rather than leaving its placeholders.
 
@@ -130,16 +128,7 @@ Both routes produce one file, and three rules bind both:
 The shared schema is what lets an Impeccable session adopt a hand-written file, and lets the designer
 hand-edit one Impeccable wrote.
 
-## 5. Seed the branch-local notes
-
-1. Read the README inside `docs.local`, which states what belongs in the overlay and what does not.
-2. Write one file per topic the project already has an answer for: the product's vocabulary, the
-   stakeholders' approval loop, links to the boards.
-3. Give each file the same `read_when` header the rest of the docs use.
-4. Leave the folder holding only its README where the project has nothing branch-local yet. An empty
-   overlay is the honest state.
-
-## 6. Ingest the brand, or record that it is pending
+## 5. Ingest the brand, or record that it is pending
 
 **An identity often does not exist yet, and starting unbranded is a route rather than a delay.**
 Plenty of projects start before anybody has run a brand exploration, and shaping journeys at low
@@ -150,7 +139,7 @@ fidelity first is working in the right order. Ask which case this is, and take o
   A rename with no product record fails there, which is the moment to catch it rather than three
   sessions later.
 - **The identity is pending** — change no theme file, and write the state into the product record's
-  brand section: that it is pending, what it waits on, and who owns it. Skip to step 7.
+  brand section: that it is pending, what it waits on, and who owns it. Skip to step 6.
 
 **The brand section is the only place that state gets recorded**, because everything else already
 tells the truth on its own. An unfilled slot reads as unfilled in every picker, and its own file
@@ -161,11 +150,11 @@ against this one.
 **An unfilled slot nags nobody.** A branch that never runs `ingest-theme` stays silent for as long
 as the project needs it to. Come back to this step when the identity arrives.
 
-## 7. Scaffold the first surface
+## 6. Scaffold the first surface
 
 Run the `new-surface` skill.
 
-- **Where step 6 ingested an identity**, pin it on the surface. A project's first surface is the
+- **Where step 5 ingested an identity**, pin it on the surface. A project's first surface is the
   reason the theme exists.
 - **Where the identity is pending**, pin nothing. The repo's default look is the correct look for
   work nobody has branded yet. Never pin the placeholder id as a stand-in: a screenshot captioned
@@ -174,7 +163,7 @@ Run the `new-surface` skill.
 Re-pin the surfaces when the identity lands. A pin is one field, so starting unbranded costs a line
 per surface rather than a rebuild.
 
-## 8. Seed the issue ladder
+## 7. Seed the issue ladder
 
 The first surface declares which issues its screens answer, so the question "where is this tracked"
 has an answer from the first session. `issues.doc` owns the rung shape and the status words, and this
@@ -206,5 +195,5 @@ that the ladder waits on the project. Come back to this step when the project ex
 
 Name six things: the branch, which notes step 3 filled and which stayed at their template, which
 route wrote the product record, what the theme slot was renamed to, which connector ids are still
-placeholders, and how many rungs step 8 seeded — or that it seeded none, and why. The last three go
+placeholders, and how many rungs step 7 seeded, or that it seeded none and why. The last three go
 stale in silence.

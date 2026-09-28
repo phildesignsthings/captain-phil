@@ -52,8 +52,8 @@ The file named by `git.doc` picks the pull-request template by audience, and tha
 skill's gate. Where the slot is absent, judge the audience yourself: a designer or a stakeholder reading
 it means run the ask.
 
-- **A pull request a designer or a stakeholder reads** — run the ask. The rungs are the part of that body they act on.
-- **An internal correctness fix** — skip it. Clear whatever pre-pull-request check guards the command, and say in one line that you skipped and why.
+- **A pull request a designer or a stakeholder reads.** Run the ask. The rungs are the part of that body they act on.
+- **An internal correctness fix.** Skip it. Clear whatever pre-pull-request check guards the command, and say in one line that you skipped and why.
 
 Decide on the audience rather than on the size of the diff. A one-line change to a screen a stakeholder
 signed off on changes a rung; a thousand-line refactor behind a data seam does not.

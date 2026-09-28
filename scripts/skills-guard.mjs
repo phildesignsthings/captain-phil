@@ -40,18 +40,18 @@ const PENDING_SKILLS = new Map();
 // layout, where a portable skill cites a host slot. references/ is exempt
 // because a bundled reference can quote the corpus it came from.
 const HOST_PATH_PATTERNS = [
-  [/ideation-sandbox\//, "names one repo's app folder — read `surfaces.root`"],
-  [/sandbox-guard/, "names one repo's guard script — read `checks.guard`"],
-  [/scripts\/probes/, "hardcodes a probe folder — read `verify.probes`"],
-  [/docs\/[a-z-]+\.md/, "cites a doc by path — read the matching `docs.*` slot"],
-  [/(?<![\w.])memory\//, "names a project-notes folder — read `memory.root`"],
-  [/\.agents\/context\//, "names a record folder — read the matching `records.*` slot"],
-  [/(?<![\w-])meta\.ts/, "names one repo's per-surface config file — read `surfaces.doc`"],
+  [/ideation-sandbox\//, "names one repo's app folder; read `surfaces.root` instead"],
+  [/sandbox-guard/, "names one repo's guard script; read `checks.guard` instead"],
+  [/scripts\/probes/, "hardcodes a probe folder; read `verify.probes` instead"],
+  [/docs\/[a-z-]+\.md/, "cites a doc by path; read the matching `docs.*` slot instead"],
+  [/(?<![\w.])memory\//, "names a project-notes folder; read `memory.root` instead"],
+  [/\.agents\/context\//, "names a record folder; read the matching `records.*` slot instead"],
+  [/(?<![\w-])meta\.ts/, "names one repo's per-surface config file; read `surfaces.doc` instead"],
   // This also matches the gerund, as in "staging a file". Catching a bare
   // branch name needs that, so reword the sentence rather than loosening the
   // pattern.
-  [/(?<![\w-])staging(?![\w-])/, "names a branch — read `git.trunk`"],
-  [/-vibes(?![\w-])/, "names one repo's branch convention — read `git.doc`"],
+  [/(?<![\w-])staging(?![\w-])/, "names a branch; read `git.trunk` instead"],
+  [/-vibes(?![\w-])/, "names one repo's branch convention; read `git.doc` instead"],
 ];
 
 const findings = [];

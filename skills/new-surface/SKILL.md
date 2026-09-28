@@ -64,7 +64,7 @@ design statement rather than a default worth prompting for.
 
 **A sixth question exists only where the work answers a tracker: which stories do these screens answer?** Ask
 it where `memory.connectors` records a real tracker project, and skip it while that block is still
-placeholders. The answer is one or more **parent stories** — the ones with a title a stakeholder can read —
+placeholders. The answer is one or more **parent stories**, the ones with a title a stakeholder can read,
 and never the design sub-task hanging off one. Skip the question too where `issues.retired` is
 `true`: a ladder that was dropped on purpose does not come back one surface at a time. The answers
 become the declaration in step 3.
