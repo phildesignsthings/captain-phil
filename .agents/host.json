@@ -10,7 +10,7 @@
     "test": null,
     "format": null
   },
-  "git": { "trunk": "main", "release": null, "engagementBranch": null, "doc": "AGENTS.md" },
+  "git": { "trunk": "main", "release": null, "doc": "AGENTS.md" },
   "docs": { "root": null, "glossary": null, "gotchas": null, "local": null, "retired": null, "index": "AGENTS.md" },
   "records": { "product": null, "productTemplate": null, "design": [], "designDoc": null, "driftWatch": null },
   "memory": { "root": null, "archive": null, "doc": null, "gloss": null, "connectors": null },

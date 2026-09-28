@@ -57,7 +57,7 @@ Several skills need to know things only the repo can answer: which command start
 branch a pull request goes to, where the design records live. The repo answers once in
 `.agents/host.json`, and every skill reads its answers by slot.
 
-Four templates ship in `host/templates/`. Pick the one that matches the repo and paste its block.
+Three templates ship in `host/templates/`. Pick the one that matches the repo and paste its block.
 Each writes `.agents/host.json` and prints the template name it wrote, so a wrong pick is visible
 straight away. Each refuses to overwrite a host file that already exists, because the one there
 carries answers the template does not; move it aside first to start again.
@@ -75,14 +75,6 @@ carries answers the template does not; move it aside first to start again.
 
 ```bash
 (set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-web.json \
-  --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
-```
-
-**Ideation sandbox.** The design repo layout: prototypes under `ideation-sandbox/src/prototypes/`,
-a theme registry, a component catalogue, a sandbox guard, and a lint baseline of 5 rather than 0.
-
-```bash
-(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/ideation-sandbox.json \
   --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
 ```
 
@@ -131,10 +123,10 @@ The second column is the moment the skill runs, not what it contains.
 | `run-spike` | A gate asks how something behaves rather than asking for a build, two tools have to be compared on numbers, or a spike report cannot say what was tested |
 | `verify-ui` | A UI change has to be proved rendered, or a number is going into a pull-request body or a gate write-up |
 | `record-design` | A surface's design record is unfilled or stale, or a surface is going to somebody who was not in the session |
-| `ingest-theme` | A designer brings generated theme CSS or brand colours, or a repo has to be rebranded to a client identity |
-| `ask-issue-status` | A pull request somebody outside the team reads is being written up, or a status shown in the app looks stale |
+| `ingest-theme` | A designer brings generated theme CSS or brand colours, or a repo has to be rebranded to a new identity |
+| `ask-issue-status` | A pull request a designer or a stakeholder reads is being written up, or a status shown in the app looks stale |
 | `paper` | A board is being designed or iterated on in Paper, coded screens are being reproduced on the canvas, or a designer's comments need working |
-| `start-engagement` | A client engagement starts, a branch carries no product record, the client's first materials arrive, or work has to start before any identity exists |
+| `start-project` | A new product starts in the repo, the repo carries no product record, the first brief or research arrives, or work has to start before any identity exists |
 | `new-surface` | Somebody wants a new prototype, flow or user journey, or a surface scaffolded by a form needs finishing |
 | `receive-prototype` | A developer has been handed a prototype folder, a prototype graduates into a real application, or the demo-only machinery has to come out |
 
@@ -161,7 +153,7 @@ Every change runs `npm run guard`, which CI repeats on every push and every pull
 blocks a merge on that run. A private repo under a free personal account cannot protect a branch, so
 a red run is one somebody has to read.
 
-The guard checks the skills index against the filesystem both ways, validates the four host
+The guard checks the skills index against the filesystem both ways, validates the three host
 templates against `host/host.schema.json`, ties each skill's `metadata.host` to the slots its body
 reads, fails any skill body outside `references/` that names one repo's paths, and runs the house
 style over every markdown file.

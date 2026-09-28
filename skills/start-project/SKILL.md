@@ -1,57 +1,51 @@
 ---
-name: start-engagement
+name: start-project
 description: >-
-  Open one client engagement's home in this repo — cut its branch, wire the connectors, digest
-  what the client has sent into the project notes, write the product record, seed the
+  Set up a new product's home in this repo — branch from the trunk, wire the connectors, digest
+  the material that already exists into the project notes, write the product record, seed the
   branch-local notes, ingest the brand or record it as pending, scaffold the first surface, and
   seed its issue ladder.
 when_to_use: >-
-  Use when a new client or engagement starts, when a branch exists but carries no product
-  record, when the client sends their first materials, when work has to start unbranded because
-  no identity exists yet, or when somebody asks where a client's work is meant to live. Trigger
-  phrases "start a client branch", "set up a new engagement", "new client", "we won the
-  project", "the client sent us their deck", "we have no brand yet", "where does this client's
-  work go".
+  Use when a new product or project starts in the repo, when the repo carries no product record,
+  when the first brief, deck or research arrives, when work has to start unbranded because no
+  identity exists yet, or when somebody asks where a new project's work is meant to live. Trigger
+  phrases "start a new project", "set up a new product", "kick off the project", "here is the
+  brief", "stakeholders sent us their deck", "we have no brand yet", "where does this work go".
 compatibility: >-
-  Reads git.trunk, git.release, git.engagementBranch, git.doc, memory.root, memory.connectors, memory.doc,
+  Reads git.trunk, git.release, git.doc, memory.root, memory.connectors, memory.doc,
   records.product, records.productTemplate, docs.local, theme.registry, issues.tracker,
   issues.ladder, issues.doc, issues.retired and checks.guard from .agents/host.json. With
-  git.engagementBranch null the repo carries no per-engagement branch, so step 1 names the
-  branch with the designer and the rest runs unchanged. With memory.root null there are no
-  project notes, so steps 2 and 3 do not run and the product record comes from the interview
-  alone. With records.product null the repo has no product record yet, which is the
-  absence step 4 exists to end: the path is agreed in one question and written back into the host
-  file. With records.productTemplate absent the record is filled from
+  memory.root null there are no project notes, so steps 2 and 3 do not run and the product record
+  comes from the interview alone. With records.product null the repo has no product record yet,
+  which is the absence step 4 exists to end: the path is agreed in one question and written back
+  into the host file. With records.productTemplate absent the record is filled from
   assets/product-record.template.md. With docs.local null every note is repo-wide and step 5
   does not run. With theme.registry null the repo lists no themes and step 6 asks only whether
   an identity exists. With issues.ladder null, or issues.retired true, step 8 does not run.
 metadata:
   suite: captain-phil
-  host: [git.trunk, git.release, git.engagementBranch, git.doc, memory.root, memory.connectors, memory.doc, records.product, records.productTemplate, docs.local, theme.registry, issues.tracker, issues.ladder, issues.doc, issues.retired, checks.guard]
+  host: [git.trunk, git.release, git.doc, memory.root, memory.connectors, memory.doc, records.product, records.productTemplate, docs.local, theme.registry, issues.tracker, issues.ladder, issues.doc, issues.retired, checks.guard]
 ---
 
-# Start an engagement
-
-An engagement's branch is its home, and it is a base branch in its own right. Nothing merges it
-back. Read `git.doc` for which branch owns what before cutting anything.
+# Start a project
 
 Run the eight steps in order, and the order is the substance. Steps 2 and 3 fill the project notes
 under `memory.root`, and every step after them reads what those two put there.
 
-**Three steps fork, and every fork is legitimate.** Step 3 handles an engagement with nothing to
-ingest yet, step 6 handles one with no identity yet, and step 8 handles one with no issue tracker
-project yet. None of the three is a degraded path. The phase before a client has decided anything is
-a real phase, and a branch running unbranded against half-empty notes is the work in its right
-order rather than a setup somebody abandoned.
+**Three steps fork, and every fork is legitimate.** Step 3 handles a project with nothing to ingest
+yet, step 6 handles one with no identity yet, and step 8 handles one with no issue tracker project
+yet. None of the three is a degraded path. The phase before anybody has decided anything is a real
+phase, and a branch running unbranded against half-empty notes is the work in its right order rather
+than a setup somebody abandoned.
 
-## 1. Cut the branch
+## 1. Branch from the trunk
 
 1. Confirm the trunk is current: `git fetch origin && git log -1 --format=%cr origin/<git.trunk>`.
-2. Branch from `git.trunk`, and never from `git.release` where the repo separates the two.
-3. Name it by the pattern in `git.engagementBranch`, substituting the client or the product. Where
-   that slot is `null` the repo carries no per-engagement convention, so agree the name with the
-   designer in one question and match whatever the branch list already does.
-4. Push it, and stop treating it as a feature branch: `git push -u origin <branch>`.
+2. Branch from `git.trunk`, and never from `git.release` where the repo separates the two. Read
+   `git.doc` for which branch owns what before cutting anything.
+3. Name the branch the way the branch list already does, and agree the name with the designer in
+   one question where no convention shows.
+4. Push it: `git push -u origin <branch>`. The setup lands through `open-pr` like any other work.
 
 ## 2. Wire the connectors
 
@@ -60,20 +54,20 @@ meeting recorder or the chat tool, and none of them can run against a placeholde
 
 1. Replace every placeholder in `memory.connectors` with a real id.
 2. Record the tracker's team, project name and project id, plus the ids of the documents the
-   engagement reads from.
+   project reads from.
 3. Copy a project link in the form the tool hands out rather than assembling one. A link whose slug
    ends in a hash nothing derives is a link step 8 can only paste.
 4. Record the meeting folder and the chat channels.
-5. Delete a connector block the engagement does not use, rather than leaving its placeholders.
+5. Delete a connector block the project does not use, rather than leaving its placeholders.
 
 Query each connector for its own ids rather than asking the designer to paste them. Where one is not
 authorized, say which one and carry on: an unwired connector narrows what step 3 can reach, and it
 blocks nothing else.
 
 **Where `memory.connectors` is `null`**, say in one line that the repo records no connector ids,
-and carry the ones this engagement uses into the product record's evidence section instead.
+and carry the ones this project uses into the product record's evidence section instead.
 
-## 3. Digest what the client has sent into the project notes
+## 3. Digest the existing material into the project notes
 
 **The notes under `memory.root` ship blank.** Every file is a template carrying its question rather
 than an answer, so an agent reading one on the first day learns nothing. Nothing downstream works
@@ -81,28 +75,27 @@ until this step runs.
 
 1. Ask what exists and where: a brief, a deck, a brand book, prior research, a tracker project,
    recorded calls.
-2. Digest each artifact into the client-inputs note, one heading per artifact, keeping its source
-   line.
-3. Pull the decisions out of the recordings into the decisions note, and the client's domain terms
+2. Digest each artifact into the inputs note, one heading per artifact, keeping its source line.
+3. Pull the decisions out of the recordings into the decisions note, and the product's domain terms
    into the project glossary, which is a different file from the repo's own.
 4. Synthesize across the sources into the research note and the requirements note, which are the two
    the rest of the repo reads.
 5. Record every question the material did not answer in the open-questions note.
-6. Leave a file at its template where the engagement has nothing for it. A blank file reads as
-   nobody having done this yet, and generic prose reads as an answer.
+6. Leave a file at its template where the project has nothing for it. A blank file reads as nobody
+   having done this yet, and generic prose reads as an answer.
 
 Match each note by its own `read_when` header rather than by a filename this skill guesses, and read
 `memory.doc` for what each status means before editing one.
 
-**A brand-new engagement often has nothing to ingest, and that is a legal state.** Where the client
-has sent nothing, say so rather than inventing a digest. Step 4's record then comes from the intake
-conversation alone, every fact in it is labelled as inferred, and the open-questions note carries the
-gaps. Re-run this step when the first material arrives, which is why it is a step rather than a
-one-time chore.
+**A brand-new project often has nothing to ingest, and that is a legal state.** Where nothing has
+been written down yet, say so rather than inventing a digest. Step 4's record then comes from the
+intake conversation alone, every fact in it is labelled as inferred, and the open-questions note
+carries the gaps. Re-run this step when the first material arrives, which is why it is a step rather
+than a one-time chore.
 
 ## 4. Write the product record
 
-`records.product` must exist and must describe the client. Ask the designer which route produces it,
+`records.product` must exist and must describe the product. Ask the designer which route produces it,
 then take that route once.
 
 **Where `records.product` is `null`, this step is what ends that.** Everywhere else in this suite a
@@ -134,26 +127,26 @@ Both routes produce one file, and three rules bind both:
 3. Omit a section that does not apply rather than filling it with generic prose, and label an
    inferred fact as inferred.
 
-The shared schema is what lets an Impeccable session adopt a hand-written file, and lets a designer
+The shared schema is what lets an Impeccable session adopt a hand-written file, and lets the designer
 hand-edit one Impeccable wrote.
 
 ## 5. Seed the branch-local notes
 
 1. Read the README inside `docs.local`, which states what belongs in the overlay and what does not.
-2. Write one file per topic the engagement already has an answer for: the client's vocabulary, their
-   approval loop, links to their boards.
+2. Write one file per topic the project already has an answer for: the product's vocabulary, the
+   stakeholders' approval loop, links to the boards.
 3. Give each file the same `read_when` header the rest of the docs use.
-4. Leave the folder holding only its README where the engagement has nothing branch-local yet. An
-   empty overlay is the honest state.
+4. Leave the folder holding only its README where the project has nothing branch-local yet. An empty
+   overlay is the honest state.
 
 ## 6. Ingest the brand, or record that it is pending
 
 **An identity often does not exist yet, and starting unbranded is a route rather than a delay.**
-Plenty of engagements start before anybody has run a brand exploration, and a designer shaping
-journeys at low fidelity is working in the right order. Ask which case this is, and take one branch.
+Plenty of projects start before anybody has run a brand exploration, and shaping journeys at low
+fidelity first is working in the right order. Ask which case this is, and take one branch.
 
 - **The identity exists** — run the `ingest-theme` skill, which fills the repo's unfilled theme slot
-  and renames it to the client's id in `theme.registry`. Run `checks.guard` immediately afterwards.
+  and renames it to the product's id in `theme.registry`. Run `checks.guard` immediately afterwards.
   A rename with no product record fails there, which is the moment to catch it rather than three
   sessions later.
 - **The identity is pending** — change no theme file, and write the state into the product record's
@@ -166,17 +159,17 @@ is a product fact and belongs with the other product facts. A second flag elsewh
 against this one.
 
 **An unfilled slot nags nobody.** A branch that never runs `ingest-theme` stays silent for as long
-as the engagement needs it to. Come back to this step when the identity arrives.
+as the project needs it to. Come back to this step when the identity arrives.
 
 ## 7. Scaffold the first surface
 
 Run the `new-surface` skill.
 
-- **Where step 6 ingested an identity**, pin it on the surface. An engagement's first surface is the
+- **Where step 6 ingested an identity**, pin it on the surface. A project's first surface is the
   reason the theme exists.
 - **Where the identity is pending**, pin nothing. The repo's default look is the correct look for
-  work the client has not branded yet. Never pin the placeholder id as a stand-in: a screenshot
-  captioned with a placeholder word tells a client nothing about their own product.
+  work nobody has branded yet. Never pin the placeholder id as a stand-in: a screenshot captioned
+  with a placeholder word tells a stakeholder nothing about their own product.
 
 Re-pin the surfaces when the identity lands. A pin is one field, so starting unbranded costs a line
 per surface rather than a rebuild.
@@ -197,12 +190,12 @@ step fills the declaration once from the tracker.
 4. Derive each rung's status from the state of the story's design sub-task, by the table in
    `issues.doc`.
 5. Record in the surface's own README that the statuses are a seed derived from the tracker rather
-   than a reading confirmed with the client. A tracker read is a proposal, and the first pull request
-   the designer reads is where it gets confirmed or corrected.
+   than a reading anybody confirmed. A tracker read is a proposal, and the first pull request the
+   designer reads is where it gets confirmed or corrected.
 6. Run `checks.guard`, which enforces the rules on the declaration.
 7. Open the app's issue listing and check the rows appear grouped under the project's heading.
 
-**Skip this step where `issues.retired` is `true`.** The branch dropped the ladder on purpose, and a
+**Skip this step where `issues.retired` is `true`.** The repo dropped the ladder on purpose, and a
 seed here puts back what `ask-issue-status` deleted. Skip it too where `issues.ladder` is `null`:
 the repo tracks status somewhere no skill writes.
 

@@ -5,12 +5,11 @@ description: >-
   against their baselines, fill a reader-facing or a fix template with a measured verification
   table, and push review fixes to the same branch.
 when_to_use: >-
-  Use when work is finished and ready to raise, when a review comes back, when syncing shared
-  work out to another branch, or when catching a release branch up from the trunk. Trigger
-  phrases "open a PR", "raise a PR", "ship this", "push this up", "sync this out", "catch main
-  up".
+  Use when work is finished and ready to raise, when a review comes back, or when catching a
+  release branch up from the trunk. Trigger phrases "open a PR", "raise a PR", "ship this", "push
+  this up", "catch main up".
 compatibility: >-
-  Reads git.trunk, git.release, git.engagementBranch, git.doc, checks.typecheck, checks.lint,
+  Reads git.trunk, git.release, git.doc, checks.typecheck, checks.lint,
   checks.test, issues.ladder, issues.doc, verify.doc and dev.platform from .agents/host.json.
   With dev.platform native, the verification table's rows are looked at off simulator screenshots
   and written in the looked-at row format. Without
@@ -19,7 +18,7 @@ compatibility: >-
   not run. With issues.ladder null, no rung changes and the status ask is skipped in one line.
 metadata:
   suite: captain-phil
-  host: [git.trunk, git.release, git.engagementBranch, git.doc, checks.typecheck, checks.lint, checks.test, issues.ladder, issues.doc, verify.doc, dev.platform]
+  host: [git.trunk, git.release, git.doc, checks.typecheck, checks.lint, checks.test, issues.ladder, issues.doc, verify.doc, dev.platform]
 ---
 
 # Open a PR
@@ -35,14 +34,10 @@ from the branch names.
 ## 1. Pick the base
 
 1. Read `git.doc` where the slot is set, and match the work to one row of its branch table.
-2. Take `git.trunk` as the base for anything shared — the design system, the docs, the
-   infrastructure, a dependency bump. Where the slot is `null` or absent, read the default branch
-   from `gh repo view --json defaultBranchRef` and name the base you picked.
-3. Take the engagement's own branch as the base where the work belongs to one engagement and
-   `git.engagementBranch` names the convention. That branch is a base in its own right: nothing
-   merges it back into the trunk.
-4. Confirm the base is live before opening against it: `git log -1 --format=%cr origin/<branch>`.
-5. Name a feature branch with a personal prefix or ticket-first, following whatever names the repo
+2. Take `git.trunk` as the base. Where the slot is `null` or absent, read the default branch from
+   `gh repo view --json defaultBranchRef` and name the base you picked.
+3. Confirm the base is live before opening against it: `git log -1 --format=%cr origin/<branch>`.
+4. Name a feature branch with a personal prefix or ticket-first, following whatever names the repo
    already carries.
 
 **A PR aimed at `git.release` is the one case to stop and ask about.** Where the slot is set, the
@@ -101,23 +96,6 @@ body that the baseline was zero because nobody recorded one.
 4. Update the body wherever the scope moved. A stale body reads as an accurate one.
 
 ## Variants
-
-### A sync — shared work out to an engagement branch
-
-Runs where `git.engagementBranch` names a convention. Shared work reaches each such branch through
-its own PR, one per branch.
-
-1. Wait for the catch-up where the repo has one, so the work arrives in one reviewed batch rather
-   than one PR at a time.
-2. Measure divergence both ways: `git rev-list --count origin/<base>..origin/<branch>`, and the
-   reverse.
-3. Branch off the engagement branch, and base the PR on that same branch.
-4. Apply the change without clobbering whatever that branch has deliberately forked — its own
-   readme heading, its local docs, its theme.
-5. Drive every ported widget through a full open-and-close round trip. A port breaks what a
-   typecheck and a screenshot both miss: dead handlers, primitives that throw only on open, a
-   trigger rendering a raw value.
-6. Write the body from the fix template.
 
 ### A catch-up — the trunk out to the release branch
 

@@ -36,8 +36,8 @@ writing it, apply the house style, index the file where a reader finds it, and r
 
 Ask what the content is, in this order, and stop at the first match.
 
-1. **One engagement's context — a decision somebody made, a question nobody has answered, research,
-   something the client sent** → a project note, under `memory.root`. Go to step 1a.
+1. **One project's context — a decision somebody made, a question nobody has answered, research,
+   something a stakeholder sent** → a project note, under `memory.root`. Go to step 1a.
 2. **Ordered, triggered, has a done state** → a procedure. It belongs in a skill.
 3. **Scanned and matched — a table, a token list, a symptom index, a template** → a catalogue. It
    belongs in a doc under `docs.root`.
@@ -85,7 +85,7 @@ takes, and therefore which file can hold it.
 9. Separate what got decided from what got discussed, and label the second as ideation.
 
 **A branch-local convention is not a project note.** A vocabulary, an approval loop, a process log
-or a lesson that binds one engagement goes under `docs.local`, per the table in step 1.
+or a lesson that binds one branch goes under `docs.local`, per the table in step 1.
 
 ## 2. Cut it to one home
 

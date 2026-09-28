@@ -16,7 +16,7 @@ metadata:
 
 # Report finished work
 
-The reader is a junior or mid designer, on a phone, reading once. The report leads with the verdict,
+The reader is a designer, on a phone, reading once. The report leads with the verdict,
 carries the changes in bullets, points at the thing they can open, and ends with the next action.
 
 **This skill formats; it does not verify.** The `wrap-gate` skill runs a gate's checks, the
@@ -80,7 +80,7 @@ the deep link as the command that opens it, the taps from where it lands, and th
 - Bullet anything that comes in threes or more; bold the noun that changed, never the sentence.
 - Cut the closing caveat unless acting on it changes what the designer does next.
 - Leave out guard or hook findings on lines the change did not touch.
-- Write a client-facing report fresh: no internal ids, and one idea stated once.
+- Write a stakeholder-facing report fresh: no internal ids, and one idea stated once.
 
 ## 4. Check before handing back
 

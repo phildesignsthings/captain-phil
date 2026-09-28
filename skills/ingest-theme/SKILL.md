@@ -6,8 +6,8 @@ description: >-
   every place a theme has to appear, and verify it rendered.
 when_to_use: >-
   Use when a designer brings generated theme CSS or a set of brand colours, when a repo has to be
-  rebranded to a client identity, or when a theme slot ships unfilled and an engagement needs it
-  filled. Trigger phrases "here is the tweakcn export", "rebrand this to the client", "ingest
+  rebranded to a new identity, or when a theme slot ships unfilled and a project needs it
+  filled. Trigger phrases "here is the tweakcn export", "rebrand this", "ingest
   this theme", "these are their brand colours", "fill in the brand theme".
 compatibility: >-
   Reads theme.dir, theme.registry, theme.contract, theme.generator, theme.doc,
@@ -40,15 +40,15 @@ space-separated RGB triplets, and a dark theme is one token set written in three
 the wrong shape, or a token missing from one block, renders plausibly and wrong.
 
 **Where the repo ships an unfilled theme slot, fill it rather than adding one beside it.** A slot
-that ships at neutral values, registered under a placeholder label, is the thing an engagement
+that ships at neutral values, registered under a placeholder label, is the thing a project
 renames and fills. Adding a second theme beside it leaves the placeholder in every picker and every
-screenshot, and nothing says which of the two is the client's.
+screenshot, and nothing says which of the two is the product's.
 
 ## 1. Intake
 
 Four questions, asked one at a time.
 
-1. **The id.** The client or the product, kebab-case, never a placeholder word. It ends up in every picker, under every screenshot, and a label reading "Brand" tells a client nothing about their own product. Agree the human label the same way.
+1. **The id.** The product, kebab-case, never a placeholder word. It ends up in every picker, under every screenshot, and a label reading "Brand" tells a stakeholder nothing about their own product. Agree the human label the same way.
 2. **The anchors.** A generator export is the direct path. Brand colours alone work too: at minimum the primary, and ideally the grounds, the line colour and the status anchors.
 3. **More than colours?** A display face, a different radius, bespoke surface finishes. Colours alone is the common answer, and anything past it is sanctioned rather than assumed.
 4. **Light, dark, or both?** This is a property of the theme rather than a formality. An identity that exists on one ground alone must say so, and then the repo holds every surface wearing the theme to that mode. A single-mode theme writes its one face into the base block and carries no dark block at all.
@@ -73,7 +73,7 @@ Where `theme.generator` is `null`, the repo has no generator and the values are 
 
 **Read the generator's own diagnostics.** They report every trap that fired, and one thing an
 export makes easy to miss: an anchor the export moved in the light block and left alone in the dark
-one. That anchor falls back to the stock value, so the theme wears the client's colour on one face
+one. That anchor falls back to the stock value, so the theme wears the brand's colour on one face
 and the framework's on the other, with both blocks looking complete.
 
 ## 3. Review the traps
@@ -109,9 +109,9 @@ Two homes, and both exist before this skill runs:
 - **The theme file.** Every trap you overrode, and every value you moved off the derivation, goes in a comment beside the value it explains. Give the file a short header saying what the identity is.
 - **The design record of whatever surface pins the theme.** That record holds how those screens spend the system — which surfaces carry the brand colour, what the type pairing does, what not to do with the palette. Run `record-design` once there are screens to read it off.
 
-**Renaming a placeholder slot to a client creates one obligation.** A theme named after a client
-marks a real engagement, so `records.product` owes a file describing that client. Run
-`start-engagement` where it is absent, rather than writing a stub.
+**Renaming a placeholder slot to a product creates one obligation.** A theme named after a product
+marks a real project, so `records.product` owes a file describing that product. Run
+`start-project` where it is absent, rather than writing a stub.
 
 ## 6. Verify
 
@@ -127,7 +127,7 @@ use the screenshot to confirm the screen spent it. Switch the simulator's appear
 1. Open `components.showcase` and confirm the theme renders every token group. A page that reads live values off the rendered DOM is where a wrong or missing token surfaces, and it is the only place all four traps are visible at once. Where the slot is `null`, the repo has no token page, so say so in one line. Read the four trap values out of the file by hand, and let items 2 to 4 carry the check on real screens.
 2. Check both modes where the theme carries both, and confirm a single-mode theme renders its one face rather than an empty specimen.
 3. Put the theme on a real screen, because a token page proves the values and a screen proves the pairings.
-4. Spot-check one narrow-width surface. On native, boot the smallest phone the app supports. Device chrome stays on the repo's own tokens rather than the client's, and a stepped token has to carry its narrow half.
+4. Spot-check one narrow-width surface. On native, boot the smallest phone the app supports. Device chrome stays on the repo's own tokens rather than the product's, and a stepped token has to carry its narrow half.
 5. Run `checks.guard` again, then whatever test holds the generator's output where the repo has one.
 
 ## Before handing back

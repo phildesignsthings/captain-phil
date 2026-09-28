@@ -27,14 +27,14 @@ rather than inside them, so an install does not put them in the consuming repo:
   --jq .content | base64 -d > .agents/host.json)
 ```
 
-`host/templates/` carries four filled starting points: `minimal`, `react-web`,
-`react-native-expo` and `ideation-sandbox`. Each one declares the template it came from in its
+`host/templates/` carries three filled starting points: `minimal`, `react-web` and
+`react-native-expo`. Each one declares the template it came from in its
 `template` field, so a suite update can tell what a repo started from.
 
 `minimal` leaves every `checks` leaf absent on purpose. It is the template for a repo that matches
 none of the others, so any command it named would be a guess, and a guessed command is worse than an
 absent one — absent sends the skill to its fallback and makes it offer to write the real answer,
-where a wrong `cmd` just fails. The other three name commands that hold for their stack.
+where a wrong `cmd` just fails. The other two name commands that hold for their stack.
 
 `react-native-expo` leaves `dev.url` absent for the same reason. On native the slot is the app's
 deep-link base, and every Expo app declares its own scheme, so any value the template shipped would
@@ -91,22 +91,22 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 | `checks.cwd`, `checks.typecheck`, `checks.lint`, `checks.test` | `wrap-gate`, `clean-done`, `open-pr` |
 | `checks.format` | `wrap-gate`, `clean-done`, `open-pr`, `tidy-comments` |
 | `checks.guard` | `wrap-gate`, `write-doc`, `freeze-memory`, `ingest-theme` |
-| `git.trunk`, `git.release`, `git.engagementBranch` | `open-pr`, `start-engagement` |
+| `git.trunk`, `git.release` | `open-pr`, `start-project` |
 | `git.doc` | `open-pr`, `ask-issue-status` |
 | `docs.root`, `docs.index` | `write-doc` |
 | `docs.glossary` | `write-doc` |
 | `docs.gotchas` | `new-screen`, `record-design`, `audit-design` |
-| `docs.local` | `ask-issue-status`, `paper`, `start-engagement` |
+| `docs.local` | `ask-issue-status`, `paper`, `start-project` |
 | `docs.retired` | `write-doc`, `freeze-memory` |
-| `records.product` | `audit-design`, `ingest-theme`, `start-engagement` |
-| `records.productTemplate` | `start-engagement` |
+| `records.product` | `audit-design`, `ingest-theme`, `start-project` |
+| `records.productTemplate` | `start-project` |
 | `records.design` | `record-design`, `paper`, `receive-prototype` |
 | `records.designDoc` | `record-design` |
 | `records.driftWatch` | `record-design` |
 | `memory.root`, `memory.archive`, `memory.doc` | `write-doc`, `freeze-memory` |
 | `memory.gloss` | `write-doc` |
-| `memory.connectors` | `new-surface`, `start-engagement` |
-| `issues.tracker`, `issues.ladder`, `issues.ask`, `issues.retired` | `ask-issue-status`, `new-surface`, `start-engagement` |
+| `memory.connectors` | `new-surface`, `start-project` |
+| `issues.tracker`, `issues.ladder`, `issues.ask`, `issues.retired` | `ask-issue-status`, `new-surface`, `start-project` |
 | `issues.doc` | `ask-issue-status`, `open-pr` |
 | `verify.mcp` | `verify-ui`, `wrap-gate`, `decision-request`, `add-primitive` |
 | `verify.probes`, `verify.agent` | `verify-ui`, `record-design` |
@@ -150,7 +150,7 @@ whose fallback nobody wrote.
 3. Add its row to *The groups*, naming every skill that reads it.
 4. Add the slot to each of those skills' `metadata.host`, and state the fallback in
    `compatibility`.
-5. Fill the slot in all four templates, using `null` where the template's repo kind has none.
+5. Fill the slot in all three templates, using `null` where the template's repo kind has none.
 6. Run `npm run guard`, which fails on a slot the schema does not know and on a template that does
    not validate.
 

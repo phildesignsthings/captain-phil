@@ -50,7 +50,7 @@ Answer this before proposing any move, and answer it on its own where that is wh
 
 1. Stop where `issues.tracker` is `null` or absent. Nothing outside the repo can supersede a note,
    and a note nobody edits is a note nobody edits.
-2. Read the note recording which external services this engagement's material comes from, for the
+2. Read the note recording which external services this project's material comes from, for the
    team's document set and its index document.
 3. Read the index document first. It clusters every document by product surface, so a document
    missing from it is either brand new or misfiled, and a surface with no document has nothing that

@@ -3,7 +3,7 @@ name: new-surface
 description: >-
   Scaffold a new surface — the intake questions asked one at a time, the design-intent contract
   agreed before any code, the folder written to the repo's own structure, its records, its issue
-  declaration on an engagement branch, and a check that it renders.
+  declaration where a tracker project exists, and a check that it renders.
 when_to_use: >-
   Use when somebody wants to start a new prototype, screen set, flow or user journey, when a
   surface has been scaffolded by a form and needs finishing, or when a new area of the app needs
@@ -62,9 +62,9 @@ belongs to the theme rather than to this surface. A surface may narrow its theme
 and it only narrows where the designer raises it — "these screens are only ever seen dark" is a
 design statement rather than a default worth prompting for.
 
-**A sixth question exists only on an engagement branch: which stories do these screens answer?** Ask
+**A sixth question exists only where the work answers a tracker: which stories do these screens answer?** Ask
 it where `memory.connectors` records a real tracker project, and skip it while that block is still
-placeholders. The answer is one or more **parent stories** — the ones with a client-legible title —
+placeholders. The answer is one or more **parent stories** — the ones with a title a stakeholder can read —
 and never the design sub-task hanging off one. Skip the question too where `issues.retired` is
 `true`: a ladder that was dropped on purpose does not come back one surface at a time. The answers
 become the declaration in step 3.
@@ -108,10 +108,10 @@ Two declarations are conditional.
 - **A second screen means the surface declares its screens** — a slug and a title each — which is
   what makes each one addressable, listable and reload-proof. A brand-new surface declares nothing
   and gains entries as screens land.
-- **Client work means the issue declaration from step 1's sixth question**, in the shape
+- **Tracked work means the issue declaration from step 1's sixth question**, in the shape
   `issues.ladder` types, with each rung's status derived by the table in `issues.doc` and the
   seed's provenance recorded in the developer's record rather than in a code comment a form's save
-  would delete. Omit it entirely for work that is not client work.
+  would delete. Omit it entirely where step 1 skipped the sixth question.
 
 ## 4. Verify
 
