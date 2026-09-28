@@ -17,9 +17,8 @@ for somebody who was not in the session, so its length follows the change.
 
 | The reader | Template |
 |---|---|
-| A designer or a client | A |
+| A designer or a stakeholder | A |
 | An internal correctness fix | B |
-| A sync of shared work out to another branch | B |
 | Unsure | A |
 
 ## Template A — reader-facing

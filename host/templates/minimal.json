@@ -3,7 +3,7 @@
   "template": "minimal",
   "dev": { "cwd": null, "start": null, "url": null, "platform": null },
   "checks": { "cwd": null },
-  "git": { "trunk": "main", "release": null, "engagementBranch": null, "doc": null },
+  "git": { "trunk": "main", "release": null, "doc": null },
   "docs": { "root": null, "glossary": null, "gotchas": null, "local": null, "retired": null, "index": "AGENTS.md" },
   "records": { "product": null, "productTemplate": null, "design": [], "designDoc": null, "driftWatch": null },
   "memory": { "root": null, "archive": null, "doc": null, "gloss": null, "connectors": null },

@@ -42,7 +42,7 @@ A file no external system replaces declares `never_freeze: true` beside its `sta
 reason in its opening paragraph. The flag is a stop, not a preference.
 
 The test is whether the content has one authoritative home outside the repo. An approved topic
-document in the client's tracker is such a home, and it outranks anything written here. A term list
+document in the tracker is such a home, and it outranks anything written here. A term list
 somebody reads while writing product copy is not, because nobody maintains it there.
 
 ## What the status drives

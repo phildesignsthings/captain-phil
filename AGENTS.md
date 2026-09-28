@@ -11,7 +11,7 @@ because a mistake here lands in a repo the author never sees.
 
 - `skills/<name>/SKILL.md` is one skill. Its `references/`, `scripts/` and `assets/` folders install
   with it and are the only things it can read off disk.
-- `host/` is the questionnaire a consuming repo fills in at `.agents/host.json`, its schema, and four
+- `host/` is the questionnaire a consuming repo fills in at `.agents/host.json`, its schema, and three
   filled templates. **The installer copies skills and nothing else, so `host/` never reaches a
   consuming repo** — that is why the README's install is two steps, and why a template is fetched
   rather than copied. Read [the host file spec](host/README.md) before touching a slot.

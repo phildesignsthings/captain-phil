@@ -6,7 +6,7 @@ description: >-
   yes, write the answers back into the ladder, and carry the changes into the pull-request body.
   Offers a third answer that retires the ladder where the repo tracks status somewhere else.
 when_to_use: >-
-  Use when a pull request a designer or a client reads is being written up or updated, when a
+  Use when a pull request a designer or a stakeholder reads is being written up or updated, when a
   pre-pull-request hook blocks the command over stale rungs, when a review round pushes new
   commits to such a pull request, or when a status the app displays looks stale. Do not run it
   for an internal fix: that changes no rung and the ask is noise. Trigger phrases "refresh the
@@ -49,13 +49,13 @@ Three answers end the skill before it asks anything, and each one is a single li
 ## 2. Run it for an outward-facing pull request alone
 
 The file named by `git.doc` picks the pull-request template by audience, and that pick is this
-skill's gate. Where the slot is absent, judge the audience yourself: a designer or a client reading
+skill's gate. Where the slot is absent, judge the audience yourself: a designer or a stakeholder reading
 it means run the ask.
 
-- **A pull request somebody outside the team reads** — run the ask. The rungs are the part of that body they act on.
-- **An internal correctness fix or a sync** — skip it. Clear whatever pre-pull-request check guards the command, and say in one line that you skipped and why.
+- **A pull request a designer or a stakeholder reads.** Run the ask. The rungs are the part of that body they act on.
+- **An internal correctness fix.** Skip it. Clear whatever pre-pull-request check guards the command, and say in one line that you skipped and why.
 
-Decide on the audience rather than on the size of the diff. A one-line change to a screen a client
+Decide on the audience rather than on the size of the diff. A one-line change to a screen a stakeholder
 signed off on changes a rung; a thousand-line refactor behind a data seam does not.
 
 ## 3. Read the rungs silently

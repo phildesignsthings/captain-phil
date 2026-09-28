@@ -10,7 +10,7 @@
     "template": {
       "type": "string",
       "description": "Which host/templates/ file this was filled from. Recorded so a suite update can tell what a repo started from.",
-      "enum": ["minimal", "react-web", "react-native-expo", "ideation-sandbox"]
+      "enum": ["minimal", "react-web", "react-native-expo"]
     },
 
     "dev": {
@@ -60,7 +60,7 @@
 
     "git": {
       "type": "object",
-      "description": "Branches and who merges. Read by open-pr, start-engagement and ask-issue-status.",
+      "description": "Branches and who merges. Read by open-pr, start-project and ask-issue-status.",
       "additionalProperties": false,
       "properties": {
         "trunk": {
@@ -70,10 +70,6 @@
         "release": {
           "type": ["string", "null"],
           "description": "Branch the trunk is caught up to, where the repo separates the two. Null means the trunk is also the release branch, and open-pr's § Variants does not run."
-        },
-        "engagementBranch": {
-          "type": ["string", "null"],
-          "description": "Branch one client engagement's work lives on, where the repo carries per-engagement branches. Null means every branch is the same kind."
         },
         "doc": {
           "type": ["string", "null"],
@@ -116,7 +112,7 @@
 
     "records": {
       "type": "object",
-      "description": "The product record and the design records. Read by record-design, audit-design, ingest-theme, paper, start-engagement and receive-prototype.",
+      "description": "The product record and the design records. Read by record-design, audit-design, ingest-theme, paper, start-project and receive-prototype.",
       "additionalProperties": false,
       "properties": {
         "product": {
@@ -125,7 +121,7 @@
         },
         "productTemplate": {
           "type": ["string", "null"],
-          "description": "Stub the product record is filled from. Absent means start-engagement uses its own bundled template."
+          "description": "Stub the product record is filled from. Absent means start-project uses its own bundled template."
         },
         "design": {
           "type": "array",
@@ -154,7 +150,7 @@
 
     "memory": {
       "type": "object",
-      "description": "One engagement's project notes. Read by write-doc, freeze-memory and start-engagement.",
+      "description": "The project notes. Read by write-doc, freeze-memory and start-project.",
       "additionalProperties": false,
       "properties": {
         "root": {
@@ -175,14 +171,14 @@
         },
         "connectors": {
           "type": ["string", "null"],
-          "description": "Note recording which external services this engagement's material comes from, and which space or project inside each."
+          "description": "Note recording which external services this project's material comes from, and which space or project inside each."
         }
       }
     },
 
     "issues": {
       "type": "object",
-      "description": "The tracker and the per-surface issue ladder. Read by ask-issue-status, open-pr, new-surface and start-engagement.",
+      "description": "The tracker and the per-surface issue ladder. Read by ask-issue-status, open-pr, new-surface and start-project.",
       "additionalProperties": false,
       "properties": {
         "tracker": {
