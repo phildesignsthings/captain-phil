@@ -80,7 +80,7 @@
 
     "docs": {
       "type": "object",
-      "description": "Where written rules live. Read by write-doc, new-screen, record-design, paper and ask-issue-status.",
+      "description": "Where written rules live. Read by write-doc, new-screen, record-design, paper, ask-issue-status and drift-check.",
       "additionalProperties": false,
       "properties": {
         "root": {
@@ -150,7 +150,7 @@
 
     "memory": {
       "type": "object",
-      "description": "The project notes. Read by write-doc, freeze-memory and start-project.",
+      "description": "The project notes. Read by write-doc, freeze-memory, start-project and drift-check.",
       "additionalProperties": false,
       "properties": {
         "root": {
@@ -178,7 +178,7 @@
 
     "issues": {
       "type": "object",
-      "description": "The tracker and the per-surface issue ladder. Read by ask-issue-status, open-pr, new-surface and start-project.",
+      "description": "The tracker and the per-surface issue ladder. Read by ask-issue-status, open-pr, new-surface, start-project and drift-check.",
       "additionalProperties": false,
       "properties": {
         "tracker": {
@@ -286,7 +286,7 @@
 
     "surfaces": {
       "type": "object",
-      "description": "Where a screen goes and what its folder owes. Read by new-surface, new-screen, record-design, paper and receive-prototype.",
+      "description": "Where a screen goes and what its folder owes. Read by new-surface, new-screen, record-design, paper, receive-prototype and drift-check.",
       "additionalProperties": false,
       "properties": {
         "root": {
