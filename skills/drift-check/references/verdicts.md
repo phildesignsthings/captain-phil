@@ -21,7 +21,7 @@ it also says where the fix goes. Every example here is invented.
 | `sources-split` | Two written sources disagree with each other, whatever the code does | The owner of the older source | A spec says 5 tries, and a later decision record says 3 |
 | `code-only` | The code enforces a rule no source states | The owner, to record it as a decision or have it removed | A typed code drops its spaces before the lookup, and no doc says it does |
 | `open` | A source holds the point open, and the code has picked an answer | Nobody yet, and the row names the open question | The code charges no fee, and the decision record still asks whether there is one |
-| `agrees` | The code, its comment and every source say the same thing | Nowhere, and the row is counted rather than shown | |
+| `agrees` | The code, its comment and every source say the same thing | Nowhere | |
 
 ## Which source stands
 
@@ -34,8 +34,8 @@ it also says where the fix goes. Every example here is invented.
 5. **Date a doc in the repo by the commit that last changed the lines in question**, from
    `git log -L`, rather than by a status line or a sign-off date in its text. A doc signed off on one
    day and edited three days later carries two dates, and only git knows which line has which.
-6. **The code is never a source for itself.** Code that has done something for months has been
-   unreviewed for months, which is no ruling.
+6. **The code is never a source for itself.** How long code has run says nothing about whether
+   anyone agreed to what it does.
 
 ## Order
 

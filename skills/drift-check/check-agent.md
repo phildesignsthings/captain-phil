@@ -49,5 +49,5 @@ or transcript you skimmed rather than read.
 
 | Withheld | Why |
 |---|---|
-| The code itself | the claims table already says what the code does, and a checker that reads the code argues for it |
+| The code itself | the claims table already says what the code does, and an agent that has read the code looks for reasons it is right |
 | The session's transcript | a checker that knows which answer the user hopes for finds it |
