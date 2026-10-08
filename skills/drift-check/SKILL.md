@@ -1,24 +1,25 @@
 ---
 name: drift-check
 description: >-
-  Find where one slice of a built product disagrees with itself or with its written sources: a
+  Find where a feature of a built product disagrees with itself or with its written sources: a
   comment against the code beside it, the code against a spec, a spec against a later decision in the
-  tracker. Two sub-agents pull the slice's claims and check each one, and the run hands back one
-  table where every row names which side is wrong and where its fix goes.
+  tracker. The user names the feature in their own words, the run splits it into gates a person can
+  review in one sitting, and each gate hands back one table where every row names which side is
+  wrong and where its fix goes.
 when_to_use: >-
   Use when a codebase is about to go to another developer or their agents, when a feature was built
   a while ago and later decisions may have overtaken it, when a comment and the tracker seem to
-  disagree, or when somebody asks what the code knows that no doc says. Take a slice of a few screens
-  and the helpers they import, never a whole repo in one run. Do not run it to improve how a comment
-  reads, which is `tidy-comments`, or to check that a screen renders, which is `verify-ui`. Trigger
-  phrases "check this for drift", "is this comment still true", "does the code match the tracker",
-  "what's only in the code", "drift check this feature", "shore this up before the handoff".
-argument-hint: "[slice: a folder, a route or a few files]"
+  disagree, or when somebody asks what the code knows that no doc says. Do not run it to improve how
+  a comment reads, which is `tidy-comments`, or to check that a screen renders, which is
+  `verify-ui`. Trigger phrases "check this for drift", "is this comment still true", "does the code
+  match the tracker", "what's only in the code", "drift check the billing epic", "shore this up
+  before the handoff".
+argument-hint: "[what to check: an epic, a feature, a flow, some screens, a decision or a ticket]"
 compatibility: >-
   Reads docs.root, memory.connectors, issues.tracker, surfaces.root and surfaces.harnessMarkers from
   .agents/host.json. With docs.root null the repo keeps no specs, so claims are checked against the
   connectors alone. With memory.connectors and issues.tracker both null, the check reads the repo's
-  own docs only and the report says no external source was read. With a slot absent, look for a
+  own docs only and the plan says no external source will be read. With a slot absent, look for a
   docs folder, a connectors or sources note at the repo root, and a src or app folder, and name what
   was used. With surfaces.harnessMarkers absent or empty, no code is skipped as demo-only.
 metadata:
@@ -28,73 +29,97 @@ metadata:
 
 # Drift check
 
-The short version: pick a slice, list the sources it answers to, send the slice to the claims agent,
-send its claims to the checking agent, and put one table to the user. Fix only the rows the user
-rules on. A slice is a few screens plus the files they import, small enough to check in one run.
+The short version: the user names what to check in their own words, and the run finds its screens
+and splits them into gates. It shows the gates, says what the user reviews in each one, and asks
+their review budget. Then each gate pulls the claims, checks them against the sources, and puts one table
+to the user. Fix only the rows the user rules on.
 
 `claims-agent.md` and `check-agent.md` are the two sub-agent prompts. `references/verdicts.md`
 defines each verdict, which source stands where two disagree, and the order rows go to the user.
 
-## 1. Pick the slice
+## 1. Find what the user named
 
-1. Take the slice from `$1` where it names a folder, a route or files.
-2. List the folders under `surfaces.root` where `$1` is empty, with the date git last changed each.
-   Propose the three changed longest ago, and ask which one to check.
-3. Add every file the slice's screens import from inside the repo, one level deep: helpers,
+1. Take what to check from `$1`: an epic, a feature, a flow, some screens, a decision or a ticket,
+   in the user's words.
+2. Ask what to check where `$1` is empty. Offer the epics and features by the names the tracker and
+   the specs use, and never by folder.
+3. Find the screens behind the name. Read the tracker project or ticket it names, the spec in
+   `docs.root` that covers it, the routes under `surfaces.root`, and any file that cites a decision
+   or ticket ID the user gave.
+4. Name each screen the way the product names it, by its title or the flow it belongs to, rather
+   than by its file.
+
+## 2. Split it into gates
+
+A gate is one segment the user can rule on in one sitting: one flow, or two to four screens that
+share their rules.
+
+1. Group the screens by what a user does with them, such as "scan a card and see it land", rather
+   than by folder.
+2. Add every file a segment's screens import from inside the repo, one level deep: helpers,
    constants, state and the request layer. Leave out shared UI components and generated files.
-4. Split the slice where it passes about 1,500 lines, and say which half runs first.
+3. Split a segment again where its files pass about 1,500 lines. Keep the count to yourself; the
+   user plans by screens and flows.
+4. Order the gates so a gate whose rules others depend on runs first.
+5. Run the plan as one gate where the whole request fits in one.
 
-## 2. List the sources
+## 3. Show the plan and ask the budget
 
-1. Read `docs.root` for the specs and design records that cover the slice.
-2. Read the note `memory.connectors` names for the external sources: the tracker, its decision
-   records, meeting notes and chat channels, with the IDs to query each.
-3. Read `issues.tracker` for the tracker to search where the connectors note leaves it out.
-4. Load the tools for each source before the checking agent needs them. Name every source whose tool
-   is missing or unauthorised in the report.
+1. Show one line per gate: its name, the screens in it by their product names, and the sources it
+   will be checked against.
+2. Say what the user reviews at the end of each gate: one table of rulings, and roughly how many
+   rows it will hold.
+3. Name every source no tool can reach, so the user knows before the run what it cannot see.
+4. Ask the review budget. Offer to put every row to the user, only the rows that change what a user
+   sees or does, or only the rows the sources disagree on. Where the budget leaves a class of rows
+   out, ask whether that class gets fixed without asking or listed without action.
+5. Wait for a go on the plan and the budget together.
+6. Stop at the end of every gate and wait. Follow `gate` and `wrap-gate` where the plan runs past
+   one session.
 
-## 3. Pull the claims
+## 4. Check one gate
 
-1. Launch one sub-agent in the foreground with `claims-agent.md`'s prompt verbatim. Pick a fast
-   model where the harness offers one, because this step reads a great deal and judges little.
-2. Fill in the slice's file list and the strings in `surfaces.harnessMarkers`.
-3. Keep the claims table it returns. A claim it marks as self-split is a finding before any source
-   is read.
-
-## 4. Check the claims
-
-1. Launch one sub-agent in the foreground with `check-agent.md`'s prompt verbatim. Fill in the
-   claims table, the source list from step 2, and the absolute path to `references/verdicts.md`.
-2. Split the claims across two or three agents where there are more than about 40, grouped by the
-   file they came from.
-3. Keep every gap an agent reports: a source it could not reach, a search it cut short, a transcript
-   it skimmed. The report carries them.
+1. List the sources the gate answers to. Read the specs under `docs.root`, and the note
+   `memory.connectors` names for the tracker, its decision records, meeting notes and chat
+   channels, with the IDs to query each. Read `issues.tracker` where the connectors note leaves the
+   tracker out.
+2. Load the tools for each source before the checking agent needs them.
+3. Launch one sub-agent in the foreground with `claims-agent.md`'s prompt verbatim. Fill in the
+   gate's file list and the strings in `surfaces.harnessMarkers`. Pick a fast model where the
+   harness offers one, because this step reads a great deal and judges little.
+4. Launch one sub-agent in the foreground with `check-agent.md`'s prompt verbatim. Fill in the
+   claims table, the source list, and the absolute path to `references/verdicts.md`.
+5. Split the claims across two or three checking agents where there are more than about 40.
+6. Keep every gap an agent reports: a source it could not reach, a search it cut short, a transcript
+   it skimmed.
 
 ## 5. Put the table to the user
 
 1. Drop every claim marked `agrees`, and give their count in one line.
-2. Order the rest by `references/verdicts.md` § Order.
-3. Build one table: the claim, where the code says it, what the sources say with their dates, the
-   verdict and the proposed fix.
-4. Run `unslop` on the table and the message around it before sending.
-5. Ask for one ruling per row: fix the code, fix the comment, fix the source, record a decision, or
+2. Apply the budget. Fix the classes the user waved through, list the classes they set aside, and
+   keep the rest for the table.
+3. Order the table by `references/verdicts.md` § Order.
+4. Build one table: the claim in the product's words, the screen it shows on, what the sources say
+   with their dates, the verdict and the proposed fix.
+5. Run `unslop` on the table and the message around it before sending.
+6. Ask for one ruling per row: fix the code, fix the comment, fix the source, record a decision, or
    leave it. Follow `decision-request` where seeing a screen is part of the ruling.
-6. Build nothing before the rulings arrive.
+7. Build nothing before the rulings arrive.
 
 ## 6. Apply the rulings
 
-1. Fix the code and its comment together, in the slice's files only.
+1. Fix the code and its comment together, in the gate's files only.
 2. Invoke `tidy-comments` on the diff once the facts are right.
 3. Draft each source fix or decision for whoever owns it. Run `write-doc` and then `unslop` on every
    draft.
 4. Post nothing to an external service without the user's go on that post.
-5. Hand back through `work-report`: the rows fixed, the rows left and why, the drafts waiting, and
-   the gaps from step 4.
+5. Hand back through `work-report`: the rows fixed, the rows left and why, the drafts waiting, the
+   gaps, and the next gate.
 
 ## What this skill never does
 
 | Never | Why |
 |---|---|
 | Rule a row itself | the connectors note names who owns each decision, and a guessed ruling is one more source of drift |
-| Widen past the slice | a repo-wide sweep returns a table too long to rule on |
+| Run a gate past its segment | a gate that grows returns a table too long to rule on in one sitting |
 | Count a draft as a source | `references/verdicts.md` § Which source stands, rule 4 |
