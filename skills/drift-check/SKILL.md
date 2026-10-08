@@ -18,7 +18,8 @@ argument-hint: "[what to check: an epic, a feature, a flow, some screens, a deci
 compatibility: >-
   Reads docs.root, memory.connectors, issues.tracker, surfaces.root and surfaces.harnessMarkers from
   .agents/host.json. With docs.root null the repo keeps no specs, so claims are checked against the
-  connectors alone. With memory.connectors and issues.tracker both null, the check reads the repo's
+  connectors alone, and the record of checked gates goes in the scratch folder, where it reaches no
+  other session. With memory.connectors and issues.tracker both null, the check reads the repo's
   own docs only and the plan says no external source will be read. With a slot absent, look for a
   docs folder, a connectors or sources note at the repo root, and a src or app folder, and name what
   was used. With surfaces.harnessMarkers absent or empty, no code is skipped as demo-only.
@@ -36,6 +37,8 @@ to the user. Fix only the rows the user rules on.
 
 `claims-agent.md` and `check-agent.md` are the two sub-agent prompts. `references/verdicts.md`
 defines each verdict, which source stands where two disagree, and the order rows go to the user.
+`references/record.md` is the record of which gates have been checked, so a run can pick up where
+the last session stopped.
 
 ## 1. Find what the user named
 
@@ -43,10 +46,18 @@ defines each verdict, which source stands where two disagree, and the order rows
    in the user's words.
 2. Ask what to check where `$1` is empty. Offer the epics and features by the names the tracker and
    the specs use, and never by folder.
-3. Find the screens behind the name. Read the tracker project or ticket it names, the spec in
+3. Look for the feature's record, as `references/record.md` § Where it lives says. Where one exists,
+   show which gates are checked and when, and offer to carry on from the first unchecked gate.
+4. Find the screens behind the name. Read the tracker project or ticket it names, the spec in
    `docs.root` that covers it, the routes under `surfaces.root`, and any file that cites a decision
    or ticket ID the user gave.
-4. Name each screen the way the product names it, by its title or the flow it belongs to, rather
+5. Start from the spec's own list of the feature's files where it keeps one, and check that list
+   against the routes.
+6. Read each parent issue in the tracker project in full. Open a sub-issue only where its title names
+   a product rule rather than a stage of work, such as a wireframe or a placeholder task.
+7. Name the tracker items the repo does not build, such as another app's screens or work the tracker
+   marks for a later release, and leave them out of the gates.
+8. Name each screen the way the product names it, by its title or the flow it belongs to, rather
    than by its file.
 
 ## 2. Split it into gates
@@ -57,24 +68,30 @@ share their rules.
 1. Group the screens by what a user does with them, such as "scan a card and see it land", rather
    than by folder.
 2. Add every file a segment's screens import from inside the repo, one level deep: helpers,
-   constants, state and the request layer. Leave out shared UI components and generated files.
-3. Split a segment again where its files pass about 1,500 lines. Keep the count to yourself; the
+   constants, state and the request layer.
+3. Add a shared component where it carries the feature's copy or rules, such as a finish screen that
+   prints what a run paid. Leave out primitives and generated files.
+4. Split a segment again where its files pass about 1,500 lines. Keep the count to yourself; the
    user plans by screens and flows.
-4. Order the gates so a gate whose rules others depend on runs first.
-5. Run the plan as one gate where the whole request fits in one.
+5. Order the gates so a gate whose rules others depend on runs first.
+6. Run the plan as one gate where the whole request fits in one.
 
 ## 3. Show the plan and ask the budget
 
-1. Show one line per gate: its name, the screens in it by their product names, and the sources it
-   will be checked against.
-2. Say what the user reviews at the end of each gate: one table of rulings, and roughly how many
+1. List the sources every gate is checked against once, before the gates.
+2. Show one line per gate: its name, the screens in it by their product names, and the sources only
+   that gate adds.
+3. Say what the user reviews at the end of each gate: one table of rulings, and a range for how many
    rows it will hold.
-3. Name every source no tool can reach, so the user knows before the run what it cannot see.
-4. Ask the review budget. Offer to put every row to the user, only the rows that change what a user
+4. List the tracker items left out in step 1, so the user can pull one back in.
+5. Name every source no tool can reach, so the user knows before the run what it cannot see.
+6. Say in one line which sources the check leaves out where a source slot is `null`.
+7. Ask the review budget. Offer to put every row to the user, only the rows that change what a user
    sees or does, or only the rows the sources disagree on. Where the budget leaves a class of rows
    out, ask whether that class gets fixed without asking or listed without action.
-5. Wait for a go on the plan and the budget together.
-6. Stop at the end of every gate and wait. Follow `gate` and `wrap-gate` where the plan runs past
+8. Wait for a go on the plan and the budget together.
+9. Write the feature's record once the go arrives, with every gate unchecked.
+10. Stop at the end of every gate and wait. Follow `gate` and `wrap-gate` where the plan runs past
    one session.
 
 ## 4. Check one gate
@@ -113,7 +130,8 @@ share their rules.
 3. Draft each source fix or decision for whoever owns it. Run `write-doc` and then `unslop` on every
    draft.
 4. Post nothing to an external service without the user's go on that post.
-5. Hand back through `work-report`: the rows fixed, the rows left and why, the drafts waiting, the
+5. Add the gate to the feature's record, as `references/record.md` says.
+6. Hand back through `work-report`: the rows fixed, the rows left and why, the drafts waiting, the
    gaps, and the next gate.
 
 ## What this skill never does
