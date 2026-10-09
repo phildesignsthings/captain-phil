@@ -60,7 +60,10 @@ export function problemsWithAsk(text) {
       `It asks ${questions} questions with no numbered list. Run \`decision-request\` so each ` +
         'decision is a numbered block the user can answer by number.',
     )
-  const code = text.match(/\b[A-Z][A-Z0-9]{1,9}-\d{1,5}\b/)
+  // Standards such as UTF-8, ISO-8601 and WCAG-21 match the issue-code pattern, so the lookahead skips them.
+  const code = text.match(
+    /\b(?!(?:UTF|ISO|WCAG|RFC|SHA|MD|ES|ECMA|IEEE|ANSI|AES|RSA|HTTP|TLS|SSL|IPV|CVE)-)[A-Z][A-Z0-9]{1,9}-\d{1,5}\b/,
+  )
   if (code) problems.push(`It names ${code[0]}. Lead with the issue's or the screen's title, never a code alone.`)
   if (CAVEAT_OPENERS.test(lastParagraph(text).replace(/^[*_>\s-]+/, '')))
     problems.push('It ends on a caveat. Cut it unless acting on it changes what the user does next.')
@@ -91,9 +94,11 @@ const UNMASK = [
   /\bstache\b/i,
   /\bpirat/i,
   /\b(arr+|ahoy|matey|'?sblood|avast)\b/i,
-  /\b(talk|talking|speak|speaking|spoke|sound|sounding|sounded)\s+like\s+a\b/i,
+  /\b(talk|talking|speak|speaking|spoke|sound|sounding|sounded)\s+like\s+an?\s+(sailor|buccaneer|privateer|corsair|sea ?dog)\b/i,
   /\bwhy (are|did|do) you (talk|speak|sound)/i,
-  /\b(accent|old-timey|olde)\b/i,
+  // Accent is also a colour name in design work, so only "your accent" or "that accent" counts.
+  /\b(your|that) accent\b(?![\s-]*colou?r)/i,
+  /\b(old-timey|olde)\b/i,
 ]
 
 export const mentionsMustache = text => !CREWMAN_OFF.test(text) && UNMASK.some(re => re.test(text))
@@ -145,6 +150,10 @@ const SAMPLES = [
   ['mustache', 'stop the pirate', false],
   ['mustache', 'drop the act, the pirate stuff is funny but not now', false],
   ['mustache', 'Talk me through the plan', false],
+  ['mustache', 'make the accent colour quieter', false],
+  ['mustache', "that doesn't sound like a bug to me", false],
+  ['mustache', "what's with your accent?", true],
+  ['mustache', 'why do you talk like a sailor', true],
   ['ask', 'Want me to open the PR?', true],
   ['ask', 'Done. Lint and typecheck pass.', false],
   ['ask', 'The Home tab is your call.', true],
@@ -153,6 +162,8 @@ const SAMPLES = [
   ['clean', 'Merged. The PR is closed.', 0],
   ['dirty', 'Keep the toast? Move Save up?', 1],
   ['dirty', 'Want me to fix PROJ-412 next?', 1],
+  ['clean', 'Want me to switch the dates to ISO-8601?', 0],
+  ['clean', 'Should the file stay UTF-8, and does it meet WCAG-21?', 0],
   ['dirty', 'Want me to ship it — or wait?', 1],
   ['dirty', 'Want me to ship it?\n\nOne thing worth flagging: lint is slow.', 1],
 ]
