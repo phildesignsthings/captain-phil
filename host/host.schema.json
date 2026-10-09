@@ -80,7 +80,7 @@
 
     "docs": {
       "type": "object",
-      "description": "Where written rules live. Read by write-doc, new-screen, record-design, paper and ask-issue-status.",
+      "description": "Where written rules live. Read by write-doc, new-screen, record-design, paper, ask-issue-status and drift-check.",
       "additionalProperties": false,
       "properties": {
         "root": {
@@ -112,12 +112,16 @@
 
     "records": {
       "type": "object",
-      "description": "The product record and the design records. Read by record-design, audit-design, ingest-theme, paper, start-project and receive-prototype.",
+      "description": "The product record, the agreed scope and the design records. Read by record-design, audit-design, ingest-theme, paper, start-project, receive-prototype and drift-check.",
       "additionalProperties": false,
       "properties": {
         "product": {
           "type": ["string", "null"],
           "description": "File stating what the product is, who it serves and what its copy standard is. audit-design quotes its six criteria from here."
+        },
+        "scope": {
+          "type": ["string", "null"],
+          "description": "Where the scope agreed with the client lives: a folder, a file, a tracker project or a URL, frozen at the point it was agreed. Null means the tracker's descriptions are the only scope, and they may have been edited since."
         },
         "productTemplate": {
           "type": ["string", "null"],
@@ -150,7 +154,7 @@
 
     "memory": {
       "type": "object",
-      "description": "The project notes. Read by write-doc, freeze-memory and start-project.",
+      "description": "The project notes. Read by write-doc, freeze-memory, start-project and drift-check.",
       "additionalProperties": false,
       "properties": {
         "root": {
@@ -286,7 +290,7 @@
 
     "surfaces": {
       "type": "object",
-      "description": "Where a screen goes and what its folder owes. Read by new-surface, new-screen, record-design, paper and receive-prototype.",
+      "description": "Where a screen goes and what its folder owes. Read by new-surface, new-screen, record-design, paper, receive-prototype and drift-check.",
       "additionalProperties": false,
       "properties": {
         "root": {

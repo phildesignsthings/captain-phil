@@ -116,6 +116,7 @@ The second column is the moment the skill runs, not what it contains.
 | `freeze-memory` | An external document has taken over what a project note holds, or somebody asks which notes are stale |
 | `unslop` | A piece of writing is going to a human, or a draft reads as machine-written |
 | `tidy-comments` | A commit or a pull request adds or changes a code comment, or somebody asks for comments to be cleaned up |
+| `drift-check` | A feature has been built for a while and someone needs to know whether it has grown past the scope agreed with the client, before a demo, a handoff or the next phase is planned |
 | `get-creative` | Somebody asks for random or off-the-wall directions, or rejects a round as safe, boring or samey |
 | `audit-design` | A designed surface is finished enough to be scored, a fix round has landed and it has to be re-scored, or two scores are about to be compared |
 | `new-screen` | A screen goes into an existing surface, a screen is being redesigned, or a screen is coming out as a stack of same-sized cards |
