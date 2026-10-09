@@ -8,7 +8,7 @@
   },
   "git": { "trunk": "main", "release": null, "doc": null },
   "docs": { "root": "docs", "glossary": null, "gotchas": null, "local": null, "retired": null, "index": "AGENTS.md" },
-  "records": { "product": null, "productTemplate": null, "design": [], "designDoc": null, "driftWatch": null },
+  "records": { "product": null, "scope": null, "productTemplate": null, "design": [], "designDoc": null, "driftWatch": null },
   "memory": { "root": null, "archive": null, "doc": null, "gloss": null, "connectors": null },
   "issues": { "tracker": null, "ladder": null, "doc": null, "ask": null, "retired": true },
   "verify": { "mcp": null, "probes": null, "doc": null, "agent": null },

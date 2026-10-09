@@ -112,12 +112,16 @@
 
     "records": {
       "type": "object",
-      "description": "The product record and the design records. Read by record-design, audit-design, ingest-theme, paper, start-project and receive-prototype.",
+      "description": "The product record, the agreed scope and the design records. Read by record-design, audit-design, ingest-theme, paper, start-project, receive-prototype and drift-check.",
       "additionalProperties": false,
       "properties": {
         "product": {
           "type": ["string", "null"],
           "description": "File stating what the product is, who it serves and what its copy standard is. audit-design quotes its six criteria from here."
+        },
+        "scope": {
+          "type": ["string", "null"],
+          "description": "Where the scope agreed with the client lives: a folder, a file, a tracker project or a URL, frozen at the point it was agreed. Null means the tracker's descriptions are the only scope, and they may have been edited since."
         },
         "productTemplate": {
           "type": ["string", "null"],
@@ -178,7 +182,7 @@
 
     "issues": {
       "type": "object",
-      "description": "The tracker and the per-surface issue ladder. Read by ask-issue-status, open-pr, new-surface, start-project and drift-check.",
+      "description": "The tracker and the per-surface issue ladder. Read by ask-issue-status, open-pr, new-surface and start-project.",
       "additionalProperties": false,
       "properties": {
         "tracker": {

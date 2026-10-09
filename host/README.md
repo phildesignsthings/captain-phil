@@ -100,6 +100,7 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 | `docs.local` | `ask-issue-status`, `paper`, `write-doc` |
 | `docs.retired` | `write-doc`, `freeze-memory` |
 | `records.product` | `audit-design`, `ingest-theme`, `start-project` |
+| `records.scope` | `drift-check` |
 | `records.productTemplate` | `start-project` |
 | `records.design` | `record-design`, `paper`, `receive-prototype` |
 | `records.designDoc` | `record-design` |
@@ -107,7 +108,7 @@ Every slot below names the skills that read it. A slot no skill reads is a slot 
 | `memory.root`, `memory.archive`, `memory.doc` | `write-doc`, `freeze-memory` |
 | `memory.gloss` | `write-doc` |
 | `memory.connectors` | `new-surface`, `start-project`, `drift-check` |
-| `issues.tracker` | `ask-issue-status`, `new-surface`, `start-project`, `drift-check` |
+| `issues.tracker` | `ask-issue-status`, `new-surface`, `start-project` |
 | `issues.ladder`, `issues.ask`, `issues.retired` | `ask-issue-status`, `new-surface`, `start-project` |
 | `issues.doc` | `ask-issue-status`, `open-pr` |
 | `verify.mcp` | `verify-ui`, `wrap-gate`, `decision-request`, `add-primitive` |
