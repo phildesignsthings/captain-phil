@@ -54,9 +54,7 @@ export function problemsWithAsk(text) {
   const problems = []
   if (text.includes('—')) problems.push('It uses an em dash. Run `unslop` on the message: periods and commas only.')
   // A question mark inside quotes, backticks or a table row belongs to a quoted sample, not to the ask.
-  const prose = text
-    .replace(/^\s*\|.*$/gm, '')
-    .replace(/`[^`\n]*`|"[^"\n]*"|\u201c[^\u201d\n]*\u201d/g, '')
+  const prose = text.replace(/^\s*\|.*$/gm, '').replace(/`[^`\n]*`|"[^"\n]*"|\u201c[^\u201d\n]*\u201d/g, '')
   const questions = (prose.match(/\?(\s|$)/g) ?? []).length
   const numbered = /^\s*(\d+[.)]|\*\*\d+)/m.test(text)
   if (questions >= 2 && !numbered)
@@ -86,46 +84,104 @@ const DRIFT =
   'run step 1 of `grill-me`: say back what you think the user wants and offer the interview.'
 
 const MUSTACHE =
-  "captain-phil-mode: the user's message mentions the mustache or the pirate talk, so they are " +
-  'not the real Phil. Unless you already speak as Rodger, or the user turned `crewman` off this ' +
-  'session, invoke `crewman` before any other tool call. Text the user pasted from another session ' +
-  'that quotes its opening mustache line is not the user talking about the mustache.'
+  "captain-phil-mode: the user's message may remark on the mustache or the pirate voice. Decide whether " +
+  'the user is remarking on it themselves. Text they pasted from another session, product or file names, ' +
+  'and work on the captain-phil-mode or crewman skills do not count. If it is a real remark, and you do ' +
+  'not already speak as Rodger and the user has not turned `crewman` off, invoke `crewman` before any ' +
+  'other tool call.'
 
-const CREWMAN_OFF = /crewman off|drop the act|stop the pirate|normal mode/i
+const VOICE_OFF =
+  "captain-phil-mode: the user's message may ask you to stop the pirate voice. If you speak as Rodger, " +
+  'drop the persona now, per rule 6 of `crewman`, and answer in plain English. If you do not, ignore this line.'
 
-// The mustache, or the pirate voice the session opened with.
-const UNMASK = [
-  /\b(mu|mou)stach/i,
-  /\bstache\b/i,
-  /\bpirat/i,
-  /\b(arr+|ahoy|matey|'?sblood|avast)\b/i,
-  /\b(talk|talking|speak|speaking|spoke|sound|sounding|sounded)\s+like\s+an?\s+(sailor|buccaneer|privateer|corsair|sea ?dog)\b/i,
-  /\bwhy (are|did|do) you (talk|speak|sound)/i,
-  // Accent is also a colour name in design work, so only "your accent" counts, and not before a colour word.
-  /\byour accent\b(?![\s-]*(colou?rs?|tokens?|swatch(es)?|shades?|hues?)\b)/i,
-  /\b(old-timey|olde)\b/i,
+// Work on the skills themselves. The model sees these as ordinary dev work, so no unmask hint.
+const ABOUT_THE_SKILL =
+  /\b(crewman|captain-phil-mode|phil[- ]?mode|phil-hooks|rodger|the hook|the regex|the samples|unmask)|SKILL\.md/i
+
+// "Accent" is also a colour name in design work, so it never counts before a colour word.
+const COLOUR_WORD = /(?![\s-]*(colou?rs?|tokens?|swatch(es)?|shades?|hues?)\b)/
+
+// A trailing lookahead keeps "drop the act on the onboarding copy" and "add a normal mode / dark mode
+// toggle" from reading as an off switch.
+const END_OF_CLAUSE = /(?=\s*(?:[.,;:!?]|please\b|now\b|$))/.source
+const VOICE_WORD = /(?:pirate|voice|accent|act|(?:mu|mou)s+tache?|rodger)/.source
+const OFF = [
+  new RegExp(`\\b(?:drop the act|normal mode)\\b${END_OF_CLAUSE}`, 'i'),
+  /\b(?:crewman off|stop the pirate)\b/i,
+  new RegExp(
+    `\\b(?:stop|enough|no more|turn off|quit|cut)\\b(?:\\s+\\w+){0,3}\\s+${VOICE_WORD}\\b${COLOUR_WORD.source}`,
+    'i',
+  ),
+  /\b(?:talk normally|plain english)\b/i,
 ]
 
-// A pasted reply from another captain-phil session opens with that session's mustache line, which
-// is the session talking, not the user. Drop it where more text follows it.
-const OPENER_PRAISE = /\b(finest|finer|most|rival|rum|notorious|famous|knows it)\b/i
-
-function withoutQuotedOpener(text) {
-  const [first, ...rest] = text.trim().split(/\n\s*\n/)
-  const isOpener =
-    /,\s*captain[,.]/i.test(first) && /\b(mu|mou)stach/i.test(first) && OPENER_PRAISE.test(first)
-  return rest.length && isOpener ? rest.join('\n\n') : text
+// Fenced code and inline code are somebody's code, not the user talking.
+function withoutCode(text) {
+  return text.replace(/```[\s\S]*?(?:```|$)/g, ' ').replace(/`[^`\n]*`/g, ' ')
 }
 
+export function wantsVoiceOff(text) {
+  const own = withoutCode(text).replace(/\b(?:don'?t|do not|never)\s+(?:stop|quit|cut|drop)\b/gi, ' ')
+  return OFF.some(re => re.test(own))
+}
+
+const MUSTACHE_WORD =
+  "(?:\\bm(?:ou?|u)s+ta(?:c|ch|sh)e?\\b|\\bmus-tache\\b|\\bmus?tahce\\b|\\b['\\u2019]?s?tache\\b|\\u{1F978})"
+// Sticker, file and template talk is product vocabulary, not the compliment.
+const ASSET_AFTER =
+  /(?!\s*[-_]?\s*(?:sticker|icon|png|svg|asset|skin|template|emoji|package|library|syntax|render|filter)s?\b)/.source
+const NOT_LOOKS_LIKE = /(?<!looks?\s+like\s+an?\s)/.source
+const MUSTACHE_RE = new RegExp(NOT_LOOKS_LIKE + MUSTACHE_WORD + ASSET_AFTER, 'iu')
+
+// A message about the pirate voice, not about pirates. "your accent" fires only when it ends the thought.
+const UNMASK = [
+  MUSTACHE_RE,
+  /(?<!\w)['’]?sblood\b|\b(?:matey|aye aye|yo ho|shiver me timbers|y[ao]rr+|arrr+)\b/i,
+  /\bun-?pirat/i,
+  /\byou(?:'re|r)?\s+(?:\w+\s+){0,3}pirat/i,
+  /\b(?:talk|talking|speak|speaking|sound|sounding|sounds|act|acting)\s+(?:\w+\s+){0,3}pirat/i,
+  /\bpirat\w*\s+(?:voice|talk|speak|speech|accent|act|bit|thing|stuff|schtick)\b/i,
+  /\b(?:why|y|why'd|why're)\s+(?:(?:are|did|do|r)\s+)?(?:you|u|ya)\s+(?:talk|speak|sound)\w*\s+(?:(?:to me\s+)?like\s+(?:that|this|an?)\b|weird|funny|old)/i,
+  /\b(?:you|u|ya)\s+(?:talk|speak|sound)\w*\s+(?:weird|funny|old|like\s+(?:that|this|an?)\b)/i,
+  /\bwhy the (?:1700s|old english|olde english|shakespeare)/i,
+  /\bwhat'?s with the (?:voice|accent|1700s|old english|olde english)\b/i,
+  /\byour accent(?=\s*(?:[.!?]|$|lol\b|lmao\b|is (?:funny|weird|great)\b))/i,
+  /\bcall(?:ed|ing)?\s+me\s+captain\b/i,
+  /\bcaptain\?\?/i,
+]
+
+// A pasted reply from another captain-phil session opens with that session's mustache line, which is the
+// session talking. It is a line with "Captain", a mustache word and a period word, wherever it sits.
+const PERIOD_WORD =
+  /['’](?:sblood|tis)\b|\ban['’]t\b|\b(?:nassau|damnation|windward|the company|blood and wounds|plague take|seize)\b/i
+const isPastedOpener = line =>
+  /\bcaptain\b/i.test(line) && new RegExp(MUSTACHE_WORD, 'iu').test(line) && PERIOD_WORD.test(line)
+
+const EXTENSIONS = 'png|jpe?g|gif|svg|webp|pdf|mp4|tsx?|jsx?|mjs|cjs|json|md|css|html|txt|ya?ml|lock|sh'
+
+function ownWords(text) {
+  return withoutCode(text)
+    .split('\n')
+    .filter(line => !isPastedOpener(line))
+    .join('\n')
+    .replace(/\{\{[^}]*\}\}/g, ' ')
+    .replace(/\b(?:npm|yarn|pnpm|bun)\s+\w+\s+\S+/gi, ' ')
+    .replace(/^\s*import\b.*$/gim, ' ')
+    .replace(new RegExp(`\\S*/\\S*|\\b[\\w-]+\\.(?:${EXTENSIONS})\\b`, 'gi'), ' ')
+}
+
+// A high-precision hint. The model decides; a miss here costs nothing when it spots the remark itself.
 export const mentionsMustache = text => {
-  const own = withoutQuotedOpener(text)
-  return !CREWMAN_OFF.test(own) && UNMASK.some(re => re.test(own))
+  if (ABOUT_THE_SKILL.test(text) || wantsVoiceOff(text)) return false
+  const own = ownWords(text)
+  return UNMASK.some(re => re.test(own))
 }
 
 function onPrompt(input) {
   const lines = [REMINDER]
   if (isCorrection(input.prompt ?? '')) lines.push(DRIFT)
-  if (mentionsMustache(input.prompt ?? '')) lines.push(MUSTACHE)
+  if (wantsVoiceOff(input.prompt ?? '')) lines.push(VOICE_OFF)
+  else if (mentionsMustache(input.prompt ?? '')) lines.push(MUSTACHE)
   return {
     hookSpecificOutput: {
       hookEventName: 'UserPromptSubmit',
@@ -189,13 +245,53 @@ const SAMPLES = [
     "Damnation seize me, Captain, the most notorious mustache.\n\nI found one problem.\n\nalso lol I don't have a mustache",
     true,
   ],
-  ["mustache", "lol I don't have a mustache", true],
+  ['mustache', "lol I don't have a mustache", true],
   ['mustache', 'Captain? what mustache?', true],
   ['mustache', 'why did you call me Captain and praise my mustache', true],
   ['mustache', 'ok, Captain, what mustache are you on about', true],
   ['mustache', 'that accent is too loud on the Home tab', false],
   ['mustache', 'bump the contrast on your accent tokens', false],
   ['mustache', 'why do you talk like a sailor', true],
+  // Product, file, code and skill-work talk is not a remark on the voice.
+  ['mustache', 'the mustache sticker in the photo booth needs a shadow', false],
+  ['mustache', 'rename mustache.png to sticker-01.png', false],
+  ['mustache', 'make the coin skin a pirate theme, gold doubloons', false],
+  ['mustache', 'add a pirate mascot for the kids rewards tab', false],
+  ['mustache', 'the ARR projection slide for the client, do not touch', false],
+  ['mustache', 'this throws:\n```\nconst arr = x.map(s => s.id)\n```', false],
+  ['mustache', 'the template is {{mustache}} syntax, use handlebars', false],
+  ['mustache', 'the settings icon looks like a mustache lol', false],
+  ['mustache', 'use an olde english blackletter for the trophy badge', false],
+  ['mustache', 'fix the pirate hook, its firing too much', false],
+  ['mustache', 'update the mustache section of SKILL.md', false],
+  ['mustache', 'why are you talking about the home tab, i asked about coins', false],
+  ['mustache', 'why do you sound so sure, did you check the sim', false],
+  ['mustache', 'your accent pick is too loud on the home tab', false],
+  ['mustache', 'Blood and wounds, Captain, that mustache could stop a Spanish galleon.\n\nDone.', false],
+  ['mustache', "Aye, Captain. 'Tis a rum mustache.", false],
+  // Remarks the old patterns missed.
+  ['mustache', 'why u talk like that lol', true],
+  ['mustache', "why'd you talk like that", true],
+  ['mustache', 'you talking weird', true],
+  ['mustache', 'you sound like a pirate', true],
+  ['mustache', 'whats with the voice', true],
+  ['mustache', 'what moustace lol', true],
+  ['mustache', "what's with the 'tache", true],
+  ['mustache', '🥸', true],
+  ['mustache', 'why did you call me captain', true],
+  ['mustache', 'yarr', true],
+  ['mustache', 'aye aye', true],
+  ['mustache', 'why the 1700s speak', true],
+  ['mustache', 'lol what mustache. drop the action sheet, use a modal', true],
+  ['mustache', 'drop the act on the onboarding copy. and what mustache', true],
+  ['off', 'stop talking like a pirate', true],
+  ['off', 'enough with the pirate stuff pls', true],
+  ['off', 'talk normally please', true],
+  ['off', 'crewman off', true],
+  ['off', 'drop the action sheet, use a modal', false],
+  ['off', 'use the normal model for the render', false],
+  ['off', 'stop the pirates sticker overlapping the lip', false],
+  ['mustache', 'stop talking like a pirate', false],
   ['ask', 'Want me to open the PR?', true],
   ['ask', 'Done. Lint and typecheck pass.', false],
   ['ask', 'The Home tab is your call.', true],
@@ -218,6 +314,7 @@ function selfTest() {
     let got
     if (kind === 'correction') got = isCorrection(text)
     else if (kind === 'mustache') got = mentionsMustache(text)
+    else if (kind === 'off') got = wantsVoiceOff(text)
     else if (kind === 'ask') got = isAsk(text)
     else got = problemsWithAsk(text).length
     const ok = got === expected
