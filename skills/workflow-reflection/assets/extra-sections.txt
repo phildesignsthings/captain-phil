@@ -1,0 +1,8 @@
+## Firsts
+The first time a tool, skill, convention or way of working appears in these sessions, with the session stem. Only count it as a first if nothing in the digest suggests it existed before. Already in use before this stretch: {{KNOWN}}.
+
+## How the process looked in this stretch
+One paragraph: how {{PERSON}} worked in these sessions and what they handed to the AI versus kept.
+
+## {{QUESTION}}
+Evidence for the question "{{QUESTION}}". Note {{WHAT_COUNTS}}. Quote {{PERSON}} where they talk about it.

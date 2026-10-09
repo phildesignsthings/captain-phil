@@ -1,0 +1,35 @@
+You are reading digests of Claude Code sessions. In these sessions {{PERSON}}, {{ROLE}}, worked on {{PROJECT}} with Claude. Each digest has a header (dates, PRs, models, token usage, skills, subagents) and then the conversation: **{{LABEL}}:** is what {{PERSON}} typed, and **CLAUDE:** is the last thing Claude said before {{PERSON}}'s next message. A message ending in […+N chars] was clipped when the digest was made, and the rest is not available anywhere, so read it as complete and do not report it as cut off.
+
+The goal is to reconstruct {{PERSON}}'s PROCESS so other people can repeat it, and to find where it was inefficient. Read every digest file listed below in full. Then write your findings to {{OUTPUT_PATH}} as markdown, using exactly these sections. Cite each point with the digest filename stem, e.g. (main__2026-09-12__ab12cd34).
+
+## Sessions
+One line per session: stem, a 6-10 word summary of what the session was for, and a kind label from: build, build-system, review/feedback, design-board, stakeholder-review, plan, docs/skills, tooling/infra, debugging, research, other.
+
+## Process steps observed
+The repeatable steps {{PERSON}} went through, in the order they happen. Say who drove each one: AI drove, {{PERSON}} steered (gave direction or judgement), or {{PERSON}} hands-on (did it outside Claude, or edited by hand). Quote {{PERSON}}'s own words where they show the step.
+
+## Where {{PERSON}} took the reins
+Moments where {{PERSON}} overrode, corrected or redirected Claude on judgement, taste, copy, domain context, or scope. Quote them, then say what the AI had got wrong.
+
+## Rework and friction
+Loops where the same thing was asked more than once, where something broke and was re-done, where Claude claimed a thing was done and it wasn't, or where tooling ate time. For each one, estimate the cost (number of messages or sessions) and what would have prevented it: a better plan, a skill, a template, or an earlier rule.
+
+## Model and effort use
+Which model did which kind of work (see the token headers). Point out builds a costly model did where the plan was clear enough for a cheaper one, and anything that suggests where the plans were too thin for a cheaper model.
+
+## Planning quality
+Say whether the work started from a written plan or gates, or from prose. Note sessions where a better upfront plan would have saved a session or more.
+
+## Reusable assets created
+The skills, docs, scripts, hooks or conventions these sessions created that somebody else could reuse.
+
+## Quotes worth keeping
+Up to 8 verbatim {{PERSON}} quotes that capture how they think about working with AI.
+
+{{EXTRA_SECTIONS}}
+
+Rules: stick to evidence. Never invent a session or a quote. If a section has nothing, write "none seen". Keep the whole file under 2,500 words. Reply with only the output path and one line giving the session count you read.
+
+Digest folder: {{DIGEST_DIR}}
+Files to read, in date order:
+{{FILES}}
