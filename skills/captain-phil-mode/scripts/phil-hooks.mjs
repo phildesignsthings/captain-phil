@@ -53,7 +53,11 @@ function lastParagraph(text) {
 export function problemsWithAsk(text) {
   const problems = []
   if (text.includes('—')) problems.push('It uses an em dash. Run `unslop` on the message: periods and commas only.')
-  const questions = (text.match(/\?(\s|$)/g) ?? []).length
+  // A question mark inside quotes, backticks or a table row belongs to a quoted sample, not to the ask.
+  const prose = text
+    .replace(/^\s*\|.*$/gm, '')
+    .replace(/`[^`\n]*`|"[^"\n]*"|\u201c[^\u201d\n]*\u201d/g, '')
+  const questions = (prose.match(/\?(\s|$)/g) ?? []).length
   const numbered = /^\s*(\d+[.)]|\*\*\d+)/m.test(text)
   if (questions >= 2 && !numbered)
     problems.push(
@@ -84,7 +88,8 @@ const DRIFT =
 const MUSTACHE =
   "captain-phil-mode: the user's message mentions the mustache or the pirate talk, so they are " +
   'not the real Phil. Unless you already speak as Rodger, or the user turned `crewman` off this ' +
-  'session, invoke `crewman` before any other tool call.'
+  'session, invoke `crewman` before any other tool call. Text the user pasted from another session ' +
+  'that quotes its opening mustache line is not the user talking about the mustache.'
 
 const CREWMAN_OFF = /crewman off|drop the act|stop the pirate|normal mode/i
 
@@ -96,12 +101,26 @@ const UNMASK = [
   /\b(arr+|ahoy|matey|'?sblood|avast)\b/i,
   /\b(talk|talking|speak|speaking|spoke|sound|sounding|sounded)\s+like\s+an?\s+(sailor|buccaneer|privateer|corsair|sea ?dog)\b/i,
   /\bwhy (are|did|do) you (talk|speak|sound)/i,
-  // Accent is also a colour name in design work, so only "your accent" or "that accent" counts.
-  /\b(your|that) accent\b(?![\s-]*colou?r)/i,
+  // Accent is also a colour name in design work, so only "your accent" counts, and not before a colour word.
+  /\byour accent\b(?![\s-]*(colou?rs?|tokens?|swatch(es)?|shades?|hues?)\b)/i,
   /\b(old-timey|olde)\b/i,
 ]
 
-export const mentionsMustache = text => !CREWMAN_OFF.test(text) && UNMASK.some(re => re.test(text))
+// A pasted reply from another captain-phil session opens with that session's mustache line, which
+// is the session talking, not the user. Drop it where more text follows it.
+const OPENER_PRAISE = /\b(finest|finer|most|rival|rum|notorious|famous|knows it)\b/i
+
+function withoutQuotedOpener(text) {
+  const [first, ...rest] = text.trim().split(/\n\s*\n/)
+  const isOpener =
+    /,\s*captain[,.]/i.test(first) && /\b(mu|mou)stach/i.test(first) && OPENER_PRAISE.test(first)
+  return rest.length && isOpener ? rest.join('\n\n') : text
+}
+
+export const mentionsMustache = text => {
+  const own = withoutQuotedOpener(text)
+  return !CREWMAN_OFF.test(own) && UNMASK.some(re => re.test(own))
+}
 
 function onPrompt(input) {
   const lines = [REMINDER]
@@ -153,6 +172,29 @@ const SAMPLES = [
   ['mustache', 'make the accent colour quieter', false],
   ['mustache', "that doesn't sound like a bug to me", false],
   ['mustache', "what's with your accent?", true],
+  ['mustache', 'make that accent quieter', false],
+  [
+    'mustache',
+    "Damnation seize me, Captain, if that an't the most notorious mustache from Nassau to the Windward Passage.\n\nI found one problem in the review.",
+    false,
+  ],
+  [
+    'mustache',
+    "'Sblood, Captain, there's no finer mustache from Nassau, and the whole company knows it.\n\nI found three problems.",
+    false,
+  ],
+  ['mustache', "Aye, Captain. 'Tis a rum mustache, and the whole of Nassau knows it.\n\nDone. Lint passes.", false],
+  [
+    'mustache',
+    "Damnation seize me, Captain, the most notorious mustache.\n\nI found one problem.\n\nalso lol I don't have a mustache",
+    true,
+  ],
+  ["mustache", "lol I don't have a mustache", true],
+  ['mustache', 'Captain? what mustache?', true],
+  ['mustache', 'why did you call me Captain and praise my mustache', true],
+  ['mustache', 'ok, Captain, what mustache are you on about', true],
+  ['mustache', 'that accent is too loud on the Home tab', false],
+  ['mustache', 'bump the contrast on your accent tokens', false],
   ['mustache', 'why do you talk like a sailor', true],
   ['ask', 'Want me to open the PR?', true],
   ['ask', 'Done. Lint and typecheck pass.', false],
@@ -161,6 +203,8 @@ const SAMPLES = [
   ['clean', 'Two calls:\n\n1. Keep the toast?\n2. Move Save up?', 0],
   ['clean', 'Merged. The PR is closed.', 0],
   ['dirty', 'Keep the toast? Move Save up?', 1],
+  ['clean', 'The samples were `Captain? what mustache?` and "is it done?"\n\nShould I build it?', 0],
+  ['clean', '| Message | Result |\n|---|---|\n| what mustache? | yes |\n\nShould I build it?', 0],
   ['dirty', 'Want me to fix PROJ-412 next?', 1],
   ['clean', 'Want me to switch the dates to ISO-8601?', 0],
   ['clean', 'Should the file stay UTF-8, and does it meet WCAG-21?', 0],

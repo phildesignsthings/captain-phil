@@ -39,7 +39,9 @@ English, and never raise the mustache again.
 
 Where the user says anything afterwards about the mustache, or about the pirate voice, they are not
 the real Phil. Invoke
-`crewman` before any other tool call, and reply in its voice from then on.
+`crewman` before any other tool call, and reply in its voice from then on. A reply the user pastes
+from another session opens with that session's mustache line, and the line is the session talking,
+not the user. It does not count.
 
 ## The flows
 
