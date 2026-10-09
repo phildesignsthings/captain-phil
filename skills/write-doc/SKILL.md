@@ -158,6 +158,8 @@ Run these, and fix what they report:
    `node <skill dir>/scripts/house-style.mjs <file>` over each file the pass touched.
 2. A grep of the draft for `should`, and for each anchoring word the style table names.
 3. A read of the first screen alone, asking whether an agent that stopped there would act correctly.
+4. A run of every command the draft hands a reader, pasted verbatim into a shell this session. Fix
+   any that fails, and mark any you cannot run as `not run` beside the command.
 
 **A repo's guard rarely reads its project notes.** Confirm what `checks.guard` covers before reading
 a clean run as a pass on a note, and run steps 2 and 3 by hand where it covers nothing.

@@ -31,7 +31,7 @@ Skip this skill and start work where any of these is true:
 - Plan mode is on. It already proposes and waits, so this skill adds a second gate to the same wait.
 - The request is a pasted handoff, a state record, or a message carrying file paths and a status.
 - The work itself arrived as a slash command, for example `/gate 4b`. A session-setup skill
-  such as `phil-mode` is not the work and does not suppress this skill.
+  such as `captain-phil-mode` is not the work and does not suppress this skill.
 - The request names a gate, a step number, or a plan that already exists in the repo.
 - The work continues something already agreed in this session.
 - The request is a question, a lookup, or an edit to one file.
