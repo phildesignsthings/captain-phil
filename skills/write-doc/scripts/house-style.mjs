@@ -62,8 +62,8 @@ export const EMPTY_LINK_TEXT =
 const blank = (m) => m.replace(/[^\n]/g, " ");
 
 /*
-  Blanks out the blocks that are not prose: frontmatter, fenced code and HTML
-  comments. It keeps every line break and column, so a finding's line number
+  Blanks out the blocks that are not prose: frontmatter, fenced code, HTML
+  comments, and the raw HTML blocks whose line breaks render, such as `<pre>`. It keeps every line break and column, so a finding's line number
   is the line the author sees.
 
   A fence closes on a run of the same character at least as long as the one
@@ -77,7 +77,8 @@ export function maskBlocks(text) {
   }
   return out
     .replace(/^[ \t>]*(`{3,}|~{3,})[^\n]*\n[\s\S]*?^[ \t>]*\1[`~]*[ \t]*$/gm, blank)
-    .replace(/<!--[\s\S]*?-->/g, blank);
+    .replace(/<!--[\s\S]*?-->/g, blank)
+    .replace(/^[ \t]*<(pre|script|style|textarea)\b[\s\S]*?<\/\1>/gim, blank);
 }
 
 /*
@@ -166,6 +167,7 @@ export function checkHouseStyle(files, opts = {}) {
     // code span is still text. One finding per paragraph, not one per line.
     const blocks = maskBlocks(text).split("\n").map(splitQuote);
     let wrapReported = false;
+    let inCode = false;
 
     raw.forEach((line, i) => {
       const at = `${rel}:${i + 1}`;
@@ -225,6 +227,9 @@ export function checkHouseStyle(files, opts = {}) {
       // gives it away.
       const here = blocks[i];
       const above = i > 0 ? blocks[i - 1] : null;
+      // Indented code cannot interrupt a paragraph, so a run of it starts
+      // under a blank line. An indented line under prose is a list item's.
+      inCode = !!here.text && here.indent >= 4 && (!above?.text.trim() || inCode);
       if (!above?.text.trim()) {
         wrapReported = false;
       } else if (
@@ -233,8 +238,7 @@ export function checkHouseStyle(files, opts = {}) {
         here.depth === above.depth &&
         // A table row, including one that leaves off its outer pipes.
         !maskedLine.includes("|") &&
-        // A line of an indented code block, which sits under another.
-        !(here.indent >= 4 && above.indent >= 4) &&
+        !inCode &&
         // A line ending in two spaces or a backslash breaks on purpose.
         !/(?: {2}|\\)$/.test(raw[i - 1])
       ) {
