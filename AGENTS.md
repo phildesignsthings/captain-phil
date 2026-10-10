@@ -57,7 +57,7 @@ because a mistake here lands in a repo the author never sees.
 3. Write `compatibility` naming the fallback for every slot listed.
 4. Add `argument-hint` where the body reads `$1`.
 5. Bundle whatever the skill reads off disk under `references/`, `scripts/` or `assets/`.
-6. Add one row to `README.md`'s `## Skills` table, naming the moment the skill runs.
+6. Add one row to `README.md`'s `## Skills` table, under the moment the skill runs, saying what it does.
 7. Run `npm run guard`.
 
 ## Adding a slot
