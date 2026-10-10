@@ -68,9 +68,17 @@ export const HTML_BLOCK =
 
 // A line that starts one of these is a block of its own, so it never continues
 // the paragraph above it: a heading, a list item, a table row, a fence, an HTML
-// block, a rule, or a `**Label:**` field line such as a record's `**State:**`.
+// block, a rule, a `**Label:**` field line such as a record's `**State:**`, or
+// a link reference or footnote definition, which sit one to a line.
 export const BLOCK_START =
-  /^(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||```|~~~|\*\*[^*\n]+:\*\*|(?:-{3,}|\*{3,}|_{3,})\s*$)/;
+  /^(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||```|~~~|\*\*[^*\n]+:\*\*|\[\^?[^\]]+\]:\s|(?:-{3,}|\*{3,}|_{3,})\s*$)/;
+
+// The delimiter row under a table's header, as in `--|--` or `| :-- | --: |`.
+// GFM lets a table leave off its outer pipes, so a header row like `a | b`
+// reads as a paragraph line until the row under it shows it was a table.
+export const TABLE_DELIMITER = /^\|?\s*:?-+:?\s*(?:\|\s*:?-+:?\s*)*\|?$/;
+
+const LIST_ITEM = /^(?:[-*+]|\d+[.)])\s/;
 
 /*
   Blanks out everything that is not prose. It keeps every line break and
@@ -157,6 +165,13 @@ export function checkHouseStyle(files, opts = {}) {
     let paragraphQuoted = false;
     let wrapReported = false;
     let inComment = false;
+    // An HTML block that opens with a block tag, and a table, both run to the
+    // next blank line, so every line inside one is part of it, not prose.
+    let inHtmlBlock = false;
+    let inTable = false;
+    // An indented line after a list item is the item's own content, not an
+    // indented code block, so the list stays open until a line at the margin.
+    let listOpen = false;
     // Tracked on the raw text rather than read off the masked line, because
     // maskProse also blanks inline code, and a wrapped line holding only a code
     // span is still text.
@@ -212,10 +227,12 @@ export function checkHouseStyle(files, opts = {}) {
       if (!checkProse) return;
 
       // ── Hard wraps ──
-      // Frontmatter, fenced blocks and HTML comments close the paragraph.
+      // Frontmatter, fenced and indented code, HTML blocks, tables and HTML
+      // comments close the paragraph.
       const trimmed = raw[i].trim();
       const unquoted = trimmed.replace(/^(?:>\s?)+/, "").trim();
       const fenceMark = /^(```|~~~)/.exec(unquoted)?.[1];
+      const indent = /^[ \t]*/.exec(raw[i])[0].replace(/\t/g, "    ").length;
       if (i <= frontmatterEnd || fence || fenceMark) {
         if (fence ? unquoted.startsWith(fence) : fenceMark) fence = fence ? null : fenceMark;
         paragraphOpen = false;
@@ -223,13 +240,31 @@ export function checkHouseStyle(files, opts = {}) {
         inComment = !trimmed.includes("-->");
         paragraphOpen = false;
       } else if (!trimmed) {
+        paragraphOpen = inHtmlBlock = inTable = false;
+      } else if (inHtmlBlock) {
         paragraphOpen = false;
+      } else if (!paragraphOpen && !listOpen && indent >= 4) {
+        // An indented code block. It cannot interrupt a paragraph, so it only
+        // starts where none is open.
       } else {
         const quoted = trimmed.startsWith(">");
         const content = quoted ? trimmed.replace(/^>\s?/, "").trim() : trimmed;
         const hardBreak = i > 0 && /(?: {2}|\\)$/.test(raw[i - 1]);
+        if (indent === 0 && !quoted) listOpen = LIST_ITEM.test(content);
+        else if (LIST_ITEM.test(content)) listOpen = true;
         if (!content) {
+          paragraphOpen = inHtmlBlock = inTable = false;
+        } else if (inTable && !BLOCK_START.test(content)) {
           paragraphOpen = false;
+        } else if (
+          paragraphOpen &&
+          quoted === paragraphQuoted &&
+          TABLE_DELIMITER.test(content) &&
+          content.includes("|") &&
+          raw[i - 1].includes("|")
+        ) {
+          paragraphOpen = false;
+          inTable = true;
         } else if (
           paragraphOpen &&
           (quoted === paragraphQuoted || paragraphQuoted) &&
@@ -248,6 +283,11 @@ export function checkHouseStyle(files, opts = {}) {
             wrapReported = true;
           }
         } else {
+          inTable = false;
+          // A comment, declaration or processing instruction ends at its own
+          // terminator, and the multi-line comment is handled above. A block
+          // tag runs to the next blank line.
+          inHtmlBlock = HTML_BLOCK.test(content) && !/^<[!?]/.test(content);
           paragraphOpen =
             !/^(?:#{1,6}\s|\||(?:-{3,}|\*{3,}|_{3,})\s*$)/.test(content) && !HTML_BLOCK.test(content);
           paragraphQuoted = quoted;
