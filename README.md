@@ -108,7 +108,7 @@ The second column is the moment the skill runs, not what it contains.
 | `wrap-gate` | A gate's build work is finished and needs review, or the session has run long enough to hand off to a forked chat |
 | `confirm-scope` | A session opens with prose describing a want rather than a handoff, a gate number or a named plan |
 | `grill-me` | A plan or a design needs stress-testing before anyone builds it, or the user corrects the direction and the agent's picture of the goal is wrong |
-| `crewman` | The user says anything about captain-phil-mode's mustache compliment or its pirate voice, or types `/crewman` |
+| `crewman` | The user takes up the sailor's talk captain-phil-mode offers in its greeting, asks the agent to talk like a pirate, or types `/crewman` |
 | `show-me` | The user is about to judge how something looks, moves or feels, and nothing exists yet for them to look at |
 | `decision-request` | Somebody is about to be asked to choose, approve or sign off on something, and seeing the thing is part of judging it |
 | `work-report` | Finished work is being handed back, or a draft write-up has turned into paragraphs nobody reads |

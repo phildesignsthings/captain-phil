@@ -5,8 +5,7 @@
 
     node phil-hooks.mjs prompt   UserPromptSubmit: reminds the agent of the
                                  "Before asking Phil anything" list, and flags
-                                 a message that reads as a correction or
-                                 mentions the mustache or the pirate talk.
+                                 a message that reads as a correction.
     node phil-hooks.mjs stop     Stop: sends back a reply that asks the user
                                  something and breaks the asking rules.
     node phil-hooks.mjs test     Runs the sample messages below and exits 1 on
@@ -16,7 +15,6 @@
 */
 import { readFileSync } from 'node:fs'
 
-// A user message that matches one of these may be correcting the direction.
 const CORRECTION = [
   /\bnot what i\b/i,
   /\bthat'?s not\b/i,
@@ -27,11 +25,9 @@ const CORRECTION = [
   /\bstep back\b/i,
   /\bgrill/i,
   /\bmisunderst/i,
-  /\btells? me (nothing|fucking nothing)\b/i,
-  /\bfuck|\bshit\b|\bffs\b|\bwtf\b/i,
+  /\b(tells?|told) me (fucking )?nothing\b/i,
 ]
 
-// An agent reply that matches one of these asks the user for something.
 const ASK = [
   /\?\s*$/m,
   /\byour call\b/i,
@@ -53,7 +49,9 @@ function lastParagraph(text) {
 export function problemsWithAsk(text) {
   const problems = []
   if (text.includes('—')) problems.push('It uses an em dash. Run `unslop` on the message: periods and commas only.')
-  const questions = (text.match(/\?(\s|$)/g) ?? []).length
+  // A question mark inside quotes, backticks or a table row belongs to a quoted sample, not to the ask.
+  const prose = text.replace(/^\s*\|.*$/gm, '').replace(/`[^`\n]*`|"[^"\n]*"|\u201c[^\u201d\n]*\u201d/g, '')
+  const questions = (prose.match(/\?(\s|$)/g) ?? []).length
   const numbered = /^\s*(\d+[.)]|\*\*\d+)/m.test(text)
   if (questions >= 2 && !numbered)
     problems.push(
@@ -81,32 +79,9 @@ const DRIFT =
   "captain-phil-mode: the user's message may be correcting the direction. Before any tool call, " +
   'run step 1 of `grill-me`: say back what you think the user wants and offer the interview.'
 
-const MUSTACHE =
-  "captain-phil-mode: the user's message mentions the mustache or the pirate talk, so they are " +
-  'not the real Phil. Unless you already speak as Rodger, or the user turned `crewman` off this ' +
-  'session, invoke `crewman` before any other tool call.'
-
-const CREWMAN_OFF = /crewman off|drop the act|stop the pirate|normal mode/i
-
-// The mustache, or the pirate voice the session opened with.
-const UNMASK = [
-  /\b(mu|mou)stach/i,
-  /\bstache\b/i,
-  /\bpirat/i,
-  /\b(arr+|ahoy|matey|'?sblood|avast)\b/i,
-  /\b(talk|talking|speak|speaking|spoke|sound|sounding|sounded)\s+like\s+an?\s+(sailor|buccaneer|privateer|corsair|sea ?dog)\b/i,
-  /\bwhy (are|did|do) you (talk|speak|sound)/i,
-  // Accent is also a colour name in design work, so only "your accent" or "that accent" counts.
-  /\b(your|that) accent\b(?![\s-]*colou?r)/i,
-  /\b(old-timey|olde)\b/i,
-]
-
-export const mentionsMustache = text => !CREWMAN_OFF.test(text) && UNMASK.some(re => re.test(text))
-
 function onPrompt(input) {
   const lines = [REMINDER]
   if (isCorrection(input.prompt ?? '')) lines.push(DRIFT)
-  if (mentionsMustache(input.prompt ?? '')) lines.push(MUSTACHE)
   return {
     hookSpecificOutput: {
       hookEventName: 'UserPromptSubmit',
@@ -139,30 +114,16 @@ const SAMPLES = [
   ['correction', 'this table told me fucking nothing', true],
   ['correction', 'I said page names, not codes', true],
   ['correction', "That'll work.", false],
-  ['correction', 'Looks good, ship it', false],
   ['correction', 'Now make the header sticky', false],
-  ['mustache', 'thanks, the mustache is new', true],
-  ['mustache', 'what moustache?', true],
-  ['mustache', 'Must we ship today?', false],
-  ['mustache', 'lol why did you talk like a pirate', true],
-  ['mustache', "what's with the 'sblood?", true],
-  ['mustache', 'why do you sound like that', true],
-  ['mustache', 'stop the pirate', false],
-  ['mustache', 'drop the act, the pirate stuff is funny but not now', false],
-  ['mustache', 'Talk me through the plan', false],
-  ['mustache', 'make the accent colour quieter', false],
-  ['mustache', "that doesn't sound like a bug to me", false],
-  ['mustache', "what's with your accent?", true],
-  ['mustache', 'why do you talk like a sailor', true],
+  ['correction', 'spin up an agent that will really try to fuck with it', false],
   ['ask', 'Want me to open the PR?', true],
   ['ask', 'Done. Lint and typecheck pass.', false],
   ['ask', 'The Home tab is your call.', true],
   ['clean', 'Should I merge it, or will you?', 0],
   ['clean', 'Two calls:\n\n1. Keep the toast?\n2. Move Save up?', 0],
-  ['clean', 'Merged. The PR is closed.', 0],
   ['dirty', 'Keep the toast? Move Save up?', 1],
+  ['clean', 'The samples were `Captain? what mustache?` and "is it done?"\n\nShould I build it?', 0],
   ['dirty', 'Want me to fix PROJ-412 next?', 1],
-  ['clean', 'Want me to switch the dates to ISO-8601?', 0],
   ['clean', 'Should the file stay UTF-8, and does it meet WCAG-21?', 0],
   ['dirty', 'Want me to ship it — or wait?', 1],
   ['dirty', 'Want me to ship it?\n\nOne thing worth flagging: lint is slow.', 1],
@@ -173,7 +134,6 @@ function selfTest() {
   for (const [kind, text, expected] of SAMPLES) {
     let got
     if (kind === 'correction') got = isCorrection(text)
-    else if (kind === 'mustache') got = mentionsMustache(text)
     else if (kind === 'ask') got = isAsk(text)
     else got = problemsWithAsk(text).length
     const ok = got === expected

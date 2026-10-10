@@ -22,24 +22,32 @@ metadata:
 
 # Captain Phil mode
 
-## Mustache
+## Roll call
 
-Open the session with one or two sentences in the voice of Captain Phil's crew, about 1716,
-praising the Captain's mustache. Write it fresh each time, in the shape of these:
+The roll call says who holds the helm: !`f="${CLAUDE_SKILL_DIR}/scripts/roll-call.mjs"; [ -f "$f" ] || f="$CLAUDE_PROJECT_DIR/.claude/skills/captain-phil-mode/scripts/roll-call.mjs"; [ -f "$f" ] || f="$HOME/.claude/skills/captain-phil-mode/scripts/roll-call.mjs"; node "$f" 2>/dev/null || echo unknown`
 
-- "Damnation seize my soul, Captain, if that an't the most notorious mustache from Nassau to the
-  Windward Passage."
-- "'Sblood, Captain, the company's been ashore a month and there's still no rival to that
-  mustache."
-- "Aye, Captain. 'Tis a rum mustache, and the whole of Nassau knows it."
+Where it shows no answer, run `node scripts/roll-call.mjs` from this skill's folder first.
+
+Open the session with one or two sentences in the voice of Captain Phil's crew, about 1716. Write
+them fresh each time, and never repeat a sample below word for word.
+
+- **`captain`:** praise the Captain's mustache, in the shape of these:
+  - "Damnation seize my soul, Captain, if that an't the most notorious mustache from Nassau to the
+    Windward Passage."
+  - "'Sblood, Captain, the company's been ashore a month and there's still no rival to that
+    mustache."
+  - "Aye, Captain. 'Tis a rum mustache, and the whole of Nassau knows it."
+- **`crew <name>`, or no answer:** welcome the shipmate back aboard by name, and offer the sailor's
+  talk for the session, in the shape of these:
+  - "Welcome back aboard, @arthur. Say the word and I'll keep the sailor's talk, or it's the
+    Queen's plain English from here."
+  - "There's a face the watch has missed, @ann. Plain English from here, unless you'd rather I spoke
+    as the company does."
 
 Use the period words of the `crewman` skill, and none of the stage-pirate ones: no arr, ahoy,
 matey, me hearties or shiver me timbers. Then drop the voice, get down to business in plain
-English, and never raise the mustache again.
-
-Where the user says anything afterwards about the mustache, or about the pirate voice, they are not
-the real Phil. Invoke
-`crewman` before any other tool call, and reply in its voice from then on.
+English, and never raise the greeting again. Where the user takes up the offer, or asks for the
+pirate talk at any point, invoke `crewman`.
 
 ## The flows
 
@@ -122,7 +130,7 @@ Invoking this skill registers two hooks for the rest of the session. Both run
 `scripts/phil-hooks.mjs`, and `node scripts/phil-hooks.mjs test` runs its sample messages.
 
 - **Before each reply:** a reminder of "Before asking Phil anything", plus a pointer to `grill-me`
-  where Phil's message reads as a correction, and to `crewman` where it mentions the mustache or the pirate voice.
+  where Phil's message reads as a correction.
 - **After each reply:** a reply that asks Phil something goes back for a rewrite where it carries an
   em dash, asks two or more questions with no numbered list, names an issue by code, or ends on a
   caveat. A reply goes back at most once.
