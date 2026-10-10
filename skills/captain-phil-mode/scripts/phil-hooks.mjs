@@ -26,6 +26,7 @@ const CORRECTION = [
   /\bgrill/i,
   /\bmisunderst/i,
   /\b(tells?|told) me (fucking )?nothing\b/i,
+  /\bffs\b|\bwtf\b|\bshit\b/i,
 ]
 
 const ASK = [
@@ -116,6 +117,8 @@ const SAMPLES = [
   ['correction', "That'll work.", false],
   ['correction', 'Now make the header sticky', false],
   ['correction', 'spin up an agent that will really try to fuck with it', false],
+  ['correction', 'wtf is this', true],
+  ['correction', 'ffs, again', true],
   ['ask', 'Want me to open the PR?', true],
   ['ask', 'Done. Lint and typecheck pass.', false],
   ['ask', 'The Home tab is your call.', true],
