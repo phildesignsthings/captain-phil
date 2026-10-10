@@ -125,7 +125,8 @@ Invoking this skill registers two hooks for the rest of the session. Both run
 `scripts/phil-hooks.mjs`, and `node scripts/phil-hooks.mjs test` runs its sample messages.
 
 - **Before each reply:** a reminder of "Before asking Phil anything", plus a pointer to `grill-me`
-  where Phil's message reads as a correction, and to `crewman` where it mentions the mustache or the pirate voice.
+  where Phil's message reads as a correction, and a hint to judge for `crewman` where it holds a
+  mustache word or "pirate". The model decides whether it is a real remark.
 - **After each reply:** a reply that asks Phil something goes back for a rewrite where it carries an
   em dash, asks two or more questions with no numbered list, names an issue by code, or ends on a
   caveat. A reply goes back at most once.
