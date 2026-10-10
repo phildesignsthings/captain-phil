@@ -15,7 +15,6 @@
 */
 import { readFileSync } from 'node:fs'
 
-// A user message that matches one of these may be correcting the direction.
 const CORRECTION = [
   /\bnot what i\b/i,
   /\bthat'?s not\b/i,
@@ -29,7 +28,6 @@ const CORRECTION = [
   /\b(tells?|told) me (fucking )?nothing\b/i,
 ]
 
-// An agent reply that matches one of these asks the user for something.
 const ASK = [
   /\?\s*$/m,
   /\byour call\b/i,
