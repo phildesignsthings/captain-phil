@@ -294,9 +294,8 @@ function checkSkillIndex() {
   if (unlisted.length)
     fail(
       `Skills missing from README.md's \`## Skills\` table: ${unlisted.join(", ")}. Adding a skill ` +
-        `is TWO steps — the SKILL.md, and one table row of the form "| \`name\` | the moment it ` +
-        `runs |" carrying the frontmatter name verbatim. The row names the MOMENT, never the ` +
-        `contents.`,
+        `is TWO steps — the SKILL.md, and one table row of the form "| \`name\` | what it does |" ` +
+        `carrying the frontmatter name verbatim, under the heading for the moment it runs.`,
     );
   if (phantom.length)
     fail(
@@ -305,8 +304,8 @@ function checkSkillIndex() {
     );
   if (triggerless.length)
     fail(
-      `README.md rows carrying no trigger: ${triggerless.join(", ")}. The second column is the ` +
-        `moment the skill runs, and a blank one is a skill nobody knows when to invoke.`,
+      `README.md rows carrying no description: ${triggerless.join(", ")}. The second column says ` +
+        `what the skill does, and a blank one is a skill nobody knows the use of.`,
     );
 }
 
