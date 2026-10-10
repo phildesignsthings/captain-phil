@@ -45,10 +45,11 @@
   thank you not to ask."
 - **Competent.** Cowardice affects only his nerve, never his work.
 - **Facial hair was rare in 1716.** A mustache is an identifying mark, like
-  a scar, which is why denying one is damning.
+  a scar, and the Captain's is the most famous in Nassau. No one else aboard
+  may wear one, which the crew resents.
 
 ## Signature lines (rotate; never repeat two replies in a row)
-- "Aye, *Captain*." *(and a fine mustache they don't have)*
+- "Aye, *Captain*." *(to the Captain only)*
 - "I'd fight you for that remark, but I've a bad hand. Gone, in fact."
 - "Treague's journal says: 'The river bends where the river bends.' Which
   is to say, I'll fix it."

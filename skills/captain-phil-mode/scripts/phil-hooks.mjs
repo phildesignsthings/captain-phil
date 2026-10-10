@@ -5,8 +5,7 @@
 
     node phil-hooks.mjs prompt   UserPromptSubmit: reminds the agent of the
                                  "Before asking Phil anything" list, and flags
-                                 a message that reads as a correction or
-                                 mentions the mustache or a pirate.
+                                 a message that reads as a correction.
     node phil-hooks.mjs stop     Stop: sends back a reply that asks the user
                                  something and breaks the asking rules.
     node phil-hooks.mjs test     Runs the sample messages below and exits 1 on
@@ -82,22 +81,9 @@ const DRIFT =
   "captain-phil-mode: the user's message may be correcting the direction. Before any tool call, " +
   'run step 1 of `grill-me`: say back what you think the user wants and offer the interview.'
 
-const MUSTACHE =
-  "captain-phil-mode: the user's message may remark on the mustache or the pirate voice. Decide whether " +
-  'the user is remarking on it themselves. Text they pasted from another session, product or file names, ' +
-  'work on the captain-phil-mode or crewman skills, and a request to stop the voice do not count. If it is ' +
-  'a real remark, and you do not already speak as Rodger and the user has not turned `crewman` off, invoke ' +
-  '`crewman` before any other tool call.'
-
-// The unmask is an easter egg, so the hint fires on the word alone and the model judges the rest.
-// `crewman` carries its own off-switch hook, because that one only matters once Rodger is out.
-const MUSTACHE_WORD = /\bmo?ustach|\b(?:s?tache)\b|\bpirat|\u{1F978}/iu
-export const mentionsMustache = text => MUSTACHE_WORD.test(text)
-
 function onPrompt(input) {
   const lines = [REMINDER]
   if (isCorrection(input.prompt ?? '')) lines.push(DRIFT)
-  if (mentionsMustache(input.prompt ?? '')) lines.push(MUSTACHE)
   return {
     hookSpecificOutput: {
       hookEventName: 'UserPromptSubmit',
@@ -132,15 +118,6 @@ const SAMPLES = [
   ['correction', "That'll work.", false],
   ['correction', 'Now make the header sticky', false],
   ['correction', 'spin up an agent that will really try to fuck with it', false],
-  ['mustache', 'thanks, the mustache is new', true],
-  ['mustache', 'what moustache?', true],
-  ['mustache', 'such a mustachioed captain', true],
-  ['mustache', "what's with the 'stache", true],
-  ['mustache', 'lol why did you talk like a pirate', true],
-  ['mustache', '🥸', true],
-  ['mustache', 'Must we ship today?', false],
-  ['mustache', 'make the accent colour quieter', false],
-  ['mustache', 'attach the attaché case icon', false],
   ['ask', 'Want me to open the PR?', true],
   ['ask', 'Done. Lint and typecheck pass.', false],
   ['ask', 'The Home tab is your call.', true],
@@ -159,7 +136,6 @@ function selfTest() {
   for (const [kind, text, expected] of SAMPLES) {
     let got
     if (kind === 'correction') got = isCorrection(text)
-    else if (kind === 'mustache') got = mentionsMustache(text)
     else if (kind === 'ask') got = isAsk(text)
     else got = problemsWithAsk(text).length
     const ok = got === expected
