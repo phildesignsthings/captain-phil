@@ -59,11 +59,18 @@ export const HEADING_AMPERSAND_EXEMPT = new Set([
 export const EMPTY_LINK_TEXT =
   /^(?:click here|here|this|this link|link|read more|more|see this)$/i;
 
+// The HTML blocks CommonMark lets interrupt a paragraph: a comment, a
+// declaration, or a tag from its fixed list of block names. Any other line
+// opening with `<`, such as a `<name>` placeholder, is ordinary text, so a
+// wrapped line that starts with one still continues the paragraph above it.
+export const HTML_BLOCK =
+  /^<(?:!--|\?|![A-Za-z]|!\[CDATA\[|\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|pre|script|search|section|style|summary|table|tbody|td|textarea|tfoot|th|thead|title|tr|track|ul)(?:\s|\/?>|$))/i;
+
 // A line that starts one of these is a block of its own, so it never continues
 // the paragraph above it: a heading, a list item, a table row, a fence, an HTML
-// line, a rule, or a `**Label:**` field line such as a record's `**State:**`.
+// block, a rule, or a `**Label:**` field line such as a record's `**State:**`.
 export const BLOCK_START =
-  /^(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||```|~~~|<|\*\*[^*\n]+:\*\*|(?:-{3,}|\*{3,}|_{3,})\s*$)/;
+  /^(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||```|~~~|\*\*[^*\n]+:\*\*|(?:-{3,}|\*{3,}|_{3,})\s*$)/;
 
 /*
   Blanks out everything that is not prose. It keeps every line break and
@@ -150,6 +157,11 @@ export function checkHouseStyle(files, opts = {}) {
     let paragraphQuoted = false;
     let wrapReported = false;
     let inComment = false;
+    // Tracked on the raw text rather than read off the masked line, because
+    // maskProse also blanks inline code, and a wrapped line holding only a code
+    // span is still text.
+    let fence = null;
+    const frontmatterEnd = raw[0] === "---" ? raw.indexOf("---", 1) : -1;
 
     raw.forEach((line, i) => {
       const at = `${rel}:${i + 1}`;
@@ -200,13 +212,17 @@ export function checkHouseStyle(files, opts = {}) {
       if (!checkProse) return;
 
       // ── Hard wraps ──
-      // maskProse blanks frontmatter and fenced blocks, so they read as blank
-      // lines here and close the paragraph. HTML comments are tracked by hand.
+      // Frontmatter, fenced blocks and HTML comments close the paragraph.
       const trimmed = raw[i].trim();
-      if (inComment || (trimmed.startsWith("<!--") && !trimmed.includes("-->"))) {
+      const unquoted = trimmed.replace(/^(?:>\s?)+/, "").trim();
+      const fenceMark = /^(```|~~~)/.exec(unquoted)?.[1];
+      if (i <= frontmatterEnd || fence || fenceMark) {
+        if (fence ? unquoted.startsWith(fence) : fenceMark) fence = fence ? null : fenceMark;
+        paragraphOpen = false;
+      } else if (inComment || (trimmed.startsWith("<!--") && !trimmed.includes("-->"))) {
         inComment = !trimmed.includes("-->");
         paragraphOpen = false;
-      } else if (!maskedLine.trim()) {
+      } else if (!trimmed) {
         paragraphOpen = false;
       } else {
         const quoted = trimmed.startsWith(">");
@@ -218,7 +234,8 @@ export function checkHouseStyle(files, opts = {}) {
           paragraphOpen &&
           (quoted === paragraphQuoted || paragraphQuoted) &&
           !hardBreak &&
-          !BLOCK_START.test(content)
+          !BLOCK_START.test(content) &&
+          !HTML_BLOCK.test(content)
         ) {
           if (!wrapReported) {
             findings.push(
@@ -231,7 +248,8 @@ export function checkHouseStyle(files, opts = {}) {
             wrapReported = true;
           }
         } else {
-          paragraphOpen = !/^(?:#{1,6}\s|<|\||(?:-{3,}|\*{3,}|_{3,})\s*$)/.test(content);
+          paragraphOpen =
+            !/^(?:#{1,6}\s|\||(?:-{3,}|\*{3,}|_{3,})\s*$)/.test(content) && !HTML_BLOCK.test(content);
           paragraphQuoted = quoted;
           wrapReported = false;
         }
