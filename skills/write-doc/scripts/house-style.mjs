@@ -59,30 +59,30 @@ export const HEADING_AMPERSAND_EXEMPT = new Set([
 export const EMPTY_LINK_TEXT =
   /^(?:click here|here|this|this link|link|read more|more|see this)$/i;
 
-// The HTML blocks CommonMark lets interrupt a paragraph: a comment, a
-// declaration, or a tag from its fixed list of block names. Any other line
-// opening with `<`, such as a `<name>` placeholder, is ordinary text, so a
-// wrapped line that starts with one still continues the paragraph above it.
-export const HTML_BLOCK =
-  /^<(?:!--|\?|![A-Za-z]|!\[CDATA\[|\/?(?:address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|nav|noframes|ol|optgroup|option|p|param|pre|script|search|section|style|summary|table|tbody|td|textarea|tfoot|th|thead|title|tr|track|ul)(?:\s|\/?>|$))/i;
-
-// A line that starts one of these is a block of its own, so it never continues
-// the paragraph above it: a heading, a list item, a table row, a fence, an HTML
-// block, a rule, a `**Label:**` field line such as a record's `**State:**`, or
-// a link reference or footnote definition, which sit one to a line.
-export const BLOCK_START =
-  /^(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||```|~~~|\*\*[^*\n]+:\*\*|\[\^?[^\]]+\]:\s|(?:-{3,}|\*{3,}|_{3,})\s*$)/;
-
-// The delimiter row under a table's header, as in `--|--` or `| :-- | --: |`.
-// GFM lets a table leave off its outer pipes, so a header row like `a | b`
-// reads as a paragraph line until the row under it shows it was a table.
-export const TABLE_DELIMITER = /^\|?\s*:?-+:?\s*(?:\|\s*:?-+:?\s*)*\|?$/;
-
-const LIST_ITEM = /^(?:[-*+]|\d+[.)])\s/;
+const blank = (m) => m.replace(/[^\n]/g, " ");
 
 /*
-  Blanks out everything that is not prose. It keeps every line break and
-  column, so a finding's line number is the line the author sees.
+  Blanks out the blocks that are not prose: frontmatter, fenced code and HTML
+  comments. It keeps every line break and column, so a finding's line number
+  is the line the author sees.
+
+  A fence closes on a run of the same character at least as long as the one
+  that opened it, so a ```` fence can hold a ``` example.
+*/
+export function maskBlocks(text) {
+  let out = text;
+  if (out.startsWith("---\n")) {
+    const end = out.indexOf("\n---\n", 3);
+    if (end !== -1) out = blank(out.slice(0, end + 5)) + out.slice(end + 5);
+  }
+  return out
+    .replace(/^[ \t>]*(`{3,}|~{3,})[^\n]*\n[\s\S]*?^[ \t>]*\1[`~]*[ \t]*$/gm, blank)
+    .replace(/<!--[\s\S]*?-->/g, blank);
+}
+
+/*
+  Blanks out everything that is not prose: the blocks maskBlocks covers, plus
+  the inline spans below.
 
   What gets masked, and why each would otherwise fire:
     · Frontmatter. The rules exempt it, and a skill's `description` can say
@@ -94,20 +94,23 @@ const LIST_ITEM = /^(?:[-*+]|\d+[.)])\s/;
       `new-surface` is a path, not a claim about time.
 */
 export function maskProse(text) {
-  const blank = (m) => m.replace(/[^\n]/g, " ");
-  let out = text;
-  if (out.startsWith("---\n")) {
-    const end = out.indexOf("\n---\n", 3);
-    if (end !== -1) out = blank(out.slice(0, end + 5)) + out.slice(end + 5);
-  }
-  return out
-    .replace(/```[\s\S]*?```/g, blank)
+  return maskBlocks(text)
     .replace(/`[^`\n]*`/g, blank)
     .replace(
       /(\]\()[^)\n]*(\))/g,
       (m, open, close) => open + blank(m.slice(2, -1)) + close,
     )
     .replace(/<https?:\/\/[^>\n]*>/g, blank);
+}
+
+// A line's blockquote depth, its indent inside the quote, and its text.
+function splitQuote(line) {
+  const [, marks, indent, text] = /^((?:[ \t]*> ?)*)([ \t]*)(.*)$/.exec(line);
+  return {
+    depth: marks.split(">").length - 1,
+    indent: indent.replace(/\t/g, "    ").length,
+    text,
+  };
 }
 
 // A markdown file other than a SKILL.md opts into the prose rules with
@@ -158,25 +161,11 @@ export function checkHouseStyle(files, opts = {}) {
     const masked = maskProse(text).split("\n");
     const raw = text.split("\n");
     let level = 0;
-    // Hard-wrap state: whether the line above is prose a following line could
-    // continue, whether it sat in a blockquote, and whether this paragraph has
-    // already been reported. One finding per paragraph, not one per line.
-    let paragraphOpen = false;
-    let paragraphQuoted = false;
+    // Hard wraps read the raw text with only the non-prose blocks blanked,
+    // because maskProse also blanks inline code, and a line holding only a
+    // code span is still text. One finding per paragraph, not one per line.
+    const blocks = maskBlocks(text).split("\n").map(splitQuote);
     let wrapReported = false;
-    let inComment = false;
-    // An HTML block that opens with a block tag, and a table, both run to the
-    // next blank line, so every line inside one is part of it, not prose.
-    let inHtmlBlock = false;
-    let inTable = false;
-    // An indented line after a list item is the item's own content, not an
-    // indented code block, so the list stays open until a line at the margin.
-    let listOpen = false;
-    // Tracked on the raw text rather than read off the masked line, because
-    // maskProse also blanks inline code, and a wrapped line holding only a code
-    // span is still text.
-    let fence = null;
-    const frontmatterEnd = raw[0] === "---" ? raw.indexOf("---", 1) : -1;
 
     raw.forEach((line, i) => {
       const at = `${rel}:${i + 1}`;
@@ -227,72 +216,36 @@ export function checkHouseStyle(files, opts = {}) {
       if (!checkProse) return;
 
       // ── Hard wraps ──
-      // Frontmatter, fenced and indented code, HTML blocks, tables and HTML
-      // comments close the paragraph.
-      const trimmed = raw[i].trim();
-      const unquoted = trimmed.replace(/^(?:>\s?)+/, "").trim();
-      const fenceMark = /^(```|~~~)/.exec(unquoted)?.[1];
-      const indent = /^[ \t]*/.exec(raw[i])[0].replace(/\t/g, "    ").length;
-      if (i <= frontmatterEnd || fence || fenceMark) {
-        if (fence ? unquoted.startsWith(fence) : fenceMark) fence = fence ? null : fenceMark;
-        paragraphOpen = false;
-      } else if (inComment || (trimmed.startsWith("<!--") && !trimmed.includes("-->"))) {
-        inComment = !trimmed.includes("-->");
-        paragraphOpen = false;
-      } else if (!trimmed) {
-        paragraphOpen = inHtmlBlock = inTable = false;
-      } else if (inHtmlBlock) {
-        paragraphOpen = false;
-      } else if (!paragraphOpen && !listOpen && indent >= 4) {
-        // An indented code block. It cannot interrupt a paragraph, so it only
-        // starts where none is open.
-      } else {
-        const quoted = trimmed.startsWith(">");
-        const content = quoted ? trimmed.replace(/^>\s?/, "").trim() : trimmed;
-        const hardBreak = i > 0 && /(?: {2}|\\)$/.test(raw[i - 1]);
-        if (indent === 0 && !quoted) listOpen = LIST_ITEM.test(content);
-        else if (LIST_ITEM.test(content)) listOpen = true;
-        if (!content) {
-          paragraphOpen = inHtmlBlock = inTable = false;
-        } else if (inTable && !BLOCK_START.test(content)) {
-          paragraphOpen = false;
-        } else if (
-          paragraphOpen &&
-          quoted === paragraphQuoted &&
-          TABLE_DELIMITER.test(content) &&
-          content.includes("|") &&
-          raw[i - 1].includes("|")
-        ) {
-          paragraphOpen = false;
-          inTable = true;
-        } else if (
-          paragraphOpen &&
-          (quoted === paragraphQuoted || paragraphQuoted) &&
-          !hardBreak &&
-          !BLOCK_START.test(content) &&
-          !HTML_BLOCK.test(content)
-        ) {
-          if (!wrapReported) {
-            findings.push(
-              `${at}: this line continues the paragraph above it.\n\n` +
-                `House style (${standard}): write each paragraph and each list item on one line, ` +
-                `and let the editor wrap it. A hard wrap ties the text to one window width, and ` +
-                `every later edit leaves a ragged line or reflows the whole paragraph in the diff. ` +
-                `Join this line to the one above.`,
-            );
-            wrapReported = true;
-          }
-        } else {
-          inTable = false;
-          // A comment, declaration or processing instruction ends at its own
-          // terminator, and the multi-line comment is handled above. A block
-          // tag runs to the next blank line.
-          inHtmlBlock = HTML_BLOCK.test(content) && !/^<[!?]/.test(content);
-          paragraphOpen =
-            !/^(?:#{1,6}\s|\||(?:-{3,}|\*{3,}|_{3,})\s*$)/.test(content) && !HTML_BLOCK.test(content);
-          paragraphQuoted = quoted;
-          wrapReported = false;
-        }
+      // A line that opens on a lowercase word carries on the sentence above
+      // it. Nothing else in markdown opens that way: a heading, a list item, a
+      // table row, an HTML tag, a definition and a heading underline all open
+      // on a mark. So the check needs no grammar of the blocks it skips. It
+      // misses a wrap whose next line opens on a capital, a digit or a code
+      // span, and a wrapped paragraph almost always has some other line that
+      // gives it away.
+      const here = blocks[i];
+      const above = i > 0 ? blocks[i - 1] : null;
+      if (!above?.text.trim()) {
+        wrapReported = false;
+      } else if (
+        !wrapReported &&
+        /^[a-z]/.test(here.text) &&
+        here.depth === above.depth &&
+        // A table row, including one that leaves off its outer pipes.
+        !maskedLine.includes("|") &&
+        // A line of an indented code block, which sits under another.
+        !(here.indent >= 4 && above.indent >= 4) &&
+        // A line ending in two spaces or a backslash breaks on purpose.
+        !/(?: {2}|\\)$/.test(raw[i - 1])
+      ) {
+        findings.push(
+          `${at}: this line continues the paragraph above it.\n\n` +
+            `House style (${standard}): write each paragraph and each list item on one line, ` +
+            `and let the editor wrap it. A hard wrap ties the text to one window width, and ` +
+            `every later edit leaves a ragged line or reflows the whole paragraph in the diff. ` +
+            `Join this line to the one above.`,
+        );
+        wrapReported = true;
       }
 
       // ── Anchoring words ──
