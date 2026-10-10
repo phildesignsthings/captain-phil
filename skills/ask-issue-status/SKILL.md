@@ -26,17 +26,11 @@ metadata:
 
 # Ask for the issue statuses
 
-A surface's issue rung is hand-set in the repo's own ladder and nothing reads the tracker to check
-it, so the ladder is only as true as the last time somebody was asked. This skill is that asking,
-and pull-request time is where it happens.
+A surface's issue rung is hand-set in the repo's own ladder and nothing reads the tracker to check it, so the ladder is only as true as the last time somebody was asked. This skill is that asking, and pull-request time is where it happens.
 
-The short version: read the rungs without showing them, ask **one** question — did any issue change
-status — and stop there where the answer is no. Where the answer is yes, ask which ones and where
-each one stands, write the answers back, and add a line to the pull-request body.
+The short version: read the rungs without showing them, ask **one** question — did any issue change status — and stop there where the answer is no. Where the answer is yes, ask which ones and where each one stands, write the answers back, and add a line to the pull-request body.
 
-**This is not a `decision-request`.** The answer comes from what the person knows rather than from
-looking at a screen, so the ask needs no link and no reproduction steps. Running both skills for one
-ask produces two questions about the same thing.
+**This is not a `decision-request`.** The answer comes from what the person knows rather than from looking at a screen, so the ask needs no link and no reproduction steps. Running both skills for one ask produces two questions about the same thing.
 
 ## 1. Check the repo declares rungs at all
 
@@ -48,35 +42,26 @@ Three answers end the skill before it asks anything, and each one is a single li
 
 ## 2. Run it for an outward-facing pull request alone
 
-The file named by `git.doc` picks the pull-request template by audience, and that pick is this
-skill's gate. Where the slot is absent, judge the audience yourself: a designer or a stakeholder reading
-it means run the ask.
+The file named by `git.doc` picks the pull-request template by audience, and that pick is this skill's gate. Where the slot is absent, judge the audience yourself: a designer or a stakeholder reading it means run the ask.
 
 - **A pull request a designer or a stakeholder reads.** Run the ask. The rungs are the part of that body they act on.
 - **An internal correctness fix.** Skip it. Clear whatever pre-pull-request check guards the command, and say in one line that you skipped and why.
 
-Decide on the audience rather than on the size of the diff. A one-line change to a screen a stakeholder
-signed off on changes a rung; a thousand-line refactor behind a data seam does not.
+Decide on the audience rather than on the size of the diff. A one-line change to a screen a stakeholder signed off on changes a rung; a thousand-line refactor behind a data seam does not.
 
 ## 3. Read the rungs silently
 
-This step costs the agent and never the person answering. Show nothing and ask nothing.
-**Printing the rungs above the question is the failure here**, because step 4's options already
-carry each issue and its rung. A list above them asks the same question twice and reads as a
-prompt to correct the list rather than as one question about status.
+This step costs the agent and never the person answering. Show nothing and ask nothing. **Printing the rungs above the question is the failure here**, because step 4's options already carry each issue and its rung. A list above them asks the same question twice and reads as a prompt to correct the list rather than as one question about status.
 
 1. Run `issues.ask`, which prints the touched surfaces' issues with their rungs and counts the rest.
 2. Read the declared issues out of `issues.ladder` where `issues.ask` is absent, filtered to the surfaces `git diff --name-only <base>...HEAD` touched.
 3. Stop here and go back to the pull request where no touched surface declares an issue. Say in one line that there was nothing to ask about.
 
-Read the rung words and their labels out of the file `issues.doc` names, or off the ladder file's
-own type where that slot is absent. Read them from there rather than from this file, because the
-option lists below are built from that table and a second copy of it goes stale in silence.
+Read the rung words and their labels out of the file `issues.doc` names, or off the ladder file's own type where that slot is absent. Read them from there rather than from this file, because the option lists below are built from that table and a second copy of it goes stale in silence.
 
 ## 4. Ask one question
 
-Open with a single `AskUserQuestion` carrying one question — *"Did the status of any issues you were
-working on change?"* — and three options.
+Open with a single `AskUserQuestion` carrying one question — *"Did the status of any issues you were working on change?"* — and three options.
 
 | Option | Then |
 |---|---|
@@ -84,18 +69,13 @@ working on change?"* — and three options.
 | Yes, some changed | § *Which ones changed status* |
 | We track this somewhere else | § *Retire the ladder* |
 
-**The question covers issues outside this session too**, so *no* ends the skill for every declared
-issue in the repo and not only for the ones this pull request touched. That is what keeps the common
-answer to one question: most pull requests change no rung.
+**The question covers issues outside this session too**, so *no* ends the skill for every declared issue in the repo and not only for the ones this pull request touched. That is what keeps the common answer to one question: most pull requests change no rung.
 
-**The third option's description states its cost** — whatever panel renders the rungs empties, and
-the tracker links go with it. It deletes a declaration from every surface in the repo, and the
-person answering is the one authorising that, so they must read what it costs before they pick it.
+**The third option's description states its cost** — whatever panel renders the rungs empties, and the tracker links go with it. It deletes a declaration from every surface in the repo, and the person answering is the one authorising that, so they must read what it costs before they pick it.
 
 ## 5. Which ones changed status
 
-`AskUserQuestion` takes **four questions per call and four options per question**, and it adds its
-own "Other" option. That budget decides the shape.
+`AskUserQuestion` takes **four questions per call and four options per question**, and it adds its own "Other" option. That budget decides the shape.
 
 1. Split the issues first: **the session's issues** are declared by a surface whose folder appears in the diff and get asked about individually; **everything else** is every other declared issue in the repo and gets one general question between them.
 2. Ask up to three `multiSelect: true` questions, four of the session's issues per question, each option naming the issue and its rung — `Courses list and detail views · Approved`.
@@ -103,11 +83,9 @@ own "Other" option. That budget decides the shape.
 4. Ask the general question last, as the fourth: *"Did any issue outside this session change status?"* with `No`, `Yes, I will name them`, and `Yes, read them off the tracker`.
 5. Split into a second call where the session touches more than twelve issues, keeping the general question in the last call alone.
 
-Never drill through the second set issue by issue. A repo of any size declares more issues than
-anyone will answer for, and an ask that costs ten minutes gets skipped the next time.
+Never drill through the second set issue by issue. A repo of any size declares more issues than anyone will answer for, and an ask that costs ten minutes gets skipped the next time.
 
-Add no "Other" or "No change" option of your own. The tool supplies the first and the empty
-multi-select is the second.
+Add no "Other" or "No change" option of your own. The tool supplies the first and the empty multi-select is the second.
 
 ## 6. Where each one stands
 
@@ -115,10 +93,7 @@ multi-select is the second.
 2. Build each option list from the ladder **minus that issue's rung**, which leaves one fewer than the ladder holds — an issue never moves to where it already sits.
 3. Take the answer as authoritative. The ladder is the repo's own reading, not the tracker's.
 
-**A tracker read is a proposal, never a write.** Where the answer was *"read them off the tracker"*,
-query `issues.tracker`, then put the rungs you derived back for confirmation. A tracker's workflow
-runs to a dozen or more states against a ladder of a handful, so every mapping is a judgment call
-that belongs to the person answering.
+**A tracker read is a proposal, never a write.** Where the answer was *"read them off the tracker"*, query `issues.tracker`, then put the rungs you derived back for confirmation. A tracker's workflow runs to a dozen or more states against a ladder of a handful, so every mapping is a judgment call that belongs to the person answering.
 
 ## 7. Write the answers back
 
@@ -129,19 +104,15 @@ that belongs to the person answering.
 
 ## 8. Carry it into the pull-request body
 
-Add one row per changed rung to the body's verification table, per the templates the `open-pr` skill
-carries: the issue, the rung it left, the rung it reached, and that the person answering said so. A
-rung that changed without a line in the body is a change nobody reviewing the pull request can see.
+Add one row per changed rung to the body's verification table, per the templates the `open-pr` skill carries: the issue, the rung it left, the rung it reached, and that the person answering said so. A rung that changed without a line in the body is a change nobody reviewing the pull request can see.
 
 ## Before handing back
 
-Report the rungs that changed and the rungs that held, and say plainly where the answer was
-*"nothing changed"*. A quiet ask is a result rather than a skipped step.
+Report the rungs that changed and the rungs that held, and say plainly where the answer was *"nothing changed"*. A quiet ask is a result rather than a skipped step.
 
 ## Retire the ladder
 
-The repo tracks status somewhere else, so the ladder is machinery nobody reads. Deleting every
-declaration is the whole opt-out: a surface declaring none is never asked about.
+The repo tracks status somewhere else, so the ladder is machinery nobody reads. Deleting every declaration is the whole opt-out: a surface declaring none is never asked about.
 
 1. Confirm once, plainly, what is about to be deleted: every surface's declared issues, whatever panel renders them, and the stored tracker links.
 2. Delete the declarations from `issues.ladder`, **and everything that only they referenced** — the project constants above them, their explaining comment, and the type import. A strict compiler reports one unused-symbol error per leftover, so a surface declaring eight projects throws nine of them from one file. Touch nothing else: the per-screen status field is the mechanism the repo is keeping.

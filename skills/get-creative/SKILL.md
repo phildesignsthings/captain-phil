@@ -15,15 +15,9 @@ metadata:
 
 # Get creative
 
-The short version: offer the method and wait for a yes; fix the subject; run `scripts/roll.mjs`;
-show the designer the draws and wait; build all N; write a save per direction and run
-`scripts/leak-check.mjs`; hand over the log's path; offer `audit-design`. Nothing about the method
-reaches the work.
+The short version: offer the method and wait for a yes; fix the subject; run `scripts/roll.mjs`; show the designer the draws and wait; build all N; write a save per direction and run `scripts/leak-check.mjs`; hand over the log's path; offer `audit-design`. Nothing about the method reaches the work.
 
-A **draw** is one throw of the four dice, read as a sentence: *a sinking punch card, inline in a
-sentence, breaking the one-accent rule*. The **combat log** is the one file per subject where the
-script records every draw and you record every save. `references/` holds the tables, `assets/` the
-shapes of what gets written, `scripts/` the two commands.
+A **draw** is one throw of the four dice, read as a sentence: *a sinking punch card, inline in a sentence, breaking the one-accent rule*. The **combat log** is the one file per subject where the script records every draw and you record every save. `references/` holds the tables, `assets/` the shapes of what gets written, `scripts/` the two commands.
 
 ## Requires
 
@@ -39,11 +33,9 @@ Check these before the offer, and say the sentence when one is missing.
 
 ## 1. Ask, and wait
 
-**ASK BEFORE ROLLING, EVERY TIME.** Loading this skill grants no permission to run it. Offer it in
-one line and stop:
+**ASK BEFORE ROLLING, EVERY TIME.** Loading this skill grants no permission to run it. Offer it in one line and stop:
 
-> Want me to roll these off dice rather than pick them? Four dice per direction — a descriptor, an
-> object, a layout and one house rule to break — and you see the throws before I build anything.
+> Want me to roll these off dice rather than pick them? Four dice per direction — a descriptor, an object, a layout and one house rule to break — and you see the throws before I build anything.
 
 - Make the offer when the designer asks for random, weird or surprising options, or rejects a round as safe, samey or boring.
 - Skip the offer when the designer named the method: `/get-creative`, "roll for it", "the dice thing".
@@ -69,9 +61,7 @@ node <skill dir>/scripts/roll.mjs --subject "<subject>" --log /abs/path/.context
 
 ## 4. Show, and wait
 
-Post the printed draws to the designer, one line per die per direction, and stop. The designer can
-build the set, kill one draw, or ask for a fresh throw. Roll again only on "again"; a killed draw is
-replaced by running the script with `--n 1`.
+Post the printed draws to the designer, one line per die per direction, and stop. The designer can build the set, kill one draw, or ask for a fresh throw. Roll again only on "again"; a killed draw is replaced by running the script with `--n 1`.
 
 ## 5. Build
 
@@ -92,5 +82,4 @@ Give the designer the log's path in one line, and read none of it aloud.
 
 ## 8. Offer the audit, and wait
 
-Offer `audit-design` in one line on the direction the designer names, and stop. A no is final for
-this piece of work. This skill scores nothing itself.
+Offer `audit-design` in one line on the direction the designer names, and stop. A no is final for this piece of work. This skill scores nothing itself.

@@ -1,8 +1,6 @@
 # Objects — d20 for <product name>
 
-Written once from the product record, reused every round. Twenty nouns a user of this product
-could hold, wear, read or point at. Concrete and physical: a thing, not a screen, not a feature.
-`scripts/roll.mjs` refuses a file without exactly twenty numbered lines.
+Written once from the product record, reused every round. Twenty nouns a user of this product could hold, wear, read or point at. Concrete and physical: a thing, not a screen, not a feature. `scripts/roll.mjs` refuses a file without exactly twenty numbered lines.
 
 1. <object>
 2. <object>

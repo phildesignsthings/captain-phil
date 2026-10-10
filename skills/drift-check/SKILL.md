@@ -27,20 +27,17 @@ metadata:
 
 # Drift check
 
-Scope drift is a change that makes the product cost more to build than what was agreed. A change
-that kept the effort the same, or cut it, is a design decision, and it stays out of the report.
+Scope drift is a change that makes the product cost more to build than what was agreed. A change that kept the effort the same, or cut it, is a design decision, and it stays out of the report.
 
 ## Steps
 
 1. Take the feature from `$1`, in the user's words. Ask for it where `$1` is empty.
 2. Find what was agreed for it in `records.scope`.
-3. Find the code that builds it under `surfaces.root`. Split it into slices of about 1,500 lines
-   where it is larger.
+3. Find the code that builds it under `surfaces.root`. Split it into slices of about 1,500 lines where it is larger.
 4. Run `references/build-agent.md` once per slice, in parallel.
 5. Run `references/compare-agent.md` once, with the agreed scope and every build agent's output.
 6. Write its rows into `<docs.root>/drift/<feature>.md` from `references/report-template.md`.
-7. Tell the user how many rows there are and where the file is. Show the rows only where there are
-   any.
+7. Tell the user how many rows there are and where the file is. Show the rows only where there are any.
 
 ## Never
 

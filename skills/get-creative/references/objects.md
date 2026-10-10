@@ -1,10 +1,6 @@
 # Objects — d20, the generic table
 
-The second die. The object is the physical thing the element becomes. This is the fallback table,
-used when the product has no object table of its own. A product's own table is written once from
-its product record and saved beside that record as `get-creative-objects.md` (shape in
-`assets/objects.template.md`), committed with it and reused every round. `scripts/roll.mjs` takes
-it through `--objects <path>` and falls back to this file, saying which it used.
+The second die. The object is the physical thing the element becomes. This is the fallback table, used when the product has no object table of its own. A product's own table is written once from its product record and saved beside that record as `get-creative-objects.md` (shape in `assets/objects.template.md`), committed with it and reused every round. `scripts/roll.mjs` takes it through `--objects <path>` and falls back to this file, saying which it used.
 
 1. Punch card
 2. Tide table

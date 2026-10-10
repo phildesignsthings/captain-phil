@@ -26,107 +26,52 @@ metadata:
 
 # New surface
 
-`surfaces.doc` is the structure this skill fills in. Read it before scaffolding anything; this skill
-is the order and the questions, not the folder's rules.
+`surfaces.doc` is the structure this skill fills in. Read it before scaffolding anything; this skill is the order and the questions, not the folder's rules.
 
-Call the thing by the word in `surfaces.unit` in every line printed. A repo that calls them
-prototypes and a skill that calls them surfaces are two vocabularies the designer has to translate
-between on every turn.
+Call the thing by the word in `surfaces.unit` in every line printed. A repo that calls them prototypes and a skill that calls them surfaces are two vocabularies the designer has to translate between on every turn.
 
 ## 1. Interview first
 
-**Skip a question a form already answered.** Where the folder exists because somebody scaffolded it
-elsewhere, read what is in it and go to step 2. Re-asking what a file already says reads as the
-scaffold having failed.
+**Skip a question a form already answered.** Where the folder exists because somebody scaffolded it elsewhere, read what is in it and go to step 2. Re-asking what a file already says reads as the scaffold having failed.
 
-Otherwise ask the intake questions one at a time, in this order, taking each answer before the next
-question. `surfaces.doc` owns the list where the repo states one; where it does not, these five are
-the list.
+Otherwise ask the intake questions one at a time, in this order, taking each answer before the next question. `surfaces.doc` owns the list where the repo states one; where it does not, these five are the list.
 
 1. **The title and the folder name.**
 2. **What is this?** Two or three sentences, in the designer's words.
 3. **Whose journey, and what are they trying to do?** One line per role.
-4. **Which viewport?** Ask it as three answers rather than two: the phone, the desktop, or both at
-   every width. Offer the third as what it is — a commitment to build and keep two layouts — rather
-   than as the safe middle, and never infer it from a summary that merely mentions a phone. Where
-   `dev.platform` is `native` the question is which device sizes, and the answer binds the same way.
-5. **Which look?** The repo's default is the honest answer for most surfaces. Offer a theme from
-   `theme.registry` by its **label** rather than its id, and where the only identity slot is still
-   unfilled, say so and offer to run `ingest-theme` first. Where `theme.registry` is `null` the repo
-   has one look and this question is not asked.
+4. **Which viewport?** Ask it as three answers rather than two: the phone, the desktop, or both at every width. Offer the third as what it is — a commitment to build and keep two layouts — rather than as the safe middle, and never infer it from a summary that merely mentions a phone. Where `dev.platform` is `native` the question is which device sizes, and the answer binds the same way.
+5. **Which look?** The repo's default is the honest answer for most surfaces. Offer a theme from `theme.registry` by its **label** rather than its id, and where the only identity slot is still unfilled, say so and offer to run `ingest-theme` first. Where `theme.registry` is `null` the repo has one look and this question is not asked.
 
-**Light and dark is not a sixth question — it comes with the theme.** A theme declares which modes
-it carries and the surface inherits them. Say nothing where the theme carries both. Where it carries
-one, tell the designer the surface will be that mode only, and do not offer to change it: the lock
-belongs to the theme rather than to this surface. A surface may narrow its theme and never widen it,
-and it only narrows where the designer raises it — "these screens are only ever seen dark" is a
-design statement rather than a default worth prompting for.
+**Light and dark is not a sixth question — it comes with the theme.** A theme declares which modes it carries and the surface inherits them. Say nothing where the theme carries both. Where it carries one, tell the designer the surface will be that mode only, and do not offer to change it: the lock belongs to the theme rather than to this surface. A surface may narrow its theme and never widen it, and it only narrows where the designer raises it — "these screens are only ever seen dark" is a design statement rather than a default worth prompting for.
 
-**A sixth question exists only where the work answers a tracker: which stories do these screens answer?** Ask
-it where `memory.connectors` records a real tracker project, and skip it while that block is still
-placeholders. The answer is one or more **parent stories**, the ones with a title a stakeholder can read,
-and never the design sub-task hanging off one. Skip the question too where `issues.retired` is
-`true`: a ladder that was dropped on purpose does not come back one surface at a time. The answers
-become the declaration in step 3.
+**A sixth question exists only where the work answers a tracker: which stories do these screens answer?** Ask it where `memory.connectors` records a real tracker project, and skip it while that block is still placeholders. The answer is one or more **parent stories**, the ones with a title a stakeholder can read, and never the design sub-task hanging off one. Skip the question too where `issues.retired` is `true`: a ladder that was dropped on purpose does not come back one surface at a time. The answers become the declaration in step 3.
 
 ## 2. Design intent — before any code
 
-Run step 2 of the `new-screen` skill, which holds the contract's format and the menus behind its
-values. Wait for the nod.
+Run step 2 of the `new-screen` skill, which holds the contract's format and the menus behind its values. Wait for the nod.
 
-This is the step that stops every screen becoming a stack of same-sized cards. Do not skip it, and
-do not bury it in a wall of text.
+This is the step that stops every screen becoming a stack of same-sized cards. Do not skip it, and do not bury it in a wall of text.
 
 ## 3. Scaffold
 
-Write the folder under `surfaces.root`, to the structure `surfaces.doc` states. Where `surfaces.root`
-is `null` the repo has a single application: ask once where a screen of this kind lives, then follow
-whatever a sibling does.
+Write the folder under `surfaces.root`, to the structure `surfaces.doc` states. Where `surfaces.root` is `null` the repo has a single application: ask once where a screen of this kind lives, then follow whatever a sibling does.
 
 Four things hold wherever the folder lands.
 
-- **Three records, written as the folder is created.** One for the developer — what this is, what is
-  real, what is faked, and the decisions already taken, starting with the intent step 2 agreed. One
-  for the next designer, recording the visual system the built screens land rather than the plan:
-  scaffold it unfilled below its overview and fill it from the screens, because values recorded
-  before the build get defended against the screens instead of describing them. One for the agent —
-  short, pointing at the two files to read first and the rules that bind inside the folder. Add the
-  design record to `records.design` as it is created — a record no host file lists is one
-  `record-design` never comes back to. The entry is an object rather than a path, and the shape is
-  printed here because the schema does not travel with the host file: `{ "surface": "<the surface,
-  in the repo's own word>", "path": "<the record>", "sidecar": null }`.
-- **Compose from `components.dir` rather than building a primitive.** Check what is there before
-  writing any interface; the primitive usually exists. Data never gets hardcoded in a component.
-- **Every file lands in a layer, and imports run one direction only.** `surfaces.doc` names the
-  layers. Where it names none, match the sibling that most resembles this surface.
-- **The size limits are a command, not a memory.** Run `surfaces.limits` rather than recalling a
-  number. A screen outgrowing one wants a smaller component pulled out of it rather than a longer
-  file.
+- **Three records, written as the folder is created.** One for the developer — what this is, what is real, what is faked, and the decisions already taken, starting with the intent step 2 agreed. One for the next designer, recording the visual system the built screens land rather than the plan: scaffold it unfilled below its overview and fill it from the screens, because values recorded before the build get defended against the screens instead of describing them. One for the agent — short, pointing at the two files to read first and the rules that bind inside the folder. Add the design record to `records.design` as it is created — a record no host file lists is one `record-design` never comes back to. The entry is an object rather than a path, and the shape is printed here because the schema does not travel with the host file: `{ "surface": "<the surface, in the repo's own word>", "path": "<the record>", "sidecar": null }`.
+- **Compose from `components.dir` rather than building a primitive.** Check what is there before writing any interface; the primitive usually exists. Data never gets hardcoded in a component.
+- **Every file lands in a layer, and imports run one direction only.** `surfaces.doc` names the layers. Where it names none, match the sibling that most resembles this surface.
+- **The size limits are a command, not a memory.** Run `surfaces.limits` rather than recalling a number. A screen outgrowing one wants a smaller component pulled out of it rather than a longer file.
 
 Two declarations are conditional.
 
-- **A second screen means the surface declares its screens** — a slug and a title each — which is
-  what makes each one addressable, listable and reload-proof. A brand-new surface declares nothing
-  and gains entries as screens land.
-- **Tracked work means the issue declaration from step 1's sixth question**, in the shape
-  `issues.ladder` types, with each rung's status derived by the table in `issues.doc` and the
-  seed's provenance recorded in the developer's record rather than in a code comment a form's save
-  would delete. Omit it entirely where step 1 skipped the sixth question.
+- **A second screen means the surface declares its screens** — a slug and a title each — which is what makes each one addressable, listable and reload-proof. A brand-new surface declares nothing and gains entries as screens land.
+- **Tracked work means the issue declaration from step 1's sixth question**, in the shape `issues.ladder` types, with each rung's status derived by the table in `issues.doc` and the seed's provenance recorded in the developer's record rather than in a code comment a form's save would delete. Omit it entirely where step 1 skipped the sixth question.
 
 ## 4. Verify
 
-With `dev.start` running, confirm four things at `surfaces.route` under `dev.url`: the surface
-renders, it wears the theme it pins, it comes up in the frame its viewport answer asked for, and it
-appears wherever the repo lists its surfaces. On the web, drive it with `verify.mcp` and read the accessibility tree
-rather than trusting a screenshot. Where `verify.mcp` is `null` on the web, say that the surface was
-read rather than driven, and name what went unchecked.
+With `dev.start` running, confirm four things at `surfaces.route` under `dev.url`: the surface renders, it wears the theme it pins, it comes up in the frame its viewport answer asked for, and it appears wherever the repo lists its surfaces. On the web, drive it with `verify.mcp` and read the accessibility tree rather than trusting a screenshot. Where `verify.mcp` is `null` on the web, say that the surface was read rather than driven, and name what went unchecked.
 
-Where `dev.platform` is `native`, `dev.url` is the deep-link base, and no accessibility tree is
-there to read. Open `surfaces.route` by deep link, check the four things on a simulator screenshot
-through `verify-ui`, and report them as looked at. The deep link, the taps and the screenshot path
-take the URL's place in the hand-back.
+Where `dev.platform` is `native`, `dev.url` is the deep-link base, and no accessibility tree is there to read. Open `surfaces.route` by deep link, check the four things on a simulator screenshot through `verify-ui`, and report them as looked at. The deep link, the taps and the screenshot path take the URL's place in the hand-back.
 
-A theme pin that was never registered, and a mode pin that widens its theme, both render as a
-plausible screen rather than as an error. Where the surface narrows its mode, walk out of it too:
-leaving must restore the designer's own preference rather than stranding the app in this surface's
-mode.
+A theme pin that was never registered, and a mode pin that widens its theme, both render as a plausible screen rather than as an error. Where the surface narrows its mode, walk out of it too: leaving must restore the designer's own preference rather than stranding the app in this surface's mode.

@@ -4,8 +4,7 @@ house_style: true
 
 # The comment tidier
 
-The tidier rewrites code comments in a fixed list of files and never changes code. It runs in a
-fresh context with a scope for each file and the format command, and nothing else.
+The tidier rewrites code comments in a fixed list of files and never changes code. It runs in a fresh context with a scope for each file and the format command, and nothing else.
 
 ## The prompt
 

@@ -18,21 +18,13 @@ metadata:
 
 # Audit a designed surface
 
-The short version: fix the surface and the sweep version; read the records; run the sweep list in
-its four phases; write each finding to a board with its evidence, withdrawing on measurement; hand
-the findings to the scorer in a fresh context; run the script; split what survives into "just fix"
-and "needs a call"; render the run record. An audit reads and writes no boards.
+The short version: fix the surface and the sweep version; read the records; run the sweep list in its four phases; write each finding to a board with its evidence, withdrawing on measurement; hand the findings to the scorer in a fresh context; run the script; split what survives into "just fix" and "needs a call"; render the run record. An audit reads and writes no boards.
 
-The bundle is self-contained. `references/criteria.md` holds the six criteria, the severity table,
-the mapping and the terms. `references/sweeps.md` holds the sweep list and the Paper MCP facts it
-relies on; `references/sweeps.json` holds the ready-made calls. `scorer.md` is the sub-agent prompt.
-`scripts/score.mjs` does the arithmetic and the writing. Nothing outside this folder is required.
+The bundle is self-contained. `references/criteria.md` holds the six criteria, the severity table, the mapping and the terms. `references/sweeps.md` holds the sweep list and the Paper MCP facts it relies on; `references/sweeps.json` holds the ready-made calls. `scorer.md` is the sub-agent prompt. `scripts/score.mjs` does the arithmetic and the writing. Nothing outside this folder is required.
 
-`<skill dir>` in every command below is the folder holding this `SKILL.md`. An installed skill is a
-symlink into a lock-managed folder, so the path differs per repo and hardcoding one breaks the run.
+`<skill dir>` in every command below is the folder holding this `SKILL.md`. An installed skill is a symlink into a lock-managed folder, so the path differs per repo and hardcoding one breaks the run.
 
-Everything a run produces is scratch. It lands in a gitignored folder — `.context/design-audit/<slug>/`
-by default, or whatever scratch folder the project ignores — and never in a tracked file.
+Everything a run produces is scratch. It lands in a gitignored folder — `.context/design-audit/<slug>/` by default, or whatever scratch folder the project ignores — and never in a tracked file.
 
 ## 1. Fix the run
 

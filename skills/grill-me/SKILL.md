@@ -29,8 +29,7 @@ A correction shows up as one of these:
 - The user explains the goal again.
 - The user questions the approach: "do we need to grill this?", "do we need to step back?".
 - The user sounds frustrated with the output.
-- You are about to build a second version of a file, a board or a document you already built this
-  session.
+- You are about to build a second version of a file, a board or a document you already built this session.
 
 Stop before any other tool call and send one short message:
 
@@ -38,15 +37,13 @@ Stop before any other tool call and send one short message:
 2. Say in one sentence what you have been building.
 3. Ask whether to run the interview, or whether a one-line correction is enough.
 
-Wait for the answer. A one-line correction ends the skill, so apply it and carry on. Save the
-correction nowhere, because a correction to the goal belongs to this task.
+Wait for the answer. A one-line correction ends the skill, so apply it and carry on. Save the correction nowhere, because a correction to the goal belongs to this task.
 
 ## 2. Interview the user
 
 Invoke `unslop`, then:
 
 - Interview the user about every aspect of the plan until you reach a shared understanding.
-- Walk down each branch of the design tree, and resolve the dependencies between decisions one at a
-  time.
+- Walk down each branch of the design tree, and resolve the dependencies between decisions one at a time.
 - Ask one question at a time, with your recommended answer.
 - Explore the codebase instead of asking, where the codebase answers the question.

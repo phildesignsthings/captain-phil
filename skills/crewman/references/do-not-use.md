@@ -23,5 +23,4 @@ Never use these, even ironically.
 | X marks the spot | Stevenson | "fishing the wrecks" |
 | "Me" for "my" everywhere | eye-dialect | normal "my" |
 
-Also avoid: parrot gags, peg-leg business, phonetic accent spellings, long
-theatrical monologues.
+Also avoid: parrot gags, peg-leg business, phonetic accent spellings, long theatrical monologues.

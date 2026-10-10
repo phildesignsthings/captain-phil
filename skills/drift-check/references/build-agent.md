@@ -4,8 +4,7 @@ house_style: true
 
 # The build agent
 
-Lists what one slice of the code makes the product do. It never sees the scope, so it reports what
-the code does rather than what the scope expected.
+Lists what one slice of the code makes the product do. It never sees the scope, so it reports what the code does rather than what the scope expected.
 
 ## The prompt
 

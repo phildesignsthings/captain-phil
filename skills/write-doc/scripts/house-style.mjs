@@ -59,6 +59,12 @@ export const HEADING_AMPERSAND_EXEMPT = new Set([
 export const EMPTY_LINK_TEXT =
   /^(?:click here|here|this|this link|link|read more|more|see this)$/i;
 
+// A line that starts one of these is a block of its own, so it never continues
+// the paragraph above it: a heading, a list item, a table row, a fence, an HTML
+// line, a rule, or a `**Label:**` field line such as a record's `**State:**`.
+export const BLOCK_START =
+  /^(?:#{1,6}\s|[-*+]\s|\d+[.)]\s|\||```|~~~|<|\*\*[^*\n]+:\*\*|(?:-{3,}|\*{3,}|_{3,})\s*$)/;
+
 /*
   Blanks out everything that is not prose. It keeps every line break and
   column, so a finding's line number is the line the author sees.
@@ -137,6 +143,13 @@ export function checkHouseStyle(files, opts = {}) {
     const masked = maskProse(text).split("\n");
     const raw = text.split("\n");
     let level = 0;
+    // Hard-wrap state: whether the line above is prose a following line could
+    // continue, whether it sat in a blockquote, and whether this paragraph has
+    // already been reported. One finding per paragraph, not one per line.
+    let paragraphOpen = false;
+    let paragraphQuoted = false;
+    let wrapReported = false;
+    let inComment = false;
 
     raw.forEach((line, i) => {
       const at = `${rel}:${i + 1}`;
@@ -185,6 +198,44 @@ export function checkHouseStyle(files, opts = {}) {
       }
 
       if (!checkProse) return;
+
+      // ── Hard wraps ──
+      // maskProse blanks frontmatter and fenced blocks, so they read as blank
+      // lines here and close the paragraph. HTML comments are tracked by hand.
+      const trimmed = raw[i].trim();
+      if (inComment || (trimmed.startsWith("<!--") && !trimmed.includes("-->"))) {
+        inComment = !trimmed.includes("-->");
+        paragraphOpen = false;
+      } else if (!maskedLine.trim()) {
+        paragraphOpen = false;
+      } else {
+        const quoted = trimmed.startsWith(">");
+        const content = quoted ? trimmed.replace(/^>\s?/, "").trim() : trimmed;
+        const hardBreak = i > 0 && /(?: {2}|\\)$/.test(raw[i - 1]);
+        if (!content) {
+          paragraphOpen = false;
+        } else if (
+          paragraphOpen &&
+          (quoted === paragraphQuoted || paragraphQuoted) &&
+          !hardBreak &&
+          !BLOCK_START.test(content)
+        ) {
+          if (!wrapReported) {
+            findings.push(
+              `${at}: this line continues the paragraph above it.\n\n` +
+                `House style (${standard}): write each paragraph and each list item on one line, ` +
+                `and let the editor wrap it. A hard wrap ties the text to one window width, and ` +
+                `every later edit leaves a ragged line or reflows the whole paragraph in the diff. ` +
+                `Join this line to the one above.`,
+            );
+            wrapReported = true;
+          }
+        } else {
+          paragraphOpen = !/^(?:#{1,6}\s|<|\||(?:-{3,}|\*{3,}|_{3,})\s*$)/.test(content);
+          paragraphQuoted = quoted;
+          wrapReported = false;
+        }
+      }
 
       // ── Anchoring words ──
       // The written standard exempts a retirement record, an append-only note

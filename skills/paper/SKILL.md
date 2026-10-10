@@ -26,13 +26,9 @@ metadata:
 
 # Work in Paper
 
-`references/paper.md` holds the precedence ladder, the gotcha index and the token reference. This
-file is the procedure. Go to the reference the moment Paper behaves oddly, and go to it before
-believing any note here over the shipped tool schemas.
+`references/paper.md` holds the precedence ladder, the gotcha index and the token reference. This file is the procedure. Go to the reference the moment Paper behaves oddly, and go to it before believing any note here over the shipped tool schemas.
 
-The short version: orient with `get_basic_info`, read what the code already built, post a brief and
-wait where the work is a fresh direction, then build one visual group per `write_html` call and
-screenshot after each.
+The short version: orient with `get_basic_info`, read what the code already built, post a brief and wait where the work is a fresh direction, then build one visual group per `write_html` call and screenshot after each.
 
 ## 1. Open every session this way
 
@@ -44,20 +40,13 @@ screenshot after each.
 6. Give new work its own page, named so the name says what it is and when it was made, and create it under the divider that matches how settled the work is. Fresh output goes under the first divider and never under a later one. Promotion is the designer dragging the page, so never move one yourself.
 7. Ask which page the work belongs on where the file carries no dividers, rather than inventing a structure for somebody else's file.
 
-**Paper lays out and screenshots the active page alone.** Every node on an inactive page reports
-`0×0`, which reads exactly like a broken layout. Switch pages yourself rather than assuming the
-designer left the right one open.
+**Paper lays out and screenshots the active page alone.** Every node on an inactive page reports `0×0`, which reads exactly like a broken layout. Switch pages yourself rather than assuming the designer left the right one open.
 
-**Rule out the two impostors before blaming the MCP.** An inactive page reports `0×0`, and a stale
-node ID reports `childCount: 0` — both read as a board that emptied itself. Confirm against
-`get_basic_info` before believing a loss, then restart the session, because a long agent session is
-Paper's own first fix. Both traps are written up in `references/paper.md` § Gotchas.
+**Rule out the two impostors before blaming the MCP.** An inactive page reports `0×0`, and a stale node ID reports `childCount: 0` — both read as a board that emptied itself. Confirm against `get_basic_info` before believing a loss, then restart the session, because a long agent session is Paper's own first fix. Both traps are written up in `references/paper.md` § Gotchas.
 
 ## 2. Read what the code already built
 
-Read the codebase before the brief, never after. A board drawn against the Paper file's tokens alone
-specifies components that do not exist and variants a primitive cannot do, and nothing catches that
-until build time, after the designer has approved the board.
+Read the codebase before the brief, never after. A board drawn against the Paper file's tokens alone specifies components that do not exist and variants a primitive cannot do, and nothing catches that until build time, after the designer has approved the board.
 
 Skip this step only where the surface is not in this repo.
 
@@ -68,21 +57,15 @@ Skip this step only where the surface is not in this repo.
 5. Check `docs.local` for the repo's own reference board before drawing the first one from scratch.
 6. Name in the brief every component the board reuses, and every one it invents. An invented component is a decision the designer makes knowingly, and `add-primitive` is what answers it.
 
-Drop the line for any slot that is `null` or absent, and say in the brief which of these you could
-not check. A board built against an unread design record reproposes something the surface already
-rejected.
+Drop the line for any slot that is `null` or absent, and say in the brief which of these you could not check. A board built against an unread design record reproposes something the surface already rejected.
 
-**A board may propose what the code cannot do yet.** The rule is that it says so. A board that
-invents a variant in silence reads as buildable, and the cost lands on whoever builds it.
+**A board may propose what the code cannot do yet.** The rule is that it says so. A board that invents a variant in silence reads as buildable, and the cost lands on whoever builds it.
 
 ## 3. Gate a fresh direction behind a brief
 
-Post a design brief **before any mutation call**, and wait for the answer. This is a hard gate
-rather than a suggestion, because a board built against an unstated direction gets rejected whole.
+Post a design brief **before any mutation call**, and wait for the answer. This is a hard gate rather than a suggestion, because a board built against an unstated direction gets rejected whole.
 
-The brief carries six things, in this order: mood candidates, the chosen mood, the palette, the type
-scale, the direction, and what step 2 found — the components the board reuses and the ones it
-invents. Skip the gate only where the task is reproduction or a read.
+The brief carries six things, in this order: mood candidates, the chosen mood, the palette, the type scale, the direction, and what step 2 found — the components the board reuses and the ones it invents. Skip the gate only where the task is reproduction or a read.
 
 ## 4. Build
 
@@ -93,17 +76,14 @@ invents. Skip the gate only where the task is reproduction or a read.
 5. Screenshot after each meaningful group and review it: spacing, typography, contrast, alignment, artboard fit, repetition. Shoot at 1x, and use `scale: 2` only to read small text.
 6. Call `finish_working_on_nodes` when you pause or finish.
 
-Consume tokens the file already holds rather than recreating them, per `references/paper.md`
-§ Tokens. Read that section in full before writing any token, because a value overwrite restyles
-every node bound to it across the whole file.
+Consume tokens the file already holds rather than recreating them, per `references/paper.md` § Tokens. Read that section in full before writing any token, because a value overwrite restyles every node bound to it across the whole file.
 
 ## 5. Lay the page out
 
-A page reads **left to right for the flow and top to bottom for a screen's states**. Clone a board
-the page already holds with `<x-paper-clone>` rather than re-deriving the numbers.
+A page reads **left to right for the flow and top to bottom for a screen's states**. Clone a board the page already holds with `<x-paper-clone>` rather than re-deriving the numbers.
 
 | What | Value |
-| --- | --- |
+|---|---|
 | A lo-fi screen board | 390 × 844 for a phone, the background token as the ground, the largest radius, 2px solid black border |
 | A hi-fi screen board | the device's own frame, 393 × 852 for a phone, a literal white ground, no border and no radius |
 | The next screen in the flow | board width + an 80 gutter, in x — 470 at a 390 board |
@@ -128,12 +108,9 @@ The rules the numbers do not carry:
 9. **Give a look round its own page, and clone the lo-fi board onto it as the base.** How a screen looks is a different question from how its flow runs, so a set of hi-fi directions gets its own page rather than another band under the flow. Put the lo-fi board the directions re-skin at the left of the row, and name each direction after the look it is trying rather than after the screen, which the base already names.
 10. Put on a board only what the screen shows. A footnote explaining why the design works this way is a note, and a line of interface copy that states a ruling is the same leak wearing product voice.
 
-**Every board a band holds is a screen, and the band reads as a flow.** A component specimen, a
-state chart or a legend belongs in a note rather than in a board column, because a column of
-specimens makes the designer reconstruct the journey from parts.
+**Every board a band holds is a screen, and the band reads as a flow.** A component specimen, a state chart or a legend belongs in a note rather than in a board column, because a column of specimens makes the designer reconstruct the journey from parts.
 
-**400 between bands is the number that gets missed.** A page built without it reads as one
-undifferentiated field of boards, which is the state this convention exists to fix.
+**400 between bands is the number that gets missed.** A page built without it reads as one undifferentiated field of boards, which is the state this convention exists to fix.
 
 ## 6. Pick the mode
 
@@ -146,8 +123,7 @@ undifferentiated field of boards, which is the state this convention exists to f
 
 ## 7. Work the comment threads
 
-A designer's comments are the review channel: `list_comment_threads` → `get_comment_thread` → fix →
-`set_comment_thread_status`. Resolve each thread as you land it.
+A designer's comments are the review channel: `list_comment_threads` → `get_comment_thread` → fix → `set_comment_thread_status`. Resolve each thread as you land it.
 
 1. Convert and record every pin in a frame **before** editing that frame. Offsets are frozen against the layout at comment time, so one deletion or resize throws every later conversion off by the reflow.
 2. Resolve "this" and "and here" from the pin rather than from the screenshot. Add the pinned node's `worldX` and `worldY` to the thread's `xOffset` and `yOffset`, then match the result against `get_node_info` bounds.
