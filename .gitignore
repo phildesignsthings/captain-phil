@@ -1,3 +1,4 @@
 node_modules/
 .context/
 .DS_Store
+.claude/skills/

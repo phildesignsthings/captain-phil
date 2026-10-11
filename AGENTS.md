@@ -11,7 +11,8 @@ This repo publishes agent skills that install into other people's repos. Every r
 - `skills/<name>/SKILL.md` is one skill. Its `references/`, `scripts/` and `assets/` folders install with it and are the only things it can read off disk.
 - `host/` is the questionnaire a consuming repo fills in at `.agents/host.json`, its schema, and three filled templates. **The installer copies skills and nothing else, so `host/` never reaches a consuming repo** — that is why the README's install is two steps, and why a template is fetched rather than copied. Read [the host file spec](host/README.md) before touching a slot.
 - `scripts/skills-guard.mjs` enforces the invariants. Run `npm run guard` before every commit.
-- `README.md` indexes the skills. A skill and its table row land in the same commit.
+- `skills/articles/references/articles.md` indexes the skills, and is the suite's manual. It lives inside a skill so it installs, where `README.md` never reaches a consuming repo. A skill and its table row land in the same commit. `README.md` holds the install and points at the articles.
+- `npm run link-skills` links every skill into `.claude/skills/`, so a session here runs the working copy. The links are gitignored, because a committed one would sit in the repo the installer clones. Run it again after adding, renaming or deleting a skill.
 
 ## The rules
 
@@ -33,8 +34,9 @@ This repo publishes agent skills that install into other people's repos. Every r
 3. Write `compatibility` naming the fallback for every slot listed.
 4. Add `argument-hint` where the body reads `$1`.
 5. Bundle whatever the skill reads off disk under `references/`, `scripts/` or `assets/`.
-6. Add one row to `README.md`'s `## Skills` table, under the moment the skill runs, saying what it does.
-7. Run `npm run guard`.
+6. Add one row to the `## Skills` table in `skills/articles/references/articles.md`, under the moment the skill runs, saying what it does.
+7. Run `npm run link-skills`.
+8. Run `npm run guard`.
 
 ## Adding a slot
 
