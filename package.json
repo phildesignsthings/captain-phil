@@ -5,6 +5,7 @@
   "description": "Phil Davies's portable agent-skill suite",
   "type": "module",
   "scripts": {
-    "guard": "node scripts/skills-guard.mjs"
+    "guard": "node scripts/skills-guard.mjs",
+    "link-skills": "node scripts/link-skills.mjs"
   }
 }

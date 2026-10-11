@@ -20,7 +20,10 @@ const root = resolve(dirname(new URL(import.meta.url).pathname), "..");
 const SKILLS = join(root, "skills");
 const SCHEMA_PATH = join(root, "host", "host.schema.json");
 const TEMPLATES = join(root, "host", "templates");
-const README = join(root, "README.md");
+// The suite's manual, and the index of its skills. It lives inside a skill so it installs into
+// every consuming repo, where the README never reaches.
+const INDEX = join(SKILLS, "articles", "references", "articles.md");
+const INDEX_REL = "skills/articles/references/articles.md";
 // A house-style finding cites this file as the written rule. A path gives the reader a file to
 // open, where the name of a standard leaves them searching for it.
 const STANDARD = "skills/write-doc/references/house-style.md";
@@ -245,13 +248,13 @@ function checkFrontmatter() {
 // ── 3. The skills index ─────────────────────────────────────────────────────
 
 /*
-  The skill folders on disk are the truth and README.md's `## Skills` table is
+  The skill folders on disk are the truth and the articles' `## Skills` table is
   the claim, and the check fails a mismatch in either direction. A skill absent
-  from the table is invisible to anybody deciding whether to install the suite.
+  from the table is invisible to anybody asking `/articles` what the suite does.
 */
 function checkSkillIndex() {
-  if (!existsSync(README)) {
-    fail(`No README.md at the repo root, so nothing indexes the skills.`);
+  if (!existsSync(INDEX)) {
+    fail(`No ${INDEX_REL}, so nothing indexes the skills.`);
     return;
   }
   const onDisk = new Set();
@@ -273,11 +276,11 @@ function checkSkillIndex() {
     if (hasSkill) onDisk.add(folder);
   }
 
-  const md = readFileSync(README, "utf8");
+  const md = readFileSync(INDEX, "utf8");
   const section = /\n## Skills\n([\s\S]*?)(?=\n## |$)/.exec(md);
   if (!section) {
     fail(
-      `README.md has no \`## Skills\` section, so nothing lists the ${onDisk.size} skill(s) under ` +
+      `${INDEX_REL} has no \`## Skills\` section, so nothing lists the ${onDisk.size} skill(s) under ` +
         `skills/. Restore the heading, or point checkSkillIndex at the heading that replaced it in ` +
         `the same commit.`,
     );
@@ -293,18 +296,18 @@ function checkSkillIndex() {
   const triggerless = [...listed].filter(([, t]) => !t).map(([n]) => n);
   if (unlisted.length)
     fail(
-      `Skills missing from README.md's \`## Skills\` table: ${unlisted.join(", ")}. Adding a skill ` +
+      `Skills missing from ${INDEX_REL}'s \`## Skills\` table: ${unlisted.join(", ")}. Adding a skill ` +
         `is TWO steps — the SKILL.md, and one table row of the form "| \`name\` | what it does |" ` +
         `carrying the frontmatter name verbatim, under the heading for the moment it runs.`,
     );
   if (phantom.length)
     fail(
-      `README.md's \`## Skills\` table lists skills that do not exist: ${phantom.join(", ")}. A row ` +
+      `${INDEX_REL}'s \`## Skills\` table lists skills that do not exist: ${phantom.join(", ")}. A row ` +
         `pointing at nothing sends a reader to install a skill the CLI will not find.`,
     );
   if (triggerless.length)
     fail(
-      `README.md rows carrying no description: ${triggerless.join(", ")}. The second column says ` +
+      `${INDEX_REL} rows carrying no description: ${triggerless.join(", ")}. The second column says ` +
         `what the skill does, and a blank one is a skill nobody knows the use of.`,
     );
 }
