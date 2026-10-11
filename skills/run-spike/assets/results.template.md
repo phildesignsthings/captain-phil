@@ -13,9 +13,9 @@
 ## Answers
 
 | Id | Question | Answer | Cases | Status |
-| --- | --- | --- | --- | --- |
+|---|---|---|---|---|
 | Q1 | <question> | <what happened, with the number> | `<case>`, `<case>` | **measured** (n = <runs>) |
-| Q2 | <question> | <why no case reached it> | | **not measured** |
+| Q2 | <question> | <why no case reached it> |  | **not measured** |
 
 ## Findings that conflict with the <spec | plan>
 

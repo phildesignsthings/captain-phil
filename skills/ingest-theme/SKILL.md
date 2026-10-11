@@ -27,22 +27,13 @@ metadata:
 
 # Ingest a theme
 
-The short version: ask four questions, write the theme file into `theme.dir` with `theme.generator`
-or by hand, read every trap the derivation fell into, register the theme everywhere a theme has to
-appear, and look at it.
+The short version: ask four questions, write the theme file into `theme.dir` with `theme.generator` or by hand, read every trap the derivation fell into, register the theme everywhere a theme has to appear, and look at it.
 
-Read `theme.doc` once rather than once per ingest. It holds the repo's own token contract, its theme
-roles and which modes a theme carries. `references/theme-traps.md` holds the four traps, which are
-the repo-independent part and the part this skill spends a whole step on.
+Read `theme.doc` once rather than once per ingest. It holds the repo's own token contract, its theme roles and which modes a theme carries. `references/theme-traps.md` holds the four traps, which are the repo-independent part and the part this skill spends a whole step on.
 
-**On a NativeWind stack, read `references/nativewind.md` before writing a value.** Its tokens are
-space-separated RGB triplets, and a dark theme is one token set written in three blocks. A value in
-the wrong shape, or a token missing from one block, renders plausibly and wrong.
+**On a NativeWind stack, read `references/nativewind.md` before writing a value.** Its tokens are space-separated RGB triplets, and a dark theme is one token set written in three blocks. A value in the wrong shape, or a token missing from one block, renders plausibly and wrong.
 
-**Where the repo ships an unfilled theme slot, fill it rather than adding one beside it.** A slot
-that ships at neutral values, registered under a placeholder label, is the thing a project
-renames and fills. Adding a second theme beside it leaves the placeholder in every picker and every
-screenshot, and nothing says which of the two is the product's.
+**Where the repo ships an unfilled theme slot, fill it rather than adding one beside it.** A slot that ships at neutral values, registered under a placeholder label, is the thing a project renames and fills. Adding a second theme beside it leaves the placeholder in every picker and every screenshot, and nothing says which of the two is the product's.
 
 ## 1. Intake
 
@@ -53,14 +44,11 @@ Four questions, asked one at a time.
 3. **More than colours?** A display face, a different radius, bespoke surface finishes. Colours alone is the common answer, and anything past it is sanctioned rather than assumed.
 4. **Light, dark, or both?** This is a property of the theme rather than a formality. An identity that exists on one ground alone must say so, and then the repo holds every surface wearing the theme to that mode. A single-mode theme writes its one face into the base block and carries no dark block at all.
 
-Record the answers before writing anything. Steps 2 and 4 both spend them, and a mode decided
-halfway through the file is a file with two shapes in it.
+Record the answers before writing anything. Steps 2 and 4 both spend them, and a mode decided halfway through the file is a file with two shapes in it.
 
 ## 2. Write the theme file
 
-Run `theme.generator`, passing the id, the label, the role and the modes from step 1 rather than
-taking a default for any of them. Read its output before it lands on disk, and delete whatever file
-it replaces in the same commit.
+Run `theme.generator`, passing the id, the label, the role and the modes from step 1 rather than taking a default for any of them. Read its output before it lands on disk, and delete whatever file it replaces in the same commit.
 
 Where `theme.generator` is `null`, the repo has no generator and the values are transcribed by hand:
 
@@ -71,16 +59,11 @@ Where `theme.generator` is `null`, the repo has no generator and the values are 
 5. Where `theme.contract` is `null`, read the slot list off a sibling theme file, because a theme with fewer slots than its siblings is a theme with silent gaps.
 6. On a NativeWind stack, convert each anchor to a triplet and write every token into all three blocks, per `references/nativewind.md`.
 
-**Read the generator's own diagnostics.** They report every trap that fired, and one thing an
-export makes easy to miss: an anchor the export moved in the light block and left alone in the dark
-one. That anchor falls back to the stock value, so the theme wears the brand's colour on one face
-and the framework's on the other, with both blocks looking complete.
+**Read the generator's own diagnostics.** They report every trap that fired, and one thing an export makes easy to miss: an anchor the export moved in the light block and left alone in the dark one. That anchor falls back to the stock value, so the theme wears the brand's colour on one face and the framework's on the other, with both blocks looking complete.
 
 ## 3. Review the traps
 
-`references/theme-traps.md` holds the four, their thresholds and what each correction is for. Every
-correction is a judgment made on your behalf, so the review is the check on that judgment rather
-than a formality.
+`references/theme-traps.md` holds the four, their thresholds and what each correction is for. Every correction is a judgment made on your behalf, so the review is the check on that judgment rather than a formality.
 
 1. Search the written file for the marker the generator leaves — a comment naming the trap and the value it corrected — and read every one.
 2. Confirm each corrected value against what the trap says to look for, rather than against whether it compiles.
@@ -90,9 +73,7 @@ than a formality.
 
 ## 4. Register it
 
-The file is one of the things a theme is, and missing any of the others renders as a plausible
-screen rather than as an error. Where `theme.registry` is `null` the repo keeps no list: the file is
-the whole theme, so say that in one line and go to step 5.
+The file is one of the things a theme is, and missing any of the others renders as a plausible screen rather than as an error. Where `theme.registry` is `null` the repo keeps no list: the file is the whole theme, so say that in one line and go to step 5.
 
 1. Add the entry to `theme.registry`, carrying the id, the label, the role and the modes from step 1. The modes must match what the file holds.
 2. Wire the file into whatever the repo loads its themes from, with the comment above it describing what the theme is rather than what the slot was.
@@ -101,28 +82,20 @@ the whole theme, so say that in one line and go to step 5.
 
 ## 5. Record what you decided
 
-**The theme file is the record of its values, and there is no second one.** A self-contained theme
-holds explicit literals, so a prose file restating them is only ever the copy that disagrees.
+**The theme file is the record of its values, and there is no second one.** A self-contained theme holds explicit literals, so a prose file restating them is only ever the copy that disagrees.
 
 Two homes, and both exist before this skill runs:
 
 - **The theme file.** Every trap you overrode, and every value you moved off the derivation, goes in a comment beside the value it explains. Give the file a short header saying what the identity is.
 - **The design record of whatever surface pins the theme.** That record holds how those screens spend the system — which surfaces carry the brand colour, what the type pairing does, what not to do with the palette. Run `record-design` once there are screens to read it off.
 
-**Renaming a placeholder slot to a product creates one obligation.** A theme named after a product
-marks a real project, so `records.product` owes a file describing that product. Run
-`start-project` where it is absent, rather than writing a stub.
+**Renaming a placeholder slot to a product creates one obligation.** A theme named after a product marks a real project, so `records.product` owes a file describing that product. Run `start-project` where it is absent, rather than writing a stub.
 
 ## 6. Verify
 
-Start the app with `dev.start` and look at it with `verify.mcp`, per the `verify-ui` skill. Where
-`verify.mcp` is `null` on the web, nothing can drive the app: read the file, say the theme is
-unverified, and name the diff as the only evidence.
+Start the app with `dev.start` and look at it with `verify.mcp`, per the `verify-ui` skill. Where `verify.mcp` is `null` on the web, nothing can drive the app: read the file, say the theme is unverified, and name the diff as the only evidence.
 
-Where `dev.platform` is `native`, the simulator does the looking, by deep link and screenshot through
-`verify-ui`. Every value is looked at rather than measured, so check each trap's value in the file and
-use the screenshot to confirm the screen spent it. Switch the simulator's appearance with
-`xcrun simctl ui booted appearance dark` to see the second face.
+Where `dev.platform` is `native`, the simulator does the looking, by deep link and screenshot through `verify-ui`. Every value is looked at rather than measured, so check each trap's value in the file and use the screenshot to confirm the screen spent it. Switch the simulator's appearance with `xcrun simctl ui booted appearance dark` to see the second face.
 
 1. Open `components.showcase` and confirm the theme renders every token group. A page that reads live values off the rendered DOM is where a wrong or missing token surfaces, and it is the only place all four traps are visible at once. Where the slot is `null`, the repo has no token page, so say so in one line. Read the four trap values out of the file by hand, and let items 2 to 4 carry the check on real screens.
 2. Check both modes where the theme carries both, and confirm a single-mode theme renders its one face rather than an empty specimen.
@@ -132,5 +105,4 @@ use the screenshot to confirm the screen spent it. Switch the simulator's appear
 
 ## Before handing back
 
-Name the theme's id, what it is pinned on, every trap that fired and what you did about each one,
-and anything left for the designer to decide.
+Name the theme's id, what it is pinned on, every trap that fired and what you did about each one, and anything left for the designer to decide.

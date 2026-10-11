@@ -4,12 +4,9 @@ house_style: true
 
 # What survives a handoff
 
-A prototype folder is two things wearing one coat: a set of decisions somebody made on purpose, and
-a set of machinery that exists so those decisions could be seen without a backend. The first travels
-into the application. The second was built to be deleted.
+A prototype folder is two things wearing one coat: a set of decisions somebody made on purpose, and a set of machinery that exists so those decisions could be seen without a backend. The first travels into the application. The second was built to be deleted.
 
-This is the generic list. Where the source repo answers `surfaces.receiveDoc`, that file is the
-authority and this one is the fallback.
+This is the generic list. Where the source repo answers `surfaces.receiveDoc`, that file is the authority and this one is the fallback.
 
 ## What carries a contract
 
@@ -24,23 +21,13 @@ authority and this one is the fallback.
 
 ## What stays behind
 
-- **The harness the source repo runs its surfaces inside** — the device frame, the palette, the
-  surface listing, the theme switcher. It is the source repo's own interface rather than part of
-  this work.
-- **The demo machinery.** Forcing a screen into a loading or error state, and the scenario switches
-  beside it, exist so a screen could be reviewed. They are marked so they can be found by grep
-  rather than by memory.
-- **The discovery metadata.** The per-surface config file and whatever registry reads it are how the
-  source repo finds its surfaces. The receiving application has its own router.
-- **The fixtures**, once the endpoint is real. Keep one per state while the states are being proved,
-  then delete them with the loader.
+- **The harness the source repo runs its surfaces inside** — the device frame, the palette, the surface listing, the theme switcher. It is the source repo's own interface rather than part of this work.
+- **The demo machinery.** Forcing a screen into a loading or error state, and the scenario switches beside it, exist so a screen could be reviewed. They are marked so they can be found by grep rather than by memory.
+- **The discovery metadata.** The per-surface config file and whatever registry reads it are how the source repo finds its surfaces. The receiving application has its own router.
+- **The fixtures**, once the endpoint is real. Keep one per state while the states are being proved, then delete them with the loader.
 
 ## The three questions a receiving developer asks
 
-1. **Is this real or faked?** The developer's record answers it, and a stale one is worse than none.
-   Where it disagrees with the code, the code wins and the record gets corrected in the same commit.
-2. **Why is it like this?** The design record answers it. A value in there is a rule the screens
-   already follow rather than a suggestion.
-3. **What happens when the data is wrong?** The parse at the seam answers it. Leave the parse where
-   it is when the fetch becomes real: it is how a contract drift announces itself rather than
-   rendering as a blank cell.
+1. **Is this real or faked?** The developer's record answers it, and a stale one is worse than none. Where it disagrees with the code, the code wins and the record gets corrected in the same commit.
+2. **Why is it like this?** The design record answers it. A value in there is a rule the screens already follow rather than a suggestion.
+3. **What happens when the data is wrong?** The parse at the seam answers it. Leave the parse where it is when the fetch becomes real: it is how a contract drift announces itself rather than rendering as a blank cell.

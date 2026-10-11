@@ -6,16 +6,14 @@ read_when:
 
 # Team one-pager shape
 
-The one-pager is how the person works, set out as rules a teammate can follow. It goes to people who
-were not in the sessions, so it carries no war stories, no tool traps and nothing private.
+The one-pager is how the person works, set out as rules a teammate can follow. It goes to people who were not in the sessions, so it carries no war stories, no tool traps and nothing private.
 
-Keep it under 1,500 words. Write every lesson as a rule in the imperative. Where a rule needs a
-reason, give the reason in one clause, and keep the story behind it in the private report.
+Keep it under 1,500 words. Write every lesson as a rule in the imperative. Where a rule needs a reason, give the reason in one clause, and keep the story behind it in the private report.
 
 ## Sections, in order
 
 | Section | What goes in it |
-| --- | --- |
+|---|---|
 | Title | `# <The kind of work> with Claude` |
 | Opening paragraph | What the method produces, who does what, and what the reader needs to follow it |
 | Ownership rules | The one or two lines on where authority sits, such as which file is the record |
@@ -29,12 +27,11 @@ reason, give the reason in one clause, and keep the story behind it in the priva
 ## What stays out
 
 | Leave out | Where it goes |
-| --- | --- |
+|---|---|
 | A trap one tool set, such as a stale cache or a build flag | The repo's gotchas doc or its project notes |
 | Anything about the person's habits or gaps | The private report |
 | Session stems, token counts and costs | The private report |
 | The names of clients, stakeholders or colleagues, unless the team already knows them | Nowhere |
 | A rule the evidence does not support | Nowhere |
 
-Name skills by their command where the team has them installed, in backticks, so a reader can run
-the step the rule names.
+Name skills by their command where the team has them installed, in backticks, so a reader can run the step the rule names.

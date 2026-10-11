@@ -1,9 +1,6 @@
 # Descriptors — d100
 
-The first die. A descriptor attaches to the object and gives it its specificity: not a punch card
-but a *sinking* punch card. One word or a hyphenated pair per entry, a physical or material quality
-that a screen can show. The table is fixed; `scripts/roll.mjs` reads it and will refuse a file
-without exactly one hundred numbered lines.
+The first die. A descriptor attaches to the object and gives it its specificity: not a punch card but a *sinking* punch card. One word or a hyphenated pair per entry, a physical or material quality that a screen can show. The table is fixed; `scripts/roll.mjs` reads it and will refuse a file without exactly one hundred numbered lines.
 
 1. Ancient
 2. Airy

@@ -1,8 +1,6 @@
 # The scorer
 
-The scorer tags severity on a finished list of findings and never learns what number its tags
-produce. It runs in a fresh context, once per run, with the findings file and `references/criteria.md`
-and nothing else. The auditor gathers and measures; the scorer weighs; the script counts.
+The scorer tags severity on a finished list of findings and never learns what number its tags produce. It runs in a fresh context, once per run, with the findings file and `references/criteria.md` and nothing else. The auditor gathers and measures; the scorer weighs; the script counts.
 
 ## Turn order
 

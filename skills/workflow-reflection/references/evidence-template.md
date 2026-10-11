@@ -6,17 +6,14 @@ read_when:
 
 # Evidence file shape
 
-One evidence file per phase, written by the main session from that phase's findings files. It is
-the only thing the report steps read, so it carries every point they need, each one traceable to a
-findings file and through it to a session.
+One evidence file per phase, written by the main session from that phase's findings files. It is the only thing the report steps read, so it carries every point they need, each one traceable to a findings file and through it to a session.
 
-Keep it under 4,000 words. Write each section as prose or a short list, never as a copy of the
-findings. Merge what the agents found, count it, and keep the strongest quote.
+Keep it under 4,000 words. Write each section as prose or a short list, never as a copy of the findings. Merge what the agents found, count it, and keep the strongest quote.
 
 ## Sections, in order
 
 | Section | What goes in it |
-| --- | --- |
+|---|---|
 | Title | `# Evidence <phase>: <what the phase was>, <first date> to <last date>` |
 | Source line | Sessions read, agents used, findings paths, the tally file, and the sweep's token cost |
 | How the process changed | Dated stretches, each opening with a bold date range and what defined it |
@@ -32,7 +29,6 @@ findings. Merge what the agents found, count it, and keep the strongest quote.
 
 ## Rules
 
-- Correct an earlier phase's file in this one where the findings contradict it, and say which claim
-  changed.
+- Correct an earlier phase's file in this one where the findings contradict it, and say which claim changed.
 - Count the checklist items, and carry the running total into the state file.
 - Name any session left out and why: another client, another project, this study's own kickoff.

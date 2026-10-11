@@ -18,35 +18,22 @@ metadata:
 
 # Finish clean
 
-Done means the work is finished and the session left nothing behind. A task reported complete with
-a watcher still running, a finding still in the transcript and a status still wrong is three
-problems handed to the next person.
+Done means the work is finished and the session left nothing behind. A task reported complete with a watcher still running, a finding still in the transcript and a status still wrong is three problems handed to the next person.
 
 ## The two classes of process
 
-- **Scaffolding** is anything started to produce a number: a probe, a check, a screenshot script, a
-  one-off server opened to measure something. It dies when the number has been read.
-- **The deliverable** is anything the user asked for: a dev server behind a review link, a watcher
-  they wanted left up. It stays, and it gets named.
+- **Scaffolding** is anything started to produce a number: a probe, a check, a screenshot script, a one-off server opened to measure something. It dies when the number has been read.
+- **The deliverable** is anything the user asked for: a dev server behind a review link, a watcher they wanted left up. It stays, and it gets named.
 
-Killing the second class is the same failure as leaving the first class running. Four things are
-always the second class: a dev server behind a review link, a browser an MCP server drives, a native
-app's bundler and its booted simulator, and anything started before this session. An MCP browser is
-shared across every open workspace, so killing it breaks somebody else's session.
+Killing the second class is the same failure as leaving the first class running. Four things are always the second class: a dev server behind a review link, a browser an MCP server drives, a native app's bundler and its booted simulator, and anything started before this session. An MCP browser is shared across every open workspace, so killing it breaks somebody else's session.
 
-**On a native app, the bundler and the simulator are the review link.** A deep link opens nothing
-without a booted simulator. The app on it shows no change without its bundler, such as Metro on
-port 8081. Leave both running and name them, even where only a screenshot was asked for. The
-designer checks a screenshot by opening the same screen.
+**On a native app, the bundler and the simulator are the review link.** A deep link opens nothing without a booted simulator. The app on it shows no change without its bundler, such as Metro on port 8081. Leave both running and name them, even where only a screenshot was asked for. The designer checks a screenshot by opening the same screen.
 
 ## When it does not run
 
-Skip this skill where the session started no process, wrote no file, produced no finding and moved
-no status. A one-line answer or a single typo fix has nothing to account for, and an accounting of
-nothing is noise.
+Skip this skill where the session started no process, wrote no file, produced no finding and moved no status. A one-line answer or a single typo fix has nothing to account for, and an accounting of nothing is noise.
 
-Where a gate is being wrapped, `wrap-gate` owns the checks and the record. Run this skill inside it
-and report only what those two do not already carry.
+Where a gate is being wrapped, `wrap-gate` owns the checks and the record. Run this skill inside it and report only what those two do not already carry.
 
 ## 1. Account for what the session started
 
@@ -58,8 +45,7 @@ and report only what those two do not already carry.
 ## 2. Report each check once
 
 1. Run each check once and report its result against the recorded baseline.
-2. Never re-run a clean check to feel sure. A second clean run is not more evidence. This is a
-   rule about running checks, not about writing them up.
+2. Never re-run a clean check to feel sure. A second clean run is not more evidence. This is a rule about running checks, not about writing them up.
 3. Report a check that did not run as not run, rather than leaving it out.
 
 ## 3. Write down what exists only in the transcript
@@ -68,8 +54,7 @@ and report only what those two do not already carry.
 2. Write each one into the file that owns it, before reporting done.
 3. Say where each went.
 
-A finding that lives only in the transcript is gone at the next session, and the work that produced
-it was wasted.
+A finding that lives only in the transcript is gone at the next session, and the work that produced it was wasted.
 
 ## 4. Leave every status true
 
@@ -79,8 +64,7 @@ it was wasted.
 
 ## What the report has to carry
 
-This skill does not format the hand-back. It decides what goes in it. Carry these four facts into
-whatever writes the report, and let that skill shape them:
+This skill does not format the hand-back. It decides what goes in it. Carry these four facts into whatever writes the report, and let that skill shape them:
 
 1. What was killed, and what was left running on purpose, with its port.
 2. Each check's result, reported once, against its baseline.

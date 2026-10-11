@@ -1,23 +1,16 @@
 # The sweep list — Paper boards
 
-Read this file at step 2 of `SKILL.md`. `sweeps.json` beside it holds the ready-made query for every
-mechanical sweep; copy the query rather than composing one.
+Read this file at step 2 of `SKILL.md`. `sweeps.json` beside it holds the ready-made query for every mechanical sweep; copy the query rather than composing one.
 
-A sweep keeps its number for life. A version adds numbers and removes none, and a retired sweep keeps
-its number with the word *retired* beside it. A run names the version it executed, runs every live
-sweep on it, and a skipped sweep voids the score.
+A sweep keeps its number for life. A version adds numbers and removes none, and a retired sweep keeps its number with the word *retired* beside it. A run names the version it executed, runs every live sweep on it, and a skipped sweep voids the score.
 
 ## Scope
 
-**The surface is the screens.** Everything else on the canvas organises the page or records a
-decision, and none of it scores:
+**The surface is the screens.** Everything else on the canvas organises the page or records a decision, and none of it scores:
 
 - **Canvas furniture** — section header bars, band labels, margin notes.
 - **Annotation stickies** — CHANGED and GAP notes, whatever they say and whatever they leave out.
-- **Record boards** — an icon set, a reference card, a drift table. A run **reads** these as the
-  standard the screens answer to (sweeps 2, 6, 17, 23) and raises the finding against the screen
-  that departs from them. A defect in the record itself is housekeeping, and it goes on the fix list
-  unscored.
+- **Record boards** — an icon set, a reference card, a drift table. A run **reads** these as the standard the screens answer to (sweeps 2, 6, 17, 23) and raises the finding against the screen that departs from them. A defect in the record itself is housekeeping, and it goes on the fix list unscored.
 
 A finding whose subject is any of the three is withdrawn on scope.
 
@@ -33,9 +26,7 @@ A finding whose subject is any of the three is withdrawn on scope.
 
 ## Order of work
 
-The order is cost order: one tree read, one parallel batch of queries, one parallel batch of JSX
-reads, then screenshots for the boards that earned one. Sweep numbers stay as listed; the phase is
-where each runs.
+The order is cost order: one tree read, one parallel batch of queries, one parallel batch of JSX reads, then screenshots for the boards that earned one. Sweep numbers stay as listed; the phase is where each runs.
 
 | Phase | What runs | Calls for a 30-board page |
 |---|---|---|
@@ -44,14 +35,11 @@ where each runs.
 | C · Read | `get_jsx` on every screen board, in parallel messages of ten | 30, three messages |
 | D · Look | `get_screenshot`, sequential, on one hero per band and every board a finding names | ~8 to 12 |
 
-Phase C is the measurement. A board's JSX carries every path, stroke, size, token, literal and text
-node on it, so one read per board answers sweeps 3 to 6, 11, 13 to 19 and 21 to 24 without a further
-probe. `get_computed_styles` is for the one value a JSX read leaves ambiguous.
+Phase C is the measurement. A board's JSX carries every path, stroke, size, token, literal and text node on it, so one read per board answers sweeps 3 to 6, 11, 13 to 19 and 21 to 24 without a further probe. `get_computed_styles` is for the one value a JSX read leaves ambiguous.
 
 ## Version 3
 
-**v3 retires sweep 1 and adds sweep 24.** v2 added 22 and 23 to v1. A run under v2 executed 1 to
-23; a run under v1 executed 1 to 21.
+**v3 retires sweep 1 and adds sweep 24.** v2 added 22 and 23 to v1. A run under v2 executed 1 to 23; a run under v1 executed 1 to 21.
 
 **Orient — phase A**
 
@@ -89,6 +77,4 @@ probe. `get_computed_styles` is for the one value a JSX read leaves ambiguous.
 
 1. *Retired in v3.* Screenshot every board, one call at a time. Replaced by 24 for measurement and by the phase D rule for composition.
 
-Composition and lanes (criterion 5) are judged from screenshots of one hero board per band, plus
-every board a phase C finding names. Take them one at a time, after phase C, and never in a message
-with another screenshot.
+Composition and lanes (criterion 5) are judged from screenshots of one hero board per band, plus every board a phase C finding names. Take them one at a time, after phase C, and never in a message with another screenshot.

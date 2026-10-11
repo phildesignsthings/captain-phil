@@ -59,9 +59,31 @@ export const HEADING_AMPERSAND_EXEMPT = new Set([
 export const EMPTY_LINK_TEXT =
   /^(?:click here|here|this|this link|link|read more|more|see this)$/i;
 
+const blank = (m) => m.replace(/[^\n]/g, " ");
+
 /*
-  Blanks out everything that is not prose. It keeps every line break and
-  column, so a finding's line number is the line the author sees.
+  Blanks out the blocks that are not prose: frontmatter, fenced code, HTML
+  comments, and the raw HTML blocks whose line breaks render, such as `<pre>`. It keeps every line break and column, so a finding's line number
+  is the line the author sees.
+
+  A fence closes on a run of the same character at least as long as the one
+  that opened it, so a ```` fence can hold a ``` example.
+*/
+export function maskBlocks(text) {
+  let out = text;
+  if (out.startsWith("---\n")) {
+    const end = out.indexOf("\n---\n", 3);
+    if (end !== -1) out = blank(out.slice(0, end + 5)) + out.slice(end + 5);
+  }
+  return out
+    .replace(/^[ \t>]*(`{3,}|~{3,})[^\n]*\n[\s\S]*?^[ \t>]*\1[`~]*[ \t]*$/gm, blank)
+    .replace(/<!--[\s\S]*?-->/g, blank)
+    .replace(/^[ \t]*<(pre|script|style|textarea)\b[\s\S]*?<\/\1>/gim, blank);
+}
+
+/*
+  Blanks out everything that is not prose: the blocks maskBlocks covers, plus
+  the inline spans below.
 
   What gets masked, and why each would otherwise fire:
     · Frontmatter. The rules exempt it, and a skill's `description` can say
@@ -73,20 +95,23 @@ export const EMPTY_LINK_TEXT =
       `new-surface` is a path, not a claim about time.
 */
 export function maskProse(text) {
-  const blank = (m) => m.replace(/[^\n]/g, " ");
-  let out = text;
-  if (out.startsWith("---\n")) {
-    const end = out.indexOf("\n---\n", 3);
-    if (end !== -1) out = blank(out.slice(0, end + 5)) + out.slice(end + 5);
-  }
-  return out
-    .replace(/```[\s\S]*?```/g, blank)
+  return maskBlocks(text)
     .replace(/`[^`\n]*`/g, blank)
     .replace(
       /(\]\()[^)\n]*(\))/g,
       (m, open, close) => open + blank(m.slice(2, -1)) + close,
     )
     .replace(/<https?:\/\/[^>\n]*>/g, blank);
+}
+
+// A line's blockquote depth, its indent inside the quote, and its text.
+function splitQuote(line) {
+  const [, marks, indent, text] = /^((?:[ \t]*> ?)*)([ \t]*)(.*)$/.exec(line);
+  return {
+    depth: marks.split(">").length - 1,
+    indent: indent.replace(/\t/g, "    ").length,
+    text,
+  };
 }
 
 // A markdown file other than a SKILL.md opts into the prose rules with
@@ -137,6 +162,12 @@ export function checkHouseStyle(files, opts = {}) {
     const masked = maskProse(text).split("\n");
     const raw = text.split("\n");
     let level = 0;
+    // Hard wraps read the raw text with only the non-prose blocks blanked,
+    // because maskProse also blanks inline code, and a line holding only a
+    // code span is still text. One finding per paragraph, not one per line.
+    const blocks = maskBlocks(text).split("\n").map(splitQuote);
+    let wrapReported = false;
+    let inCode = false;
 
     raw.forEach((line, i) => {
       const at = `${rel}:${i + 1}`;
@@ -185,6 +216,41 @@ export function checkHouseStyle(files, opts = {}) {
       }
 
       if (!checkProse) return;
+
+      // ── Hard wraps ──
+      // A line that opens on a lowercase word carries on the sentence above
+      // it. Nothing else in markdown opens that way: a heading, a list item, a
+      // table row, an HTML tag, a definition and a heading underline all open
+      // on a mark. So the check needs no grammar of the blocks it skips. It
+      // misses a wrap whose next line opens on a capital, a digit or a code
+      // span, and a wrapped paragraph almost always has some other line that
+      // gives it away.
+      const here = blocks[i];
+      const above = i > 0 ? blocks[i - 1] : null;
+      // Indented code cannot interrupt a paragraph, so a run of it starts
+      // under a blank line. An indented line under prose is a list item's.
+      inCode = !!here.text && here.indent >= 4 && (!above?.text.trim() || inCode);
+      if (!above?.text.trim()) {
+        wrapReported = false;
+      } else if (
+        !wrapReported &&
+        /^[a-z]/.test(here.text) &&
+        here.depth === above.depth &&
+        // A table row, including one that leaves off its outer pipes.
+        !maskedLine.includes("|") &&
+        !inCode &&
+        // A line ending in two spaces or a backslash breaks on purpose.
+        !/(?: {2}|\\)$/.test(raw[i - 1])
+      ) {
+        findings.push(
+          `${at}: this line continues the paragraph above it.\n\n` +
+            `House style (${standard}): write each paragraph and each list item on one line, ` +
+            `and let the editor wrap it. A hard wrap ties the text to one window width, and ` +
+            `every later edit leaves a ragged line or reflows the whole paragraph in the diff. ` +
+            `Join this line to the one above.`,
+        );
+        wrapReported = true;
+      }
 
       // ── Anchoring words ──
       // The written standard exempts a retirement record, an append-only note

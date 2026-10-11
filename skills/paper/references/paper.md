@@ -6,17 +6,13 @@ house_style: true
 
 # Paper Desktop
 
-[Paper](https://paper.design) is a canvas design app where every element is real HTML and CSS. The
-`paper` MCP (`mcp__plugin_paper-desktop_paper__*`) lets an agent read and write those files.
+[Paper](https://paper.design) is a canvas design app where every element is real HTML and CSS. The `paper` MCP (`mcp__plugin_paper-desktop_paper__*`) lets an agent read and write those files.
 
-The `paper` skill runs the work: orienting, the design-brief gate, building, and the comment review
-loop. This file holds what that procedure has to look up. A repo that keeps its own Paper notes
-overrides it, because that file carries the traps the repo has already paid for.
+The `paper` skill runs the work: orienting, the design-brief gate, building, and the comment review loop. This file holds what that procedure has to look up. A repo that keeps its own Paper notes overrides it, because that file carries the traps the repo has already paid for.
 
 ## What to trust, and in what order
 
-This file is a **quick lookup guide rather than a source of truth** — generalized notes on behaviour
-that the tool schemas leave unstated. Paper ships fast, so treat any of it as possibly stale.
+This file is a **quick lookup guide rather than a source of truth** — generalized notes on behaviour that the tool schemas leave unstated. Paper ships fast, so treat any of it as possibly stale.
 
 Precedence, highest first:
 
@@ -25,11 +21,7 @@ Precedence, highest first:
 3. **Official docs** — [Paper docs](https://paper.design/docs) · [MCP reference](https://paper.design/docs/mcp) · [tokens](https://paper.design/docs/tokens) · [paste](https://paper.design/docs/paste) · [vector](https://paper.design/docs/svg). Check these before trusting a workaround here, and **before believing a tool exists** — a note naming a tool is no evidence it shipped.
 4. **This file.**
 
-**Keep it living, and upstream.** This file installs from the skill suite, so an edit made in a
-consuming repo is deleted by the next update. Send a fresh trap to the suite as a change to this
-file, generalized into a rule, and record it in the consuming repo's own notes meanwhile. When
-Paper fixes a trap, delete the entry, because a stale workaround costs the next agent a detour.
-Where a note here contradicts the official docs, the docs win.
+**Keep it living, and upstream.** This file installs from the skill suite, so an edit made in a consuming repo is deleted by the next update. Send a fresh trap to the suite as a change to this file, generalized into a rule, and record it in the consuming repo's own notes meanwhile. When Paper fixes a trap, delete the entry, because a stale workaround costs the next agent a detour. Where a note here contradicts the official docs, the docs win.
 
 ## Gotchas
 
@@ -45,13 +37,7 @@ Where a note here contradicts the official docs, the docs win.
 - **Repeated rows need fixed-width slots** — `width` + `flexShrink: 0` on icons and trailing actions, even where a slot is empty in some rows. Gap alone will not hold vertical lanes. After three or more similar rows, screenshot and trace a vertical line through the icons to verify.
 - **Icons render dark on dark** — `stroke="currentColor"` doesn't inherit. Set `stroke="var(--color-…)"` explicitly on the `<svg>` **and** every child path.
 - **`fill` doesn't cascade from `<svg>` to its children either.** `fill="none"` on the root leaves child paths filled black, which reads as a broken icon. Set `fill="none"` on every path, or fix after the fact with `update_styles` on the child SVG nodes.
-- **`color-mix()` is not evaluated — Paper keeps the FIRST colour and drops the mix.** It is not
-  reported as invalid and the element does not go black, so `color-mix(in oklab, #F00 50%, #FFF)`
-  paints solid `#F00` and reads as a value someone typed wrong. This matters because it is the
-  obvious way to express a token at partial alpha (`var(--color-border)` at 30%), which is how most
-  app surfaces are authored. **To render a token at alpha, nest instead:** a `position: absolute`
-  fill child carrying `backgroundColor: var(--token)` + `opacity`, with the content in `position:
-  relative` siblings over it. Putting the opacity on the container itself fades its text too.
+- **`color-mix()` is not evaluated — Paper keeps the FIRST colour and drops the mix.** It is not reported as invalid and the element does not go black, so `color-mix(in oklab, #F00 50%, #FFF)` paints solid `#F00` and reads as a value someone typed wrong. This matters because it is the obvious way to express a token at partial alpha (`var(--color-border)` at 30%), which is how most app surfaces are authored. **To render a token at alpha, nest instead:** a `position: absolute` fill child carrying `backgroundColor: var(--token)` + `opacity`, with the content in `position: relative` siblings over it. Putting the opacity on the container itself fades its text too.
 - **CSS gradients in `background-image` don't render — the element goes black.** `repeating-linear-gradient`/`linear-gradient` silently fail and take any `backgroundColor` with them. Build grids and stripes from real flex children, or set a flat `backgroundColor`.
 - **Inline `<span>` styling is flattened.** Paper has no rich text, so a coloured or weighted span inside a text element loses its styling and inherits the parent's. Split the run into sibling text nodes inside a flex row with `align-items: baseline`.
 - **`position` is dropped by `update_styles` on an existing Frame.** It comes back in `ignoredStyles`, so you cannot retrofit a positioning context onto a node you want to hang an absolute child off. Author the wrapper through `write_html` instead — or `write_html` a `<x-paper-clone>` of a wrapper that already works, in `replace` mode.
@@ -82,15 +68,8 @@ Paper's token types: colour, font family, font weight, font size, line height, l
 - **Tokens Paper has no type for** (shadows, z-index, opacity, `env()`) — document them on the board rather than forcing them under a nearest-fit type.
 - **Do token writes in one call, sequentially.** Don't split token work across parallel agents, and don't let another agent touch the file mid-write.
 
-- **A synced colour set is no evidence the rest of the set is synced.** Read the radius ladder off
-  the running app like every other value, or off the theme file on native, and resync the ladder in place rather than adding a
-  parallel `--radius-ui-*` namespace.
-- **A corner with no rung stays a literal.** Bare Tailwind `rounded` is 4px off the *framework*
-  default, not off `--radius`, so it has no token to bind to and is the one place a literal is
-  correct. Worth flagging to the designer: it also means that element won't re-round when a theme
-  changes `--radius`.
-- **A lane needs `minWidth: 0`.** `flex-grow: 1; flex-basis: 0` loses to the min-content floor when
-  the child text is `white-space: nowrap`, so repeated rows drift by content length. Read widths out
-  of `get_tree_summary` across the rows rather than eyeballing the screenshot.
+- **A synced colour set is no evidence the rest of the set is synced.** Read the radius ladder off the running app like every other value, or off the theme file on native, and resync the ladder in place rather than adding a parallel `--radius-ui-*` namespace.
+- **A corner with no rung stays a literal.** Bare Tailwind `rounded` is 4px off the *framework* default, not off `--radius`, so it has no token to bind to and is the one place a literal is correct. Worth flagging to the designer: it also means that element won't re-round when a theme changes `--radius`.
+- **A lane needs `minWidth: 0`.** `flex-grow: 1; flex-basis: 0` loses to the min-content floor when the child text is `white-space: nowrap`, so repeated rows drift by content length. Read widths out of `get_tree_summary` across the rows rather than eyeballing the screenshot.
 
 **Reading tokens back out into code:** a file may hold more than one set — a base ramp and a hi-fi one, or a namespace per theme. **Confirm which set the board you're reading was built against before porting any value.** The names won't tell you, and picking the wrong set yields a plausible number that is wrong on every screen — the failure looks like a design disagreement, not a lookup error.
