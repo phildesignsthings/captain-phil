@@ -14,9 +14,10 @@
 // behaves belongs in that skill's own body, because this script never runs there.
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, relative, basename, dirname, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
 import { checkHouseStyle } from "../skills/write-doc/scripts/house-style.mjs";
 
-const root = resolve(dirname(new URL(import.meta.url).pathname), "..");
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SKILLS = join(root, "skills");
 const SCHEMA_PATH = join(root, "host", "host.schema.json");
 const TEMPLATES = join(root, "host", "templates");
