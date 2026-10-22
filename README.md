@@ -4,6 +4,8 @@ house_style: true
 
 # captain-phil
 
+![Captain Phil raising a tankard by a beach fire in Nassau, his crew around him and the ship at anchor under a full moon](.github/captain-phil-nassau.jpg)
+
 Captain Phil's working defaults, packaged as agent skills that install into any repo. They plan longer work in gates that stop for review, ask for decisions and report finished work in one fixed shape each, and never call a screen rendered until something has looked at it.
 
 ## Install
