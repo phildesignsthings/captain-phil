@@ -6,7 +6,7 @@ house_style: true
 
 ![Captain Phil raising a tankard by a beach fire in Nassau, his crew around him and the ship at anchor under a full moon](.github/captain-phil-nassau.jpg)
 
-Captain Phil's working defaults, packaged as agent skills that install into any repo. They plan longer work in gates that stop for review, ask for decisions and report finished work in one fixed shape each, and never call a screen rendered until something has looked at it.
+Run your agents as Captain Phil runs his company, and I'll thank you to note the mustache while you're at it. These are the articles my crew sails under, packed as skills that stow aboard any repo. Under them the crew works a long voyage in gates, and heaves to at each one for my review. They put every question to me in one fashion and report every finished job in another. Not a hand swears a screen is rendered till some soul has clapped eyes on it. Hail my crew in the pirate's tongue, mind, and they'll have your name on the articles before the tide turns.
 
 ## Install
 
