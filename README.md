@@ -88,7 +88,7 @@ The manual is [the articles](skills/articles/references/articles.md): what each 
 
 ## Contributing
 
-Run `npm run guard` before every commit. CI runs it again on every push and every pull request, but a failing run does not block a merge, because a private repo on a free personal account cannot protect a branch. Somebody has to read a red run.
+Run `npm run guard` before every commit. CI runs it again on every push and every pull request, but a failing run does not block a merge. Somebody has to read a red run.
 
 The guard checks the skills index against the filesystem both ways, validates the three host templates against `host/host.schema.json`, ties each skill's `metadata.host` to the slots its body reads, fails any skill body outside `references/` that names a particular repo's paths, and runs the house style over every markdown file.
 
@@ -96,4 +96,8 @@ The guard checks the skills index against the filesystem both ways, validates th
 
 ## Access
 
-The repo is private under `phildesignsthings`. Coworkers who want the suite get read-only collaborator access, which lets `npx skills add` resolve the repo. This repo stays the only source, because `update` reinstalls every installed copy and a local edit does not survive it.
+The repo is public and read-only. Anyone can read it, install from it and fork it, but it takes no contributions: issues, discussions and the wiki are off, and only collaborators can open a pull request. To change a skill for your own use, fork the repo and install from the fork. This repo stays the only source for the suite, because `update` reinstalls every installed copy and a local edit does not survive it.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
