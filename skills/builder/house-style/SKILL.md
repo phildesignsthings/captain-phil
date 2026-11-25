@@ -20,9 +20,8 @@ compatibility: >-
   chat and the closing report, with no offer to record them and no question about a notes file.
   With notes absent, it asks once where they live, offering notes/<name>.md in the brain, and
   keeps them in the chat where nobody answers or no brain was found. With reference null or
-  absent, the repo's own code is
-  the only reference, and where the repo has none, it asks for one. Reads docs.index, git.trunk,
-  components.dir, checks.lint and checks.typecheck from the
+  absent, the repo's own code is the only reference, and where the repo has none, it asks for
+  one. Reads docs.index, git.trunk, components.dir, checks.lint and checks.typecheck from the
   host file found through captain.json, falling back to .agents/host.json. docs.index absent means
   the agent index at the repo root. git.trunk absent means the remote's default branch, and the
   working tree where the repo has no remote. components.dir absent means the folder the example

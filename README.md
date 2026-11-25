@@ -100,7 +100,22 @@ The manual is [the articles](skills/whole-sloop/articles/references/articles.md)
 - **Rollback** is `git revert` in the consuming repo, not a flag on the installer.
 - **Pinning** is not running `update`. The lock file records the hash a repo installed.
 - **Never hand-edit an installed skill.** `update` reinstalls from source and overwrites the edit without warning. Fix it in this repo, merge to `main`, then `npx skills update -p -y`.
-- **Migrate before you update.** Skills find a repo's host file through the brain's `captain.json`, and read the repo's own `.agents/host.json` only as a fallback that prints a warning. A later release drops the fallback, so move each host file into the brain before updating past it. [Migrating from the in-repo host file](captain/README.md#migrating-from-the-in-repo-host-file) holds the steps.
+- **Migrate before you update.** Skills find a repo's host file through the brain's `captain.json`, and read the repo's own `.agents/host.json` only as a fallback that prints a warning. A later release, v2, drops the fallback, so move each host file into the brain before updating to it. [Migrating from the in-repo host file](captain/README.md#migrating-from-the-in-repo-host-file) holds the steps, and [the v1 release notes](#v1) say what else the update needs.
+
+## Release notes
+
+### v1
+
+**What v1 adds.** v1 lets any designer drive the suite from their own brain repo, with Phil's taste as the default.
+
+- **The brain's `captain.json`.** One index file at the root of your brain lists each product repo and the place its host file is kept, plus your taste overrides, plans folder and tools. Every skill that reads the host file finds it through `captain.json`, and an offer to record an answer writes to the brain, never into the product repo. [The brain index spec](captain/README.md) holds the slots.
+- **The default taste.** `captain-phil-mode` loads a default taste and a default motion at session open, then your overrides on top. A `[bar]` rule holds whatever the overrides say, and a `[style]` rule is yours to change.
+- **Six skills.** `taste-grill` writes your overrides one question at a time. `plan-it` turns an idea into a gated plan. `test-plan`, `review-build` and `qa-run` write the checks before a build, review a commit against them through a fresh reviewer agent, and run them against a live build. `house-style` holds new code to the patterns of the repo's own code. [The articles](skills/whole-sloop/articles/references/articles.md) give each one's moment and hand.
+- **The reviewer's files are protected.** On its first run, `review-build` adds a rule to `~/.claude/settings.json` that stops a build session editing the test plans or the reviewer's own folder, unless you say no. The product repo is never touched.
+
+**Run the install command again, not only `update`.** `update` skips the six skills, because it walks the lock file and they are not in it. Step 1's install command adds them and leaves the rest alone.
+
+**Migrate before you update.** This release still reads a repo's own `.agents/host.json` when the brain has no host file for it, and prints a one-line warning naming `captain.json`. v2 drops that fallback, and a repo still relying on it then reads as having no host file. Move each host file into the brain and list its repo in `captain.json` before you update to v2. [Migrating from the in-repo host file](captain/README.md#migrating-from-the-in-repo-host-file) holds the steps.
 
 ## Contributing
 
