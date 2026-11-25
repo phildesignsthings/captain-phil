@@ -12,19 +12,20 @@ when_to_use: >-
   brief", "stakeholders sent us their deck", "we have no brand yet", "where does this work go".
 compatibility: >-
   Reads git.trunk, git.release, git.doc, memory.root, memory.connectors, memory.doc,
-  records.product, records.productTemplate, theme.registry, issues.tracker,
-  issues.ladder, issues.doc, issues.retired and checks.guard from .agents/host.json. With
-  memory.root null there are no project notes, so steps 2 and 3 do not run and the product record
-  comes from the interview alone. With records.product null the repo has no product record yet,
-  which is the absence step 4 exists to end: the path is agreed in one question and written back
-  into the host file. With records.productTemplate absent the record is filled from
-  assets/product-record.template.md. With theme.registry null the repo lists no themes and step 5
-  asks only whether an identity exists. With issues.ladder null, or issues.retired true, step 7
-  does not run.
+  records.product, records.productTemplate, theme.registry, issues.tracker, issues.ladder,
+  issues.doc, issues.retired and checks.guard from the host file found through captain.json
+  (references/captain-lookup.md), falling back to .agents/host.json. With memory.root null there are
+  no project notes, so steps 2 and 3 do not run and the product record comes from the interview
+  alone. With records.product null the repo has no product record yet, which is the absence step 4
+  exists to end: the path is agreed in one question and written back into the host file. With
+  records.productTemplate absent the record is filled from assets/product-record.template.md. With
+  theme.registry null the repo lists no themes and step 5 asks only whether an identity exists. With
+  issues.ladder null, or issues.retired true, step 7 does not run.
 metadata:
   suite: captain-phil
   hand: captain
   host: [git.trunk, git.release, git.doc, memory.root, memory.connectors, memory.doc, records.product, records.productTemplate, theme.registry, issues.tracker, issues.ladder, issues.doc, issues.retired, checks.guard]
+  captain: [products]
 ---
 
 # Start a project
@@ -73,7 +74,7 @@ Match each note by its own `read_when` header rather than by a filename this ski
 
 `records.product` must exist and must describe the product. Ask the designer which route produces it, then take that route once.
 
-**Where `records.product` is `null`, this step is what ends that.** Everywhere else in this suite a null slot is an answer and the step is skipped, and this is the one exception: the repo is saying it has no product record, and writing one is what the step is for. Agree the path in one question, write the file there, and write the path back into the host file so every later skill finds it. Write it in the shape the host file's own schema states, and validate the result against that schema: no guard runs in a consuming repo, so a slot written in the wrong shape is read as absent for months.
+**Where `records.product` is `null`, this step is what ends that.** Everywhere else in this suite a null slot is an answer and the step is skipped, and this is the one exception: the repo is saying it has no product record, and writing one is what the step is for. Agree the path in one question, write the file there, and write the path back into the brain's host file (`references/captain-lookup.md`, step 6) so every later skill finds it. Write it in the shape the host file's own schema states, and validate the result against that schema: no guard runs in a consuming repo, so a slot written in the wrong shape is read as absent for months.
 
 **Offer the Impeccable route only where the plugin is installed**, and treat its absence as ordinary: `ls ~/.claude/plugins/*/impeccable* 2>/dev/null` answers it in one call. Nothing mechanical depends on Impeccable, so the manual route is a first-class answer rather than a fallback.
 

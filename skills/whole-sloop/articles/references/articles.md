@@ -19,13 +19,13 @@ This file is the suite's manual. It installs with the `articles` skill into ever
 
 ## The host file
 
-Several skills need to know things only the repo can answer: which command starts the app, which branch a pull request goes to, where the design records live. The repo answers once in `.agents/host.json`, and every skill reads its answers by slot.
+Several skills need to know things only the repo can answer: which command starts the app, which branch a pull request goes to, where the design records live. The repo answers once in its host file, and every skill reads its answers by slot. The host file is kept in the designer's brain repo, and a skill finds it through the brain's `captain.json`, as each skill's `references/captain-lookup.md` describes. For one release, a repo's own `.agents/host.json` still works as a fallback, with a warning.
 
 - **A slot with a value** is the repo's answer, and the skill uses it.
 - **A `null` slot** means the repo has none of that thing, so the skill skips the step and says so in one line.
-- **An absent slot, or no host file at all,** means nobody answered. The skill runs the fallback its `compatibility` frontmatter names, and offers once to write the answer into the host file.
+- **An absent slot, or no host file at all,** means nobody answered. The skill runs the fallback its `compatibility` frontmatter names, and offers once to write the answer into the brain's host file, never into the repo.
 
-You fetch the host file separately from the skills, from one of three templates. [Step 2 of the README's install](https://github.com/phildesignsthings/captain-phil#step-2-the-host-file) holds the commands, and [the host file spec](https://github.com/phildesignsthings/captain-phil/blob/main/host/README.md) gives each slot's meaning and which skills read it.
+You fetch the host file separately from the skills, from one of three templates. [Step 2 of the README's install](https://github.com/phildesignsthings/captain-phil#step-2-the-host-file) holds the commands, [step 3](https://github.com/phildesignsthings/captain-phil#step-3-the-brains-captainjson) lists the repo in `captain.json`, and [the host file spec](https://github.com/phildesignsthings/captain-phil/blob/main/host/README.md) gives each slot's meaning and which skills read it.
 
 ## Gates
 

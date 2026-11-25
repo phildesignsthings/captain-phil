@@ -15,7 +15,8 @@ when_to_use: >-
   asking about issues".
 compatibility: >-
   Reads issues.ladder, issues.tracker, issues.doc, issues.ask, issues.retired, git.doc,
-  docs.local and checks.typecheck from .agents/host.json. With issues.ladder null or
+  docs.local and checks.typecheck from the host file found through captain.json
+  (references/captain-lookup.md), falling back to .agents/host.json. With issues.ladder null or
   issues.retired true the repo declares no rungs: the skill says so in one line and asks
   nothing. With issues.ask absent the rungs are read out of the ladder file directly. With
   issues.doc absent the rung words are read off the ladder file's own type or table.
@@ -23,6 +24,7 @@ metadata:
   suite: captain-phil
   hand: captain
   host: [issues.ladder, issues.tracker, issues.doc, issues.ask, issues.retired, git.doc, docs.local, checks.typecheck]
+  captain: [products]
 ---
 
 # Ask for the issue statuses
@@ -120,4 +122,4 @@ The repo tracks status somewhere else, so the ladder is machinery nobody reads. 
 3. Write the ruling into `docs.local`, carrying whatever frontmatter that folder requires: that the repo tracks status elsewhere, the date and who ruled it, and the tracker project name and URL the deletion dropped, so the link survives the ladder. Where `docs.local` is `null`, write it into the repo's docs folder instead, because the ruling holds for every branch.
 4. Point the answerer at the surface that carries the status control, with a link and the control's name.
 5. Run `checks.typecheck`, then note the deletion in the pull-request body's verification table.
-6. Set `issues.retired` to `true` in `.agents/host.json`, which is what stops this skill asking again.
+6. Set `issues.retired` to `true` in the brain's host file (`references/captain-lookup.md`, step 6), which is what stops this skill asking again.

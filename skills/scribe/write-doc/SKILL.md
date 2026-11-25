@@ -13,14 +13,16 @@ when_to_use: >-
   go".
 compatibility: >-
   Reads docs.root, docs.index, docs.glossary, docs.retired, docs.local, memory.root, memory.doc,
-  memory.gloss and checks.guard from .agents/host.json. With docs.root null, the repo keeps no
-  docs folder and a doc is written where the reader who needs it will be; with it absent, ask
-  once and offer to record the answer. With memory.root null, the repo keeps no project notes,
+  memory.gloss and checks.guard from the host file found through captain.json
+  (references/captain-lookup.md), falling back to .agents/host.json. With docs.root null, the repo
+  keeps no docs folder and a doc is written where the reader who needs it will be; with it absent,
+  ask once and offer to record the answer. With memory.root null, the repo keeps no project notes,
   so step 1 never routes content there. Without checks.guard, step 6 runs by hand.
 metadata:
   suite: captain-phil
   hand: scribe
   host: [docs.root, docs.index, docs.glossary, docs.retired, docs.local, memory.root, memory.doc, memory.gloss, checks.guard]
+  captain: [products]
 ---
 
 # Write a doc or a skill
@@ -51,7 +53,7 @@ Two calls that come up every time:
 
 | Slot | Set | `null` | Absent |
 |---|---|---|---|
-| `docs.root` | Write the doc there | The repo keeps no docs folder, so write the doc where the reader who needs it will be, and say so in one line | Ask once where the repo keeps its docs, then offer to record the answer in `.agents/host.json` |
+| `docs.root` | Write the doc there | The repo keeps no docs folder, so write the doc where the reader who needs it will be, and say so in one line | Ask once where the repo keeps its docs, then offer to record the answer in the brain's host file (`references/captain-lookup.md`, step 6) |
 | `docs.retired` | Write the retirement record there | Keep the record beside the doc it retires from, and say so in one line | Run the `null` behaviour, and offer to record the answer |
 | `docs.local` | Write a branch-local note there | Every note is repo-wide, so the convention goes in the doc that owns its topic | Run the `null` behaviour |
 
@@ -118,7 +120,7 @@ Where `docs.glossary` is `null` or absent, the repo keeps no glossary: define ea
 - **A doc gets a line in the read-when index at `docs.index`**, naming the trigger rather than the contents.
 - **A skill gets a line in that same index**, carrying its frontmatter `name` verbatim.
 
-Where `docs.index` is `null`, the repo runs no read-when index and the file is findable by search alone — say so in one line. Where the slot is absent, say the same and offer to record an index file in `.agents/host.json`.
+Where `docs.index` is `null`, the repo runs no read-when index and the file is findable by search alone — say so in one line. Where the slot is absent, say the same and offer to record an index file in the brain's host file (`references/captain-lookup.md`, step 6).
 
 ## 6. Self-check before handing back
 

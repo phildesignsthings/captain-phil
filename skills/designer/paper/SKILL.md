@@ -11,18 +11,20 @@ when_to_use: >-
   directions", "read this off the board", "work my Paper comments", "make a Paper file for
   this".
 compatibility: >-
-  Requires Paper Desktop running with the paper MCP server connected. Without it no step here
-  can run, so say so rather than describing a board from memory. Reads records.design,
-  surfaces.root, theme.dir, theme.registry, components.dir, components.registry,
-  components.showcase, docs.local and dev.platform from .agents/host.json. Every one of those is
-  read in step 2 alone, and a null or absent slot drops its line from the brief rather than stopping the
-  work. With no slot answered at all, step 2 reads the shipped screens directly and the brief
-  says which components it could not check. With dev.platform native, values come from the theme
-  file rather than from the running app, because a simulator has no DOM to read them off.
+  Requires Paper Desktop running with the paper MCP server connected. Without it no step here can
+  run, so say so rather than describing a board from memory. Reads records.design, surfaces.root,
+  theme.dir, theme.registry, components.dir, components.registry, components.showcase, docs.local
+  and dev.platform from the host file found through captain.json (references/captain-lookup.md),
+  falling back to .agents/host.json. Every one of those is read in step 2 alone, and a null or
+  absent slot drops its line from the brief rather than stopping the work. With no slot answered at
+  all, step 2 reads the shipped screens directly and the brief says which components it could not
+  check. With dev.platform native, values come from the theme file rather than from the running app,
+  because a simulator has no DOM to read them off.
 metadata:
   suite: captain-phil
   hand: designer
   host: [records.design, surfaces.root, theme.dir, theme.registry, components.dir, components.registry, components.showcase, docs.local, dev.platform]
+  captain: [products]
 ---
 
 # Work in Paper

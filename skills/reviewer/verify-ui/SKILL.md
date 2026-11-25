@@ -11,7 +11,8 @@ when_to_use: >-
   contrast", "prove this works", "the probe looks wrong".
 compatibility: >-
   Reads dev.start, dev.cwd, dev.url, dev.platform, verify.mcp, verify.probes, verify.doc,
-  verify.agent and checks.typecheck from .agents/host.json. With dev.platform native the
+  verify.agent and checks.typecheck from the host file found through captain.json
+  (references/captain-lookup.md), falling back to .agents/host.json. With dev.platform native the
   simulator does the looking, dev.url is the app's deep-link base, and every value is looked at
   rather than measured. With dev.url absent on native the scheme is read from the app's config;
   with it null the app takes no deep links, so every route is reached by taps from launch. With
@@ -23,6 +24,7 @@ metadata:
   suite: captain-phil
   hand: reviewer
   host: [dev.start, dev.cwd, dev.url, dev.platform, verify.mcp, verify.probes, verify.doc, verify.agent, checks.typecheck]
+  captain: [products]
 ---
 
 # Verify a UI change
@@ -37,7 +39,7 @@ The short version: start the app, look with `verify.mcp` or the simulator, asser
 
 1. Run `dev.start` from `dev.cwd`. Where the slot is `null`, the repo has no runnable app: say so in one line and stop, because nothing here can be verified by looking.
 2. Read the URL the server prints, rather than trusting `dev.url`. A dev server walks up from its default port whenever another process holds it, so the printed URL is the one that answers and the slot is the expectation. On native, keep `dev.url`. A bundler such as Metro prints the address its own client connects to, and that address is no deep-link base.
-3. Where `dev.start` is absent, ask once for the command, and offer to record it in `.agents/host.json`.
+3. Where `dev.start` is absent, ask once for the command, and offer to record it in the brain's host file (`references/captain-lookup.md`, step 6).
 4. Where `dev.platform` is `native`, boot a simulator before starting, and read `dev.url` as the app's deep-link base, such as `myapp://`. Where that slot is absent, read the URL scheme from the app's own config, and offer to record it. Where it is `null`, the app takes no deep links: say so in one line, and reach every route by tapping from launch.
 
 ## 2. Look

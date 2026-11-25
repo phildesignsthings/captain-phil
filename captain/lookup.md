@@ -31,9 +31,9 @@ The target is the folder the task names, or the working directory where the task
 | What `products` holds | What to do |
 |---|---|
 | One matching entry | Use it, and go to step 3. |
-| No match, and the target is the brain or a folder inside it | With one entry, use it. With several, ask once which product the task is for, naming each entry's `name` and `path`. |
+| No match, and the target is the brain or a folder inside it | With one entry, use it. With several, ask once which product the task is for, naming each entry's `name` and `path`. With none, say in one line that `captain.json` lists no product repo yet, and go on with no host file and no offer. |
 | No match, and the target is outside the brain | The repo has no entry. Make the offer in step 5, then go to step 4 for this run. |
-| An empty list, or no `products` key | Treat it as no match. |
+| An empty list, or no `products` key | Treat it as no match, and take whichever of the two rows above fits the target. |
 | `null` | The brain manages no product repos. Say so in one line, and go on with no host file and no offer. |
 
 ## 3. Read the entry's host file
@@ -48,10 +48,11 @@ A slot named `group.leaf` is the `leaf` key inside the host file's `group` objec
 
 ## 4. Fall back to the repo's own host file
 
-For one release, the suite reads a host file kept inside the product repo as a fallback, and a later release drops it. Walk up from the target to the first `.agents/host.json`.
+For one release, the suite reads a host file kept inside the product repo as a fallback, and a later release drops it. Walk up from the target to the first `.agents/host.json`, and stop at the root of the git repo that holds the target, because a host file above that root belongs to another folder. Where the target sits in no git repo, look in the target alone.
 
 - **Found.** Read the slots from it, and print this warning on its own line: "Read this repo's `.agents/host.json`. A later release stops reading it there: move it into your brain and list the repo in `captain.json` (https://github.com/phildesignsthings/captain-phil/blob/main/captain/README.md)."
-- **Not found, with a brain.** Read every slot as absent. Step 5's offer is the only line to print.
+- **Not found, after step 2 found no entry.** Read every slot as absent. Step 5's offer is the only line to print.
+- **Not found, after step 3 found no `host`.** Read every slot as absent, and print one line naming the entry: "The `<name>` entry in `<brain>/captain.json` has no `host`, so this skill has no host answers and runs its fallbacks."
 - **Not found, with no brain.** Read every slot as absent, and print one line: "No `captain.json` found, so this skill has no host answers and runs its fallbacks. To set one up, see https://github.com/phildesignsthings/captain-phil/blob/main/captain/README.md." Make no offer, because the suite never creates a brain.
 
 ## 5. Offer to add a missing entry

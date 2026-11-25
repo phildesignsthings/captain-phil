@@ -9,17 +9,19 @@ read_when:
 
 # The host file
 
-A portable skill never names a host repo's paths. The consuming repo answers a fixed questionnaire once in `.agents/host.json`, and every skill reads its answers by slot.
+A portable skill never names a host repo's paths. Each consuming repo answers a fixed questionnaire once, in a host file kept in the designer's brain repo, and every skill reads its answers by slot.
 
 ## Where it lives
 
-The file sits at `.agents/host.json` in the repo root. A script finds it by walking up from the working directory, so a skill invoked from a subfolder reads the same answers as one invoked from the root. A monorepo carries one file at its root and answers `dev.cwd` and `checks.cwd` with the package that runs.
+The file sits in the designer's brain, at the path the repo's `products` entry in `captain.json` gives as its `host`, such as `hosts/<repo>.json`. A skill finds it through [the lookup](../captain/lookup.md): it finds the brain, picks the entry whose `path` holds the working directory, and reads the file that entry's `host` names. A skill invoked from a subfolder matches the same entry, so it reads the same answers as one invoked from the root. A monorepo carries one entry at its root and answers `dev.cwd` and `checks.cwd` with the package that runs.
 
-Fill it by fetching a template and editing it. The templates live beside the skills in captain-phil rather than inside them, so an install does not put them in the consuming repo:
+For one release, a host file kept in the repo at `.agents/host.json` still works as a fallback. A skill walks up from the working directory to the repo's git root for it, and prints a warning naming `captain.json`. [Migrating from the in-repo host file](../captain/README.md#migrating-from-the-in-repo-host-file) moves it into the brain.
+
+Fill it by fetching a template into the brain and editing it. The templates live beside the skills in captain-phil rather than inside them, so an install does not put them in the consuming repo. Run this from the brain's root, with `NAME` set to the product repo's name:
 
 ```bash
-(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
-  --jq .content | base64 -d > .agents/host.json)
+(set -C; mkdir -p hosts && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
+  --jq .content | base64 -d > "hosts/${NAME:?set NAME to the repo name}.json")
 ```
 
 `host/templates/` carries three filled starting points: `minimal`, `react-web` and `react-native-expo`. Each one declares the template it came from in its `template` field, so a suite update can tell what a repo started from.
@@ -36,7 +38,7 @@ Every slot has three states, and the difference between the second and the third
 |---|---|---|
 | Present, carrying a value | The repo answered | Use it. Never guess over an answer. |
 | Present, set to `null` | The repo has none of that thing | Skip the step, say so in one line, and never ask. |
-| Absent, or no host file at all | Nobody answered | Run the skill's `compatibility` fallback, then offer to write the answer into `.agents/host.json`. |
+| Absent, or no host file at all | Nobody answered | Run the skill's `compatibility` fallback, then offer to write the answer into the host file in the brain. |
 
 A `null` is an answer. A skill that asks about a `null` slot is broken, because the repo already said it has none — and being asked the same question every session is how a suite gets uninstalled.
 
@@ -50,7 +52,7 @@ Three rules the schema enforces:
 - Every leaf accepts `null` alongside its type, so a repo can answer "we have none".
 - Every group is optional, so a repo answers what it knows and leaves the rest absent.
 
-**The schema does not travel with the host file, and a skill that writes a slot back has to carry the shape itself.** A template's `$schema` is a relative path valid inside this repo and nowhere else: a consuming repo copies the template to `.agents/host.json`, the path resolves to nothing, and nothing tells an editor or an agent what a value has to look like. Two slots hold structured values rather than strings — `records.design` and every entry under `checks` — so a skill that appends to one prints the shape in its own body. Driven without that, an agent wrote `records.design` as a list of paths, which the schema types as objects, and nothing in the consuming repo said otherwise.
+**The schema does not travel with the host file, and a skill that writes a slot back has to carry the shape itself.** A template's `$schema` is a relative path valid inside this repo and nowhere else: a designer copies the template into the brain, the path resolves to nothing, and nothing tells an editor or an agent what a value has to look like. Two slots hold structured values rather than strings — `records.design` and every entry under `checks` — so a skill that appends to one prints the shape in its own body. Driven without that, an agent wrote `records.design` as a list of paths, which the schema types as objects, and nothing in the consuming repo said otherwise.
 
 The file is JSON rather than YAML or markdown for two reasons. Scripts parse it with the standard library and no dependency — `wrap-gate/scripts/check-baseline.mjs` reads `checks` and writes baselines back under `--record`. A guard validates it against a schema.
 
@@ -108,11 +110,13 @@ A skill that reads any slot carries two frontmatter fields. `compatibility` stat
 
 ```yaml
 compatibility: >-
-  Reads dev.start, dev.url, verify.mcp and verify.probes from .agents/host.json. Without
+  Reads dev.start, dev.url, verify.mcp and verify.probes from the host file found through
+  captain.json (references/captain-lookup.md), falling back to .agents/host.json. Without
   verify.probes, every number is reported as looked at rather than measured.
 metadata:
   suite: captain-phil
   host: [dev.start, dev.url, verify.mcp, verify.probes]
+  captain: [products]
 ```
 
 The guard ties the three together: every `` `group.slot` `` written in a skill's body must exist in the schema and appear in that skill's `metadata.host`, and a skill declaring any slot must carry a `compatibility` line. A skill whose body reads a slot its frontmatter does not declare is a skill whose fallback nobody wrote.

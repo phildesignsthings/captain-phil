@@ -19,6 +19,7 @@ hooks:
 metadata:
   suite: captain-phil
   hand: whole-sloop
+  captain: [products, taste]
 ---
 
 # Captain Phil mode

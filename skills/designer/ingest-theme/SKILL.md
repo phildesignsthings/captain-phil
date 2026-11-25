@@ -10,20 +10,22 @@ when_to_use: >-
   filled. Trigger phrases "here is the tweakcn export", "rebrand this", "ingest
   this theme", "these are their brand colours", "fill in the brand theme".
 compatibility: >-
-  Reads theme.dir, theme.registry, theme.contract, theme.generator, theme.doc,
-  components.showcase, records.product, checks.guard, dev.start, dev.platform and verify.mcp from
-  .agents/host.json. With theme.generator null the values are transcribed by hand and the four
-  traps in references/theme-traps.md are checked by hand rather than reported. With theme.dir
-  null the repo carries one hardcoded look, so the ingest writes a single stylesheet and steps 4
-  and 6 collapse. With theme.registry null there is no list to register in: the file is the whole
-  theme. With components.showcase null there is no token page, so step 6 checks the theme on real
-  screens alone. With dev.platform native the simulator does step 6's looking, and every value is
-  looked at. With verify.mcp null on the web nothing can drive the app, so step 6 reads the file
-  instead of the screen and says so.
+  Reads theme.dir, theme.registry, theme.contract, theme.generator, theme.doc, components.showcase,
+  records.product, checks.guard, dev.start, dev.platform and verify.mcp from the host file found
+  through captain.json (references/captain-lookup.md), falling back to .agents/host.json. With
+  theme.generator null the values are transcribed by hand and the four traps in
+  references/theme-traps.md are checked by hand rather than reported. With theme.dir null the repo
+  carries one hardcoded look, so the ingest writes a single stylesheet and steps 4 and 6 collapse.
+  With theme.registry null there is no list to register in: the file is the whole theme. With
+  components.showcase null there is no token page, so step 6 checks the theme on real screens alone.
+  With dev.platform native the simulator does step 6's looking, and every value is looked at. With
+  verify.mcp null on the web nothing can drive the app, so step 6 reads the file instead of the
+  screen and says so.
 metadata:
   suite: captain-phil
   hand: designer
   host: [theme.dir, theme.registry, theme.contract, theme.generator, theme.doc, components.showcase, records.product, checks.guard, dev.start, dev.platform, verify.mcp]
+  captain: [products]
 ---
 
 # Ingest a theme

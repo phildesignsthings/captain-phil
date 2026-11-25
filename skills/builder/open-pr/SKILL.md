@@ -9,17 +9,19 @@ when_to_use: >-
   release branch up from the trunk. Trigger phrases "open a PR", "raise a PR", "ship this", "push
   this up", "catch main up".
 compatibility: >-
-  Reads git.trunk, git.release, git.doc, checks.typecheck, checks.lint,
-  checks.test, issues.ladder, issues.doc, verify.doc and dev.platform from .agents/host.json.
-  With dev.platform native, the verification table's rows are looked at off simulator screenshots
-  and written in the looked-at row format. Without
-  git.trunk, read the repo's default branch from `gh repo view` and say which base you picked.
-  With git.release null, the trunk is also the release branch and the § Variants catch-up does
-  not run. With issues.ladder null, no rung changes and the status ask is skipped in one line.
+  Reads git.trunk, git.release, git.doc, checks.typecheck, checks.lint, checks.test, issues.ladder,
+  issues.doc, verify.doc and dev.platform from the host file found through captain.json
+  (references/captain-lookup.md), falling back to .agents/host.json. With dev.platform native, the
+  verification table's rows are looked at off simulator screenshots and written in the looked-at row
+  format. Without git.trunk, read the repo's default branch from `gh repo view` and say which base
+  you picked. With git.release null, the trunk is also the release branch and the § Variants
+  catch-up does not run. With issues.ladder null, no rung changes and the status ask is skipped in
+  one line.
 metadata:
   suite: captain-phil
   hand: builder
   host: [git.trunk, git.release, git.doc, checks.typecheck, checks.lint, checks.test, issues.ladder, issues.doc, verify.doc, dev.platform]
+  captain: [products]
 ---
 
 # Open a PR
@@ -37,7 +39,7 @@ The short version: pick the base from `git.trunk` and the work's kind, run the c
 
 **A PR aimed at `git.release` is the one case to stop and ask about.** Where the slot is set, the repo separates its trunk from its release branch on purpose, and the catch-up in § Variants is the only PR that legitimately targets the release branch. Where the slot is `null`, the trunk is the release branch and this paragraph does not apply.
 
-Where `git.doc` is `null` or absent, the repo writes its branch convention down nowhere: say which base you picked and why in one line. Offer to record `git.trunk` in `.agents/host.json` where the slot is absent rather than `null`.
+Where `git.doc` is `null` or absent, the repo writes its branch convention down nowhere: say which base you picked and why in one line. Offer to record `git.trunk` in the brain's host file (`references/captain-lookup.md`, step 6) where the slot is absent rather than `null`.
 
 ## 2. Run the checks
 

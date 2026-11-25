@@ -13,6 +13,7 @@ argument-hint: '[skill or topic]'
 metadata:
   suite: captain-phil
   hand: whole-sloop
+  captain: [products]
 ---
 
 # The articles
@@ -25,7 +26,7 @@ The manual is `references/articles.md`. Read it before answering, and answer fro
 2. Give the three steps of the manual's "Where to start" section.
 3. List the moment headings of the manual's skills section, each with the names of its skills and nothing more.
 4. Mark any skill in the table that this session does not list as installed, and say that running the README's install again adds it.
-5. Say whether `.agents/host.json` exists at the repo root. Where it does not, say the skills run their fallbacks, and link step 2 of the README's install as the manual's host file section does.
+5. Resolve the host file through `references/captain-lookup.md`, and say where it was found: in the brain, in the repo's own `.agents/host.json` as the fallback, or nowhere. Where there is none, say the skills run their fallbacks, and link step 2 of the README's install as the manual's host file section does.
 6. Offer to explain any one skill or topic.
 
 ## With an argument

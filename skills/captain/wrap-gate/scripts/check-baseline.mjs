@@ -3,14 +3,18 @@
 // compared against a recorded baseline. The output addresses a designer, so the agent
 // can paste it into the report without translating it.
 //
-// The script looks for config in this order, walking up from cwd for each:
-//   1. <project>/.agents/host.json, reading its "checks" object
+// The script looks for config in this order:
+//   1. The repo's host file in the designer's brain, found through captain.json as
+//      references/captain-lookup.md describes, reading its "checks" object
 //        { "checks": { "cwd": "app",                   // optional, relative to the repo root
 //                      "lint": { "cmd": "npm run lint", "baseline": 5, "cwd": "." }, ... } }
-//   2. <project>/.claude/checks-baseline.json, with the checks one level deeper
+//   2. Walking up from cwd: <project>/.agents/host.json, the in-repo fallback, read the same way
+//      and only up to the git root, then <project>/.claude/checks-baseline.json, with the checks
+//      one level deeper
 //        { "cwd": "app", "checks": { ... } }
-//   A check's own "cwd" overrides the top-level one. Both are relative to the config's project root,
-//   which is the host file's grandparent and the baseline file's grandparent alike.
+//   A check's own "cwd" overrides the top-level one. Both are relative to the config's project root:
+//   the products entry's path for a host file in the brain, and the host file's grandparent or the
+//   baseline file's grandparent for the other two.
 // Without either, the script runs package.json's typecheck, lint, test and format scripts against
 // a baseline of 0, and says so.
 //
@@ -20,18 +24,131 @@
 //
 // Usage: node check-baseline.mjs [--record]
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, delimiter, dirname, join, resolve } from "node:path";
+import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { basename, delimiter, dirname, isAbsolute, join, relative, resolve } from "node:path";
 
 const RECORD = process.argv.includes("--record");
 
+const LOOKUP_URL = "https://github.com/phildesignsthings/captain-phil/blob/main/captain/README.md";
+
+// The nearest folder at or above `dir` that holds `.git`, or null outside a repo.
+function findGitRoot(dir) {
+  for (;;) {
+    if (existsSync(join(dir, ".git"))) return dir;
+    const up = dirname(dir);
+    if (up === dir) return null;
+    dir = up;
+  }
+}
+
+function readJson(path) {
+  try {
+    return { value: JSON.parse(readFileSync(path, "utf8")) };
+  } catch (error) {
+    return { error: error.message };
+  }
+}
+
+// True where `child` is `parent` or sits inside it. Both sides are real paths, because a skill
+// installed under a symlinked folder otherwise never matches its products entry.
+function inside(child, parent) {
+  const rel = relative(parent, child);
+  return rel === "" || (!rel.startsWith("..") && !isAbsolute(rel));
+}
+
+function real(path) {
+  return existsSync(path) ? realpathSync(path) : resolve(path);
+}
+
+// Steps 1 to 3 of references/captain-lookup.md. Returns { config } where the brain settles it (a
+// config, or null for "no host answers, run the fallback"), or { repoHost: true } where the lookup
+// falls back to the repo's own .agents/host.json. Every line the lookup prints goes into `notes`.
+function findBrainConfig(start, notes) {
+  const home = homedir();
+  const gitRoot = findGitRoot(start);
+  // `named` marks a folder the designer pointed at, where a missing index is worth a line. The
+  // working directory and its git root are only places to look.
+  const candidates = [start, gitRoot].filter(Boolean).map((d) => ({ dir: d, named: false }));
+  if (process.env.CAPTAIN_BRAIN) candidates.push({ dir: process.env.CAPTAIN_BRAIN, named: true });
+  const pointer = join(home, ".claude", "captain.json");
+  if (existsSync(pointer)) {
+    const p = readJson(pointer);
+    if (p.value?.brain) candidates.push({ dir: p.value.brain.replace(/^~(?=\/)/, home), named: true });
+  }
+  let index = null;
+  for (const { dir, named } of candidates) {
+    if (existsSync(join(dir, "captain.json"))) {
+      index = join(dir, "captain.json");
+      break;
+    }
+    if (named) notes.push(`${dir} holds no captain.json.`);
+  }
+  if (!index) return { repoHost: true, brain: null };
+
+  const brain = dirname(index);
+  const parsed = readJson(index);
+  if (parsed.error) {
+    notes.push(`${index} is not valid JSON (${parsed.error}), so no host file is read.`);
+    return { config: null };
+  }
+  const at = (p) => real(p.startsWith("~/") ? join(home, p.slice(2)) : resolve(brain, p));
+  const products = parsed.value.products;
+  if (products === null) {
+    notes.push(`${index} manages no product repos, so no host file is read.`);
+    return { config: null };
+  }
+  const list = Array.isArray(products) ? products.filter((p) => p && typeof p.path === "string") : [];
+  const here = real(start);
+  let entry = list
+    .filter((p) => inside(here, at(p.path)))
+    .sort((a, b) => at(b.path).length - at(a.path).length)[0];
+  if (!entry && inside(here, real(brain))) {
+    if (list.length === 1) entry = list[0];
+    else {
+      notes.push(
+        list.length
+          ? `${index} lists several products and none holds ${start}; name the product repo to check.`
+          : `${index} lists no product repo yet, so no host file is read.`,
+      );
+      return { config: null };
+    }
+  }
+  if (!entry) return { repoHost: true, brain: index };
+
+  if (!("host" in entry))
+    return {
+      repoHost: true,
+      brain: index,
+      noHost: `The \`${entry.name}\` entry in ${index} has no \`host\`, so this skill has no host answers and runs its fallbacks.`,
+    };
+  if (entry.host === null) {
+    notes.push(`The \`${entry.name}\` entry in ${index} sets \`host: null\`, so this repo has no host answers.`);
+    return { config: null };
+  }
+  const host = at(entry.host);
+  if (!existsSync(host)) {
+    notes.push(`${host} does not exist, so every host slot reads as absent.`);
+    return { config: null };
+  }
+  const h = readJson(host);
+  if (!h.error && "checks" in h.value)
+    return { config: { path: host, kind: "host", root: at(entry.path), checks: h.value.checks } };
+  return { config: null };
+}
+
 // Returns { path, kind, root } or null, plus `checks` for a host file. `kind` says where the checks
 // sit in the parsed file, and `root` is the directory every relative cwd resolves against. In each
-// directory the host file wins over the legacy one, so migrating a repo is one file move.
-function findConfig(dir) {
+// directory the host file wins over the legacy one, so migrating a repo is one file move. With
+// `repoHost` false the brain has already answered, and the repo's own host file is not read.
+function findConfig(dir, repoHost) {
+  // The in-repo host file belongs to the repo, so the walk for it stops at the git root, and a
+  // folder in no repo is looked in alone.
+  const gitRoot = findGitRoot(dir);
+  let hostStop = repoHost ? dir : null;
   for (;;) {
     const host = join(dir, ".agents", "host.json");
-    if (existsSync(host)) {
+    if (hostStop && existsSync(host)) {
       try {
         const parsed = JSON.parse(readFileSync(host, "utf8"));
         // `checks: null` is an answer, meaning the repo runs no automated checks, so it stops the
@@ -47,10 +164,30 @@ function findConfig(dir) {
     const legacy = join(dir, ".claude", "checks-baseline.json");
     if (existsSync(legacy))
       return { path: legacy, kind: "legacy", root: dir };
+    if (hostStop && (!gitRoot || dir === gitRoot)) hostStop = null;
     const up = dirname(dir);
     if (up === dir) return null;
     dir = up;
   }
+}
+
+function lookupConfig(start) {
+  const notes = [];
+  const brain = findBrainConfig(start, notes);
+  if (brain.config) return { config: brain.config, notes };
+  const config = findConfig(start, Boolean(brain.repoHost));
+  if (config?.kind === "host")
+    notes.push(
+      `Read this repo's \`.agents/host.json\`. A later release stops reading it there: move it into ` +
+        `your brain and list the repo in \`captain.json\` (${LOOKUP_URL}).`,
+    );
+  else if (brain.noHost) notes.push(brain.noHost);
+  else if (brain.repoHost && !brain.brain)
+    notes.push(
+      `No \`captain.json\` found, so this skill has no host answers and runs its fallbacks. ` +
+        `To set one up, see ${LOOKUP_URL}.`,
+    );
+  return { config, notes };
 }
 
 // Keys in a "checks" block that are settings rather than checks. A host file's "checks" carries
@@ -67,7 +204,8 @@ function findPackageRoot(dir) {
   }
 }
 
-const config = findConfig(process.cwd());
+const { config, notes: lookupNotes } = lookupConfig(process.cwd());
+for (const line of lookupNotes) console.log(line);
 const configPath = config?.path ?? null;
 let cwd, checks, note;
 if (config?.kind === "host" && config.checks === null) {
