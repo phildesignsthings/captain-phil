@@ -104,7 +104,7 @@ Show the designer the card, and ask once whether to save it.
 
 ### 7. Close
 
-Tell the designer the file's path, the flow count and the tier, and that the build aims at these checks. Where the move in step 6 went through, say in one line that the build can still edit the test plan, and that `review-build` sets up the permission rule on its first run.
+Tell the designer the file's path, the flow count and the tier, and that the build aims at these checks. Where the move in step 6 went through, say in one line that the build can still edit the test plan, and that `review-build` sets up the permission rule on its next run.
 
 ## When you need
 

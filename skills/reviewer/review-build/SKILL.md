@@ -3,8 +3,9 @@ name: review-build
 description: >-
   Reviews one finished commit against the test plan written before it, through a fresh-context
   reviewer agent that reads the diff cold, and reports each finding tagged important, nit or
-  pre-existing with its file and line. It stays read-only on the repo, and on its first run it
-  sets up the permission rule that keeps the build from editing the reviewer's files.
+  pre-existing with its file and line. It stays read-only on the repo, and whenever a part of the
+  permission rule is missing, as on its first run, it sets up the rule that keeps the build from
+  editing the reviewer's files.
 when_to_use: >-
   Use when a build has a commit or a pull request ready for review, when a designer asks for a
   code review against the checks, or when a later round of fixes needs reviewing again. Trigger
@@ -50,13 +51,13 @@ The short version: pin the commit, make a fresh worktree at it, read the rules f
 
 Resolve the `plans` slot and the product through `references/captain-lookup.md`. The test plan and the checklist sit in `<plans>/tests/`, which the permission rule protects. Reports go in `<plans>/reviews/`, outside it, because a report judges nothing. Take the test plan the designer names, or the one whose `build` matches the commit. Where none matches, ask once for its path, and offer `test-plan` where there is none.
 
-### 2. Set up the permission rule, on the first run
+### 2. Set up the permission rule, wherever a part of it is missing
 
 Fill in `assets/reviewer-permissions.json` as `references/permission-rule.md` says, and read `~/.claude/settings.json`. Where its `permissions.deny` holds all three filled rules, go to step 3. Each product repo installs its own `review-build` folder, so the first run from a second repo finds that one rule missing and adds it alone.
 
 Where any rule is missing, follow `references/permission-rule.md`:
 
-1. Where `~/.claude/agents/reviewer.md` is missing or differs from `assets/reviewer.agent.md` (`cmp -s`), offer to install the agent first, while the copy can still go through.
+1. Where `~/.claude/agents/reviewer.md` is missing or differs from `assets/reviewer.agent.md` (`cmp -s`), offer to install the agent first. Where the agent's own rule is among the missing ones, the copy goes through. Where that rule is already in place, as on a second repo's first run after a suite update, the copy is refused, and `references/permission-rule.md` § The reviewer's own writes prints it for the designer to run.
 2. Show the designer the missing rules, and merge them in after a yes. A no is final for the session: say in one line that the build can edit the reviewer's files, and carry on.
 
 ### 3. Pin the commit and the round
