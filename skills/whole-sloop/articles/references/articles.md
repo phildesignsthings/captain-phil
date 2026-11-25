@@ -13,9 +13,10 @@ This file is the suite's manual. It installs with the `articles` skill into ever
 
 ## Where to start
 
-1. Invoke `captain-phil-mode` at the start of a session. It turns on checklists that call the matching skill before a question, a commit or a hand-back, so most skills run without being named.
-2. Invoke `confirm-scope` with a request written in prose, where the mode is not on. It reads the request back and waits for a go.
-3. Invoke a skill by name where the moment is clear, such as `open-pr` to raise the work or `verify-ui` to check a screen rendered.
+1. Put a `captain.json` at the root of your brain repo, the repo that holds your taste, plans and notes. It lists each product repo with the place its host file is kept, and names your taste overrides file. [Step 3 of the README's install](https://github.com/phildesignsthings/captain-phil#step-3-the-brains-captainjson) fetches a filled template. Without it, a skill reads the repo's own `.agents/host.json` with a warning for one release, and runs its fallback where the repo has none.
+2. Invoke `captain-phil-mode` at the start of a session. It loads the default taste with the overrides your `captain.json` names, and turns on checklists that call the matching skill before a question, a commit or a hand-back, so most skills run without being named.
+3. Invoke `confirm-scope` with a request written in prose, where the mode is not on. It reads the request back and waits for a go.
+4. Invoke a skill by name where the moment is clear, such as `open-pr` to raise the work or `verify-ui` to check a screen rendered.
 
 ## The host file
 
