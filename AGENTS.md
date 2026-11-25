@@ -8,10 +8,10 @@ This repo publishes agent skills that install into other people's repos. Every r
 
 ## What this repo is
 
-- `skills/<name>/SKILL.md` is one skill. Its `references/`, `scripts/` and `assets/` folders install with it and are the only things it can read off disk.
+- `skills/<hand>/<skill>/SKILL.md` is one skill, filed under the hand that would run it. Its `references/`, `scripts/` and `assets/` folders install with it and are the only things it can read off disk. The installer drops the hand folder, so a consuming repo gets `.agents/skills/<skill>/` and reads the hand only from `metadata.hand`. The articles' `## Hands` section lists every hand and its skills.
 - `host/` is the questionnaire a consuming repo fills in at `.agents/host.json`, its schema, and three filled templates. **The installer copies skills and nothing else, so `host/` never reaches a consuming repo** — that is why the README's install is two steps, and why a template is fetched rather than copied. Read [the host file spec](host/README.md) before touching a slot.
 - `scripts/skills-guard.mjs` enforces the invariants. Run `npm run guard` before every commit.
-- `skills/articles/references/articles.md` indexes the skills, and is the suite's manual. It lives inside a skill so it installs, where `README.md` never reaches a consuming repo. A skill and its table row land in the same commit. `README.md` holds the install and points at the articles.
+- `skills/whole-sloop/articles/references/articles.md` indexes the skills, and is the suite's manual. It lives inside a skill so it installs, where `README.md` never reaches a consuming repo. A skill and its table row land in the same commit. `README.md` holds the install and points at the articles.
 - `npm run link-skills` links every skill into `.claude/skills/`, so a session here runs the working copy. The links are gitignored, because a committed one would sit in the repo the installer clones. Run it again after adding, renaming or deleting a skill.
 
 ## The rules
@@ -19,22 +19,22 @@ This repo publishes agent skills that install into other people's repos. Every r
 - **A portable skill names no host repo's paths.** Apply the generic-versus-host test to every sentence: would the rule hold in a repo that shares none of this one's files? Yes, and it is bundled under the skill's `references/`. No, and it cites the host file by slot.
 - **A skill that reads a slot declares it twice** — in `compatibility` as the prose fallback, and in `metadata.host` as the machine-readable list. The guard fails a body that reads an undeclared slot.
 - **A `null` slot is an answer.** The repo said it has none of that thing, so the skill skips the step, says so in one line, and never asks.
-- **Never put a `SKILL.md` anywhere but `skills/<name>/SKILL.md`.** The installer treats every `SKILL.md` it finds as a skill named after its parent folder, so a stray one publishes a skill nobody wrote.
-- **A bundled script compares REAL paths in its main-module guard.** A skill installs as `.agents/skills/<name>/` with `.claude/skills/<name>` symlinked at it, so `import.meta.url` is resolved while the entry path a user types is not. Comparing the two raw strings makes the script exit 0 having run nothing, and a check that silently passes is worse than no check. Use `realpathSync` on both sides, as `skills/write-doc/scripts/house-style.mjs` does.
+- **Never put a `SKILL.md` anywhere but `skills/<hand>/<skill>/SKILL.md`.** The installer treats every `SKILL.md` it finds as a skill named after its parent folder, so a stray one publishes a skill nobody wrote. One in a hand folder publishes the hand as a skill. Installs are flat, so two skills of one name under different hands install over each other.
+- **A bundled script compares REAL paths in its main-module guard.** A skill installs as `.agents/skills/<name>/` with `.claude/skills/<name>` symlinked at it, so `import.meta.url` is resolved while the entry path a user types is not. Comparing the two raw strings makes the script exit 0 having run nothing, and a check that silently passes is worse than no check. Use `realpathSync` on both sides, as `skills/scribe/write-doc/scripts/house-style.mjs` does.
 - **Never add a dependency.** `package.json` is `private` with no `dependencies`, and the guard runs on the standard library alone. A guard that needs an install step is a guard that stops running.
 - **Cite a bundled reference by its path inside the skill** — `references/criteria.md`, never a path that walks out of the folder. An installed skill is one directory and nothing above it exists.
-- **Write to the house style.** `skills/write-doc/scripts/house-style.mjs` is the single copy of the mechanical rules; the guard runs it over every markdown file in the repo.
+- **Write to the house style.** `skills/scribe/write-doc/scripts/house-style.mjs` is the single copy of the mechanical rules; the guard runs it over every markdown file in the repo.
 - **Run a command verbatim before writing it down.** Every command this repo hands a user gets pasted into an empty directory first, and the result read. Two rounds shipped a command nobody had run: a `cp` whose path only resolves inside captain-phil, and a single-agent install that writes twenty-four real copies instead of symlinks. Both die in ten seconds in a scratch directory.
 - **The install command has one home, and it is `README.md`.** Anywhere else cites step 1 or step 2 by name rather than repeating the flags. A second copy is a copy that keeps the old flags: the commit that took `--all` out of the README left it in this file, and the whole subject of that commit was removing `--all`.
 
 ## Adding a skill
 
-1. Create `skills/<name>/SKILL.md` with `name`, `description` and `when_to_use` folded as `>-`.
-2. Set `metadata.suite: captain-phil`, and `metadata.host` where the skill reads any slot.
+1. Create `skills/<hand>/<skill>/SKILL.md` with `name`, `description` and `when_to_use` folded as `>-`. The folder is named after the skill and sits in the folder of the hand that runs it.
+2. Set `metadata.suite: captain-phil`, `metadata.hand` to that hand, and `metadata.host` where the skill reads any slot.
 3. Write `compatibility` naming the fallback for every slot listed.
 4. Add `argument-hint` where the body reads `$1`.
 5. Bundle whatever the skill reads off disk under `references/`, `scripts/` or `assets/`.
-6. Add one row to the `## Skills` table in `skills/articles/references/articles.md`, under the moment the skill runs, saying what it does.
+6. Add one row to the `## Skills` table in `skills/whole-sloop/articles/references/articles.md`, under the moment the skill runs, saying what it does. Add the skill to its hand's bullet in the `## Hands` section.
 7. Run `npm run link-skills`.
 8. Run `npm run guard`.
 
