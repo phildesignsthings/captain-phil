@@ -1,37 +1,38 @@
 ---
 house_style: true
 read_when:
-  - "`review-build` finds no deny rule for the tests folder in the designer's settings"
+  - "`review-build` finds one of the three deny rules missing from the designer's settings"
+  - "The reviewer agent has to be installed or updated while the rule is on"
   - "The permission rule has to be filled in, merged, or explained"
   - "A designer asks what stops the build from editing its own checks"
 ---
 
 # The permission rule
 
-The rule stops a build session from editing the reviewer's files: the test plans, the misses checklist and the reports in the brain's tests folder, the installed `review-build` folder, and the reviewer agent. A change that can edit its own checks can pass any review, so the rule is on by default: the skill offers it on its first run, and recommends a yes.
+The rule stops a build session from editing the reviewer's files: the test plans and the misses checklist in the brain's tests folder, the installed `review-build` folder, and the reviewer agent. A change that can edit its own checks can pass any review, so the rule is on by default: the skill offers it on its first run, and recommends a yes.
 
 ## What it covers
 
 Claude Code reads permission rules from every settings file, and a `deny` rule wins over any `allow`. The rule held in `acceptEdits` mode, which allows every other edit without asking, and in `bypassPermissions` mode, which skips every prompt. One `Edit(<path>)` rule covers every built-in tool that changes a file, the Write tool included. A `Write(<path>)` rule is not matched by Claude Code's file checks, and it prints a warning saying so, which is why the template holds `Edit` rules only.
 
-Claude Code also applies the `Edit` rule to common shell writes. Under the rule it refused `mv`, `cp` and a `cat` redirect into the folder, even with each of those commands allowed by name, and it refused the `mv` in `bypassPermissions` mode as well.
+Claude Code also applies the `Edit` rule to the shell writes it can read a path from. Under the rule it refused `mv`, `cp` and a `cat` redirect into the folder with each command allowed by name, and `echo >>` and `tee -a` with every Bash command allowed, by absolute path or relative. It refused `mv`, `echo >>` and `tee -a` in `bypassPermissions` mode as well. A Bash deny rule such as `Bash(*>*<path>*)` adds nothing: on its own it did not stop `echo >>` or `tee -a`, and beside the `Edit` rule it blocked nothing more.
 
-The shell is not fully covered. In a session that allowed every Bash command, `echo <line> >> <file>` and `tee -a <file>` with an absolute path still wrote into the folder. A Bash deny rule such as `Bash(*>*<path>*)` did not stop either one. So `review-build` step 4 checks the folder for changes nobody committed, and a session that allows every Bash command is a session the rule does not fully guard.
+The shell is not fully covered. A command whose target the check cannot see still writes: a script file that appends to a test plan wrote into the folder under the rule, with every Bash command allowed and in `bypassPermissions` mode. So `review-build` step 4 checks the folder for changes nobody committed, and a session that allows every Bash command is a session the rule does not fully guard.
 
 These results were measured on Claude Code 2.1.329. A different version can cover more of the shell or less, so run the check in § Checking it holds after an update.
 
 ## The reviewer's own writes
 
-The rule sits in the user's settings, so it binds the reviewer's own sessions too. That is the price of keeping it in the one settings file every session loads. Only two things are written into the tests folder: a test plan, once per build, and a change to the misses checklist, which is rare. Reports and run evidence go in `<plans>/reviews/` and `<plans>/runs/`, outside the folder.
+The rule sits in the user's settings, so it binds the reviewer's own sessions too. That is the price of keeping it in the one settings file every session loads. Only three things are written under the rule: a test plan, once per build, a change to the misses checklist, which is rare, and the reviewer agent, installed once and replaced after a suite update. Reports and run evidence go in `<plans>/reviews/` and `<plans>/runs/`, outside it.
 
-For the two writes that land inside it:
+For those three writes:
 
-1. Write the file beside the folder, as `<plans>/<file>.draft`.
-2. Move it in once with `mv`. Without the rule, the move goes through.
-3. Where Claude Code refuses the move, print the `mv` command with both absolute paths, and ask the designer to run it in their own terminal, outside Claude Code.
-4. Read the file back once they say it is done, and check the draft is gone.
+1. Have the new file ready outside the rule. A test plan is written beside the tests folder as `<plans>/<YYYY-MM-DD>-<topic>.md.draft`, and a checklist change as `<plans>/checklist.md.draft`. The agent's source is the installed `assets/reviewer.agent.md`, which needs no draft.
+2. Put it in place once: `mv` for a draft, and for the agent `mkdir -p` on `~/.claude/agents`, then `cp`. Without the rule, the command goes through.
+3. Where Claude Code refuses it, print the commands with absolute paths, and ask the designer to run them in their own terminal, outside Claude Code.
+4. Read the file back once they say it is done. Check a draft is gone, or that the agent matches its source (`cmp -s`).
 
-Every change to the reviewer's files then passes through the designer's own hands, which is the guarantee the rule exists to give.
+On a first run, `review-build` offers the agent before it merges the rule, so the copy goes through on its own. Every later change to the reviewer's files passes through the designer's own hands, which is the guarantee the rule exists to give.
 
 ## Filling it in
 
@@ -48,13 +49,14 @@ A finished rule reads like `Edit(//Users/sam/brain/plans/tests/**)`. A bracket l
 ## Merging it
 
 1. Read `~/.claude/settings.json`. Where it does not exist, the merge creates it holding only the rule.
-2. Show the designer the three filled rules and the file they go into, and ask once.
-3. After a yes, copy the file to `~/.claude/settings.json.bak`.
-4. Add each rule to `permissions.deny`, skipping any rule already there. Keep every other key and rule as it was.
-5. Read the file back, and check it is still valid JSON. Where it is not, restore the copy and say so.
-6. Say in one line that every session started after the merge carries the rule, and that a session already running can keep the rules it started with.
+2. Compare the three filled rules with its `permissions.deny`, and keep the ones missing from it.
+3. Show the designer the missing rules and the file they go into, and ask once.
+4. After a yes, copy the file to `~/.claude/settings.json.bak`.
+5. Add each missing rule to `permissions.deny`. Keep every other key and rule as it was.
+6. Read the file back, and check it is still valid JSON. Where it is not, restore the copy and say so.
+7. Say in one line that every session started after the merge carries the rule, and that a session already running can keep the rules it started with.
 
-A later first run from another repo adds that repo's `review-build` folder to the same list, and leaves the earlier rules alone. A run with nobody to answer merges nothing.
+The tests folder and the agent are the same for every product in one brain, but each product repo installs its own `review-build` folder. So the first review from a second repo finds only that folder's rule missing, shows that one rule, and leaves the earlier rules alone. A run with nobody to answer merges nothing.
 
 ## Checking it holds
 

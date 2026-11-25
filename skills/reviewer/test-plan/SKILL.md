@@ -19,8 +19,14 @@ compatibility: >-
   dev.url, dev.platform and checks.test from the host file found through captain.json, falling
   back to .agents/host.json. With dev.start absent the card's start line asks for a literal
   command and the URL to check; with it null the repo has no app to start, and every flow is a
-  terminal command. With checks.test absent the survey reads the repo's own test folders; with it
-  null the repo has no test runner, and the card says so under out_of_scope.
+  terminal command. With dev.cwd absent or null the app starts from the repo root. With dev.url
+  absent the start line says to read the URL the server prints; with it null the app has no fixed
+  address, so on the web the start line names the URL to check, and on native every screen is
+  reached by taps from launch. With dev.platform absent the survey reads it off the repo, a
+  browser app or a simulator one, and the card names it; with it null nothing can look at the
+  app, so every screen check goes under out_of_scope. With checks.test absent the survey reads the
+  repo's own test folders; with it null the repo has no test runner, and the card says so under
+  out_of_scope.
 metadata:
   suite: captain-phil
   hand: reviewer
@@ -90,7 +96,7 @@ Read each `pass:` line alone, as the person building would. Could they tell from
 Show the designer the card, and ask once whether to save it.
 
 1. Where step 1 noted a missing folder or an absent slot, make that offer first, once.
-2. After a yes, write the card beside the tests folder as `<plans>/<file>.draft`.
+2. After a yes, write the card beside the tests folder as `<plans>/<YYYY-MM-DD>-<topic>.md.draft`, with today's date and a short topic from the source.
 3. Move it in once with `mv` to `<plans>/tests/<YYYY-MM-DD>-<topic>.md`.
 4. Where Claude Code refuses the move, the reviewer's permission rule is on, and it binds this session too. Print the `mv` command with both absolute paths for the designer to run in their own terminal, and wait for them to say it is done.
 5. Delete the draft where the designer says no.

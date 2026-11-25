@@ -20,8 +20,13 @@ compatibility: >-
   Reads dev.start, dev.cwd, dev.url, dev.platform and checks.test from the host file found
   through captain.json, falling back to .agents/host.json. With dev.start absent the plan's
   literal start command is used, and asked for where the plan has none; with it null the repo has
-  no app to start, and only terminal flows run. With dev.url absent the URL the server prints is
-  used. With checks.test absent or null, every scripted flow is run from the plan's own steps.
+  no app to start, and only terminal flows run. With dev.cwd absent or null the app starts from the
+  worktree's root. With dev.url absent the URL the server prints is used; with it null the app has
+  no fixed address, so on the web the plan's URL is used, and on native every screen is reached by
+  taps from launch. With dev.platform absent it is read off the plan's start line and the repo, a
+  browser app or a simulator one, and the report names it; with it null nothing can look at the
+  app, so every screen flow is reported under Didn't test. With checks.test absent or null, every
+  scripted flow is run from the plan's own steps.
 metadata:
   suite: captain-phil
   hand: reviewer

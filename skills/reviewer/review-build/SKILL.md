@@ -52,13 +52,18 @@ Resolve the `plans` slot and the product through `references/captain-lookup.md`.
 
 ### 2. Set up the permission rule, on the first run
 
-Read `~/.claude/settings.json`. Where its `permissions.deny` holds no rule naming this tests folder, follow `references/permission-rule.md`: fill in `assets/reviewer-permissions.json`, show the designer the rules, and merge them in after a yes. A no is final for the session: say in one line that the build can edit the reviewer's files, and carry on.
+Fill in `assets/reviewer-permissions.json` as `references/permission-rule.md` says, and read `~/.claude/settings.json`. Where its `permissions.deny` holds all three filled rules, go to step 3. Each product repo installs its own `review-build` folder, so the first run from a second repo finds that one rule missing and adds it alone.
+
+Where any rule is missing, follow `references/permission-rule.md`:
+
+1. Where `~/.claude/agents/reviewer.md` is missing or differs from `assets/reviewer.agent.md` (`cmp -s`), offer to install the agent first, while the copy can still go through.
+2. Show the designer the missing rules, and merge them in after a yes. A no is final for the session: say in one line that the build can edit the reviewer's files, and carry on.
 
 ### 3. Pin the commit and the round
 
 1. Resolve what the designer named to one SHA (`git rev-parse <ref>`). For a pull request, read its head and its base.
 2. Resolve the base: the pull request's base, then `git.trunk`, then the remote's default branch. Run `git fetch` first, and diff against `origin/<base>`, never a local branch that can lag.
-3. Count the round from the reports in `<plans>/reviews/` for this test plan. A fourth round stops here, under the three-rounds rule.
+3. Count the round from the reports in `<plans>/reviews/` for this test plan. Where there is nowhere to save reports, ask the designer which round this is. A fourth round stops here, under the three-rounds rule.
 4. Make a fresh worktree at the SHA: `git worktree add --detach <scratch folder>/review-<short sha> <sha>`, in a scratch folder outside the repo.
 
 ### 4. Read the rules from outside the change
@@ -70,7 +75,7 @@ Read `~/.claude/settings.json`. Where its `permissions.deny` holds no rule namin
 
 ### 5. Hand the diff to the reviewer agent
 
-Dispatch the `reviewer` agent with the SHA, the worktree path, the base, the test plan's path and the triggered checklist items. Where no `reviewer` agent is installed, offer to copy `assets/reviewer.agent.md` to `~/.claude/agents/reviewer.md`, never into the product repo. Until it is installed, give a fresh general-purpose subagent that file's body as its brief.
+Dispatch the `reviewer` agent with the SHA, the worktree path, the base, the test plan's path and the triggered checklist items. Where no `reviewer` agent is installed, or the installed one differs from `assets/reviewer.agent.md` after a suite update, offer to install it at `~/.claude/agents/reviewer.md`, never into the product repo. The rule covers that file, so follow `references/permission-rule.md` § The reviewer's own writes: try the copy once, and where it is refused, print it for the designer to run. Until the agent is installed, give a fresh general-purpose subagent that file's body as its brief.
 
 Where the diff spans several areas, such as data, layout and tests, dispatch one reviewer per area in parallel, each told which area is theirs.
 

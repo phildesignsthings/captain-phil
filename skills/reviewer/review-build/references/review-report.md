@@ -53,7 +53,7 @@ Commit messages and trailers are outside `git diff`. Where a checklist item is a
 
 ## Rounds
 
-- **A round is one review of one pinned commit.** Its report is saved as `<plans>/reviews/<test plan name>-r<n>.md`, so the next round counts from disk.
+- **A round is one review of one pinned commit.** Its report is saved as `<plans>/reviews/<test plan name>-r<n>.md`, so the next round counts from disk. Where there is nowhere to save it, ask the designer which round this is.
 - **A later round starts from the last one.** Read the previous report, check each of its findings against this round's commit first, and say which are fixed. Then read the part of the diff that changed since the previous round's commit (`git diff <previous sha> <sha>`).
 - **Three rounds, then the designer.** Where the same check fails a third time, the report ends with that check, its three results, and one line handing it to the designer. There is no fourth round.
 
