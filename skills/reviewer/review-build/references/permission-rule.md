@@ -9,7 +9,7 @@ read_when:
 
 # The permission rule
 
-The rule stops a build session from editing the reviewer's files: the test plans and the misses checklist in the brain's tests folder, the installed `review-build` folder, and the reviewer agent. A change that can edit its own checks can pass any review, so the rule is on by default: the skill offers it on its first run, and recommends a yes.
+The rule stops a build session from editing the reviewer's files: the test plans and the misses checklist in the brain's tests folder, the installed `review-build` folder, and the reviewer agent. A change that can edit its own checks can pass any review, so the rule is on by default: the skill offers it on its first run, and on any later run that finds a part of it missing, and recommends a yes.
 
 ## What it covers
 
@@ -32,7 +32,7 @@ For those three writes:
 3. Where Claude Code refuses it, print the commands with absolute paths, and ask the designer to run them in their own terminal, outside Claude Code.
 4. Read the file back once they say it is done. Check a draft is gone, or that the agent matches its source (`cmp -s`).
 
-On a first run, `review-build` offers the agent before it merges the rule, so the copy goes through on its own. Every later change to the reviewer's files passes through the designer's own hands, which is the guarantee the rule exists to give.
+Where the agent's own rule is among the missing ones, as on the very first run, `review-build` offers the agent before it merges the rules, so the copy goes through on its own. Where that rule is already in place, the copy is refused at step 2, and steps 3 and 4 put it in place. Every later change to the reviewer's files passes through the designer's own hands, which is the guarantee the rule exists to give.
 
 ## Filling it in
 

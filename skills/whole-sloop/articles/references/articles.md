@@ -113,6 +113,7 @@ Each group names a moment. The five after Switching on are `captain-phil-mode`'s
 | Skill | What it does |
 |:---|:---|
 | `new-screen` | Builds a screen inside an existing surface: proposes the layout, the density and one hero moment, waits for your nod, then builds all four data states |
+| `house-style` | Makes new code read like the repo's own: finds the example code to copy, writes its patterns into your brain's notes before the first edit, holds the change to them, and ends with `tidy-comments` |
 | `add-primitive` | Installs a missing component from the component library and adds it to the repo's catalogue with a full spec sheet |
 | `ingest-theme` | Turns a designer's theme export or brand colours into the repo's theme, registers it everywhere a theme has to appear, and checks it rendered |
 
@@ -154,7 +155,7 @@ Each skill also belongs to one hand, the member of the crew who would run it. Th
 - **captain**: start-project, gate, wrap-gate, ask-issue-status
 - **navigator**: run-spike, drift-check, workflow-reflection, plan-it
 - **designer**: paper, get-creative, ingest-theme, new-surface, taste-grill
-- **builder**: new-screen, add-primitive, receive-prototype, tidy-comments, open-pr
+- **builder**: new-screen, add-primitive, receive-prototype, tidy-comments, open-pr, house-style
 - **reviewer**: verify-ui, audit-design, test-plan, review-build, qa-run
 - **scribe**: write-doc, record-design, freeze-memory
 
