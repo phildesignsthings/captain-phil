@@ -64,10 +64,10 @@ Two cases are particular to `captain.json`:
 
 For one release, a skill that finds no host file in the brain reads the product repo's `.agents/host.json` and prints a one-line warning naming `captain.json`. A later release drops the fallback, and a repo still relying on it then reads as having no host file.
 
-To migrate a product repo, run this from its root, with `BRAIN` set to the brain's folder and `NAME` to the repo's entry name:
+To migrate a product repo, run this from its root, with `BRAIN` set to the brain's folder and `NAME` to the repo's entry name. It copies the host file into the brain, and leaves a host file already there untouched:
 
 ```bash
-mkdir -p "$BRAIN/hosts" && (set -C; cp .agents/host.json "$BRAIN/hosts/$NAME.json")
+mkdir -p "$BRAIN/hosts" && cp -n .agents/host.json "$BRAIN/hosts/$NAME.json"
 ```
 
 Then add the repo's entry to the brain's `products`, with `host` set to `hosts/<name>.json`, and delete `.agents/host.json` from the product repo. A skill run in a repo with no entry makes the same offer, and copies the in-repo host file across when the designer says yes.
