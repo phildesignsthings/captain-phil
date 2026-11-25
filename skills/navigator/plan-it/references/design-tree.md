@@ -38,7 +38,7 @@ Where an answer about purpose is personal, record only the rule it produces, and
 ## What gets a question
 
 - **A decision that is costly or hard to undo** gets a question.
-- **A cheap, reversible detail,** such as a label, an icon or a file name, gets a written default marked as the builder's call, and no question.
+- **A cheap, reversible detail,** such as a label, an icon or a file name, gets a written default marked as the builder's call, and no question. The default goes into the plan's Decided in the turn the tree marks it.
 - **A decision that only bites in a later gate** can stay open. Mark it `[OPEN]` in the plan, with what it waits on.
 - **A question a short measurement would settle** gets `run-spike` as one of its options.
 
