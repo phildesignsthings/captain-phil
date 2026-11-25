@@ -32,10 +32,10 @@ The short version: find the overrides file, read the default and the file, say i
 - **Ask one question per message,** numbered `Q<n> of ~<total>`, and end the message there. Ask the next one only after the designer answers.
 - **Never ask about the bar.** Ask only about `[style]` rules. Where the designer pushes on a `[bar]` rule, name the rule in one line, say it holds whatever the taste, and record nothing.
 - **Write each answer into the overrides file before asking the next question,** in the designer's words and never an elaboration of them. A grill that stops halfway keeps every answer given.
-- **Never ask what a file already answers.** Skip a question whose headings the overrides file has answered, unless the designer names that heading to revisit.
+- **Never ask what a file already answers.** Skip a question once every heading it covers holds an entry in the overrides file, unless the designer names one to revisit. Where only some do, ask it about the rest alone.
 - **Keep one live version of each rule.** A later answer about a rule edits that rule's entry, rather than adding a second entry beside it.
 - **Write only into the brain,** at the path the `taste` slot names, and never into a product repo.
-- **Use no em dashes in a question,** and end it on no caveat that leaves the designer's next move unchanged.
+- **Use no em dashes in a question.** Cut any closing caveat that doesn't change what the designer does next.
 
 ## Steps
 
@@ -57,7 +57,7 @@ After a no to either offer, stop, because an answer with nowhere to go is lost.
 
 1. Read `references/default-taste.md` and `references/default-motion.md`. Every rule in them is tagged `[bar]` or `[style]`.
 2. Read the overrides file, and any file it links to.
-3. Read `references/question-bank.md` for the planned questions. Drop each one whose headings already hold an entry, and count the rest for `~<total>`.
+3. Read `references/question-bank.md` for the planned questions. Drop each one whose headings all hold an entry, and count the rest for `~<total>`. A question with some of its headings answered stays in, covering only the unanswered ones: its title names those alone, and the default it states and its options speak only for them. The answered headings keep what the file holds.
 4. Open the message with one line saying what is settled: the bar, which is never asked, the headings the overrides file has answered, and anything the designer said this session. Then ask Q1 in the same message.
 
 Numbering starts at Q1 on every run.

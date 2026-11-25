@@ -17,7 +17,7 @@ A default rule has no id. It is named by two things, and the pair is unique acro
 1. **Its heading**, the nearest heading above the rule, such as `Copy` or `Entering and leaving`.
 2. **Its lead**, the bold text the rule opens with, such as `Voice shows in small doses,`.
 
-An entry sits under a `##` heading that repeats the default's heading word for word, and quotes the lead between double quotes. Match a lead ignoring case and the punctuation at its end, so `"Voice shows in small doses"` names the rule whose lead is `Voice shows in small doses,`.
+An entry sits under a `##` heading that repeats the default's heading word for word, and quotes the lead between double quotes. Match a lead ignoring case and the punctuation at its end, so `"Voice shows in small doses"` names the rule whose lead is `Voice shows in small doses,`. A `Keep all.` or a `Drop all.` quotes no lead, and covers every `[style]` rule under its heading.
 
 ## The file
 
@@ -47,7 +47,7 @@ Each entry is one bullet, in the designer's words, never an elaboration of them.
 |---|---|---|
 | Keep | `- Keep all.`, or `- Keep "<lead>"` | Nothing. It records that the designer was asked, so nobody asks again |
 | Change | `- Change "<lead>": <the designer's rule>` | The designer's rule replaces the named `[style]` rule |
-| Drop | `- Drop "<lead>"` | The named `[style]` rule stops applying |
+| Drop | `- Drop all.`, or `- Drop "<lead>"` | `Drop all.` stops every `[style]` rule under the heading, and the quoted form stops the one it names. The heading's `[bar]` rules still apply |
 | Add | `- Add: <the designer's rule>` | A new `[style]` rule joins that heading |
 
 A heading holding any entry counts as answered. A later answer about the same rule edits its entry in place, so the file holds one live version of each.
@@ -57,9 +57,10 @@ A heading holding any entry counts as answered. A later answer about the same ru
 Read the entries in file order, and apply each to the rule its heading and lead name.
 
 1. **An entry that names a `[bar]` rule is set aside.** Name the rule in one line, and keep the default. The bar never bends.
-2. **An entry whose heading or lead matches no default rule** gets one line naming it. A Change then applies as an Add, under that heading. A Drop or a Keep does nothing.
-3. **An `Add` under a heading the default lacks** starts a new section of style rules.
-4. **A product's design file sets the values a rule uses** after the merge, such as its spacing, colours and timings. It never changes a rule.
+2. **A `Drop all.` stops each `[style]` rule under its heading,** as if each one had its own Drop. It leaves the heading's `[bar]` rules applying, and an `Add` under the same heading still joins it.
+3. **An entry whose heading or lead matches no default rule** gets one line naming it. A Change then applies as an Add, under that heading. A Drop or a Keep does nothing.
+4. **An `Add` under a heading the default lacks** starts a new section of style rules.
+5. **A product's design file sets the values a rule uses** after the merge, such as its spacing, colours and timings. It never changes a rule.
 
 ## The pre-flight list
 

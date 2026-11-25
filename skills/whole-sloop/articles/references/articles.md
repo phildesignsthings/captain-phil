@@ -86,6 +86,12 @@ Each group names a moment. The five after Switching on are `captain-phil-mode`'s
 | `tidy-comments` | Rewrites the code comments a change touched so they read plainly, deletes the ones that restate the code, and lists the other untidy comments in those files |
 | `open-pr` | Opens or updates a pull request from the current branch: picks the base, runs the checks, fills the template for its audience with a verification table, and pushes review fixes to the same branch |
 
+### Planning
+
+| Skill | What it does |
+|:---|:---|
+| `plan-it` | Turns an idea into a written plan before anything is built: asks why and what done looks like, reads what already exists, then asks one decision at a time and writes each answer into your plans folder, split into gates |
+
 ### Starting a product
 
 | Skill | What it does |
@@ -138,7 +144,7 @@ Each skill also belongs to one hand, the member of the crew who would run it. Th
 
 - **whole-sloop**: captain-phil-mode, articles, crewman, unslop, confirm-scope, grill-me, show-me, decision-request, clean-done, work-report
 - **captain**: start-project, gate, wrap-gate, ask-issue-status
-- **navigator**: run-spike, drift-check, workflow-reflection
+- **navigator**: run-spike, drift-check, workflow-reflection, plan-it
 - **designer**: paper, get-creative, ingest-theme, new-surface, taste-grill
 - **builder**: new-screen, add-primitive, receive-prototype, tidy-comments, open-pr
 - **reviewer**: verify-ui, audit-design
