@@ -11,29 +11,30 @@ when_to_use: >-
   harness", "wire this to the real API", "what do I keep from this folder".
 argument-hint: "[path to the source checkout]"
 compatibility: >-
-  Takes $1 as the path to the source checkout and reads THAT repo's .agents/host.json for dev.cwd,
-  dev.start, dev.url, dev.platform, surfaces.root, surfaces.route, surfaces.seam, surfaces.harnessMarkers,
-  surfaces.receiveDoc and records.design; checks.typecheck is read from the receiving repo's own
-  host file. With no $1 the folder arrived on its own, so step 1 is skipped and the reading is done
-  from the files. With no host file in the source, every path is found by grep and proposed before
-  anything is deleted. With surfaces.receiveDoc absent the keep-and-discard list is
-  references/what-survives.md. With surfaces.harnessMarkers empty nothing is marked, so the demo
+  Takes $1 as the path to the source checkout and reads THAT repo's host file, found through
+  captain.json (references/captain-lookup.md) with its own .agents/host.json as the fallback, for
+  dev.cwd, dev.start, dev.url, dev.platform, surfaces.root, surfaces.route, surfaces.seam,
+  surfaces.harnessMarkers, surfaces.receiveDoc and records.design; checks.typecheck is read from the
+  receiving repo's own host file. With no $1 the folder arrived on its own, so step 1 is skipped and
+  the reading is done from the files. With no host file in the source, every path is found by grep
+  and proposed before anything is deleted. With surfaces.receiveDoc absent the keep-and-discard list
+  is references/what-survives.md. With surfaces.harnessMarkers empty nothing is marked, so the demo
   machinery is identified by reading and named before it is cut. With surfaces.seam null the source
   fetched at the call site, so step 4 edits each call rather than one file. With dev.platform
   native, dev.url is a deep-link base, and each screen is opened on a simulator rather than in a
-  browser; with dev.url null there are no deep links, so each screen is reached by taps from
-  launch.
+  browser; with dev.url null there are no deep links, so each screen is reached by taps from launch.
 metadata:
   suite: captain-phil
   hand: builder
   host: [dev.cwd, dev.start, dev.url, dev.platform, surfaces.root, surfaces.route, surfaces.seam, surfaces.harnessMarkers, surfaces.receiveDoc, records.design, checks.typecheck]
+  captain: [products]
 ---
 
 # Receive a prototype
 
 The short version: run it where it was built, read its records, keep the schemas and the hook shapes, swap the fixture loader for a real request, and delete the demo machinery by its markers.
 
-`$1` is the path to the source checkout. Read its `.agents/host.json` first, because every path in this procedure is a slot in that file rather than a convention this skill can assume. Where `$1` is absent, the folder arrived on its own: skip step 1, and find by grep what the host file would have told you, proposing each deletion before making it.
+`$1` is the path to the source checkout. Resolve its host file first, through `references/captain-lookup.md` with `$1` as the target, because every path in this procedure is a slot in that file rather than a convention this skill can assume. Where `$1` is absent, the folder arrived on its own: skip step 1, and find by grep what the host file would have told you, proposing each deletion before making it.
 
 ## 1. Run it where it was built
 

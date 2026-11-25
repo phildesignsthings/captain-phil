@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/phildesignsthings/captain-phil/host/host.schema.json",
   "title": "captain-phil host file",
-  "description": "One repo's answers to the questions the suite's skills ask. Lives at .agents/host.json in the repo root and is found by walking up from cwd. A slot carrying a value is the answer; a slot set to null says the repo has none of that thing, and the skill skips the step; an absent slot means nobody answered, and the skill runs its compatibility fallback.",
+  "description": "One repo's answers to the questions the suite's skills ask. Kept in the designer's brain, at the path the repo's products entry in captain.json gives as its host, and found through captain/lookup.md. For one release, a repo's own .agents/host.json is read as a fallback, with a warning. A slot carrying a value is the answer; a slot set to null says the repo has none of that thing, and the skill skips the step; an absent slot means nobody answered, and the skill runs its compatibility fallback.",
   "type": "object",
   "additionalProperties": false,
   "properties": {

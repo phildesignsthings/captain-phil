@@ -12,15 +12,17 @@ when_to_use: >-
   has this now", "what can we retire from memory", "which notes are stale", "archive this note",
   "supersede this file".
 compatibility: >-
-  Reads memory.root, memory.archive, memory.doc, memory.gloss, issues.tracker and checks.guard
-  from .agents/host.json. With memory.root null the repo keeps no project notes and this skill
-  says so in one line and stops. Without memory.doc, the four statuses in
-  references/memory-statuses.md apply. With issues.tracker null, there is no document set to
-  sweep, so the reverse question cannot be answered.
+  Reads memory.root, memory.archive, memory.doc, memory.gloss, issues.tracker and checks.guard from
+  the host file found through captain.json (references/captain-lookup.md), falling back to
+  .agents/host.json. With memory.root null the repo keeps no project notes and this skill says so in
+  one line and stops. Without memory.doc, the four statuses in references/memory-statuses.md apply.
+  With issues.tracker null, there is no document set to sweep, so the reverse question cannot be
+  answered.
 metadata:
   suite: captain-phil
   hand: scribe
   host: [memory.root, memory.archive, memory.doc, memory.gloss, issues.tracker, checks.guard]
+  captain: [products]
 ---
 
 # Freeze a project note
@@ -29,7 +31,7 @@ A note is frozen when its content has one authoritative home outside the repo, a
 
 `references/memory-statuses.md` holds the four statuses and what each one means, and the file named by `memory.doc` overrides it where the repo declares its own. This skill runs the transition, and the question that comes up more often than the transition does.
 
-**Stop where `memory.root` is `null`.** The repo keeps no project notes, so there is nothing to freeze. Say that in one line and stop. Where the slot is absent, ask once whether the repo keeps project notes anywhere, and offer to record the answer in `.agents/host.json`.
+**Stop where `memory.root` is `null`.** The repo keeps no project notes, so there is nothing to freeze. Say that in one line and stop. Where the slot is absent, ask once whether the repo keeps project notes anywhere, and offer to record the answer in the brain's host file (`references/captain-lookup.md`, step 6).
 
 Two rules bind every run:
 

@@ -11,13 +11,15 @@ when_to_use: >-
   phrases "show me", "draw it", "I can't picture it", "give me options", "let me see it", "put it
   on my phone".
 compatibility: >-
-  Reads dev.start, dev.url and dev.platform from .agents/host.json. Without them, start the app the
+  Reads dev.start, dev.url and dev.platform from the host file found through captain.json
+  (references/captain-lookup.md), falling back to .agents/host.json. Without them, start the app the
   way the repo's readme says and quote the address it actually bound. With dev.platform native, a
   link to the running app means a deep link plus taps, as decision-request describes.
 metadata:
   suite: captain-phil
   hand: whole-sloop
   host: [dev.start, dev.url, dev.platform]
+  captain: [products]
 ---
 
 # Show me

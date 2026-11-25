@@ -10,7 +10,7 @@ Run your agents as Captain Phil runs his company, and I'll thank you to note the
 
 ## Install
 
-Installing captain-phil takes three commands, not one. `npx skills add` installs skills and nothing else, and neither the host file nor the brain index is a skill, so steps 2 and 3 are separate fetches. Skip them and every skill runs its own degraded fallback instead of reading the repo's answers.
+Installing captain-phil takes three commands, not one. `npx skills add` installs skills and nothing else, and neither the host file nor the brain index is a skill, so steps 2 and 3 are separate fetches. Skip either one and every skill runs its own degraded fallback instead of reading the repo's answers, because a skill finds the host file through `captain.json`. The one exception lasts a release: a repo that still keeps its host file at `.agents/host.json` is read from there, with a warning.
 
 ### Step 1. The skills
 
@@ -44,34 +44,34 @@ The installer writes `.agents/skills/<name>/` with a symlink from `.claude/skill
 
 ### Step 2. The host file
 
-Several skills need to know things only the repo can answer: which command starts the app, which branch a pull request goes to, where the design records live. The repo answers once in `.agents/host.json`, and every skill reads its answers by slot.
+Several skills need to know things only the repo can answer: which command starts the app, which branch a pull request goes to, where the design records live. The repo answers once in its host file, and every skill reads its answers by slot. The host file is kept in your brain repo rather than in the product repo, so the product repo stays untouched, and step 3 lists it in the brain's `captain.json`.
 
-Three templates ship in `host/templates/`. Pick the one that matches the repo and paste its block. Each writes `.agents/host.json` and prints the name of the template it wrote, so you see a wrong pick straight away. Each refuses to overwrite an existing host file, because that file holds answers the template lacks. Move it aside first to start again.
+Three templates ship in `host/templates/`. Pick the one that matches the repo, set `NAME` to the product repo's name, and paste its block from the root of the brain repo. Each writes `hosts/$NAME.json` and prints the name of the template it wrote, so you see a wrong pick straight away. Each refuses to overwrite an existing host file, because that file holds answers the template lacks. Move it aside first to start again.
 
 **Expo, React Native.** Starts with `npx expo start --ios`, checks with `tsc --build` and `npx expo lint`, screens under `src/app/`, primitives under `src/components/ui/`.
 
 ```bash
-(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-native-expo.json \
-  --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
+(set -C; mkdir -p hosts && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-native-expo.json \
+  --jq .content | base64 -d > "hosts/${NAME:?set NAME to the repo name}.json") && grep '"template"' "hosts/$NAME.json"
 ```
 
 **React on the web.** Starts with `npm run dev` on port 5173, adds a Prettier check, routes under `src/routes/`, shadcn components under `src/components/ui/`.
 
 ```bash
-(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-web.json \
-  --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
+(set -C; mkdir -p hosts && gh api repos/phildesignsthings/captain-phil/contents/host/templates/react-web.json \
+  --jq .content | base64 -d > "hosts/${NAME:?set NAME to the repo name}.json") && grep '"template"' "hosts/$NAME.json"
 ```
 
 **Anything else.** Sets the trunk to `main` and leaves every other slot empty, the checks included, rather than guessing them. Start here when no other template is close, then fill the slots the repo can answer.
 
 ```bash
-(set -C; mkdir -p .agents && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
-  --jq .content | base64 -d > .agents/host.json) && grep '"template"' .agents/host.json
+(set -C; mkdir -p hosts && gh api repos/phildesignsthings/captain-phil/contents/host/templates/minimal.json \
+  --jq .content | base64 -d > "hosts/${NAME:?set NAME to the repo name}.json") && grep '"template"' "hosts/$NAME.json"
 ```
 
 Open the file afterwards and correct the paths the repo does not match, most often `surfaces.root`, `components.dir` and `theme.dir`. Point the `checks` commands at scripts the repo really has. [The host file spec](host/README.md) gives each slot's meaning, the three states a slot can be in, and which skills read it.
 
-A repo with no host file still works. Each skill names its fallback in its `compatibility` frontmatter, runs that degraded path, and offers once to write the answer into `.agents/host.json`.
+A repo with no host file still works. Each skill names its fallback in its `compatibility` frontmatter, runs that degraded path, and offers once to write the answer into the brain's host file, never into the product repo.
 
 ### Step 3. The brain's captain.json
 

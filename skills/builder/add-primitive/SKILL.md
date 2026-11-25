@@ -11,17 +11,19 @@ when_to_use: >-
   "it is missing from the library", "add it to the catalogue".
 compatibility: >-
   Reads components.dir, components.install, components.registry, components.showcase,
-  components.doc, theme.contract, dev.platform, dev.url, verify.mcp and dev.start from
-  .agents/host.json. With components.install null the repo writes a missing primitive by hand, so
-  steps 2 and 4 change shape. With components.registry null the repo shows no catalogue:
-  registration is skipped and said so in one line, and step 5 has one route to check instead of
-  two. With components.showcase null there is no catalogue route, so step 5 checks the primitive in
-  the screen that uses it. With dev.platform native, step 5 opens each route by deep link on a
-  simulator and reports what it saw as looked at.
+  components.doc, theme.contract, dev.platform, dev.url, verify.mcp and dev.start from the host file
+  found through captain.json (references/captain-lookup.md), falling back to .agents/host.json. With
+  components.install null the repo writes a missing primitive by hand, so steps 2 and 4 change
+  shape. With components.registry null the repo shows no catalogue: registration is skipped and said
+  so in one line, and step 5 has one route to check instead of two. With components.showcase null
+  there is no catalogue route, so step 5 checks the primitive in the screen that uses it. With
+  dev.platform native, step 5 opens each route by deep link on a simulator and reports what it saw
+  as looked at.
 metadata:
   suite: captain-phil
   hand: builder
   host: [components.dir, components.install, components.registry, components.showcase, components.doc, theme.contract, dev.platform, dev.url, verify.mcp, dev.start]
+  captain: [products]
 ---
 
 # Add a primitive

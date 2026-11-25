@@ -10,14 +10,16 @@ when_to_use: >-
   this screen", "redesign this page", "this looks generic", "what layout does this want".
 compatibility: >-
   Reads docs.gotchas, surfaces.root, surfaces.doc, surfaces.compositionDoc, surfaces.limits,
-  surfaces.seam, components.dir, dev.platform, checks.typecheck and checks.lint from
-  .agents/host.json. Without surfaces.compositionDoc, the archetype menu and the data-state
-  rules in references/composition.md apply. With docs.gotchas null, step 1 is skipped in one
-  line. With surfaces.limits null, file shape is judged by reading.
+  surfaces.seam, components.dir, dev.platform, checks.typecheck and checks.lint from the host file
+  found through captain.json (references/captain-lookup.md), falling back to .agents/host.json.
+  Without surfaces.compositionDoc, the archetype menu and the data-state rules in
+  references/composition.md apply. With docs.gotchas null, step 1 is skipped in one line. With
+  surfaces.limits null, file shape is judged by reading.
 metadata:
   suite: captain-phil
   hand: builder
   host: [docs.gotchas, surfaces.root, surfaces.doc, surfaces.compositionDoc, surfaces.limits, surfaces.seam, components.dir, dev.platform, checks.typecheck, checks.lint]
+  captain: [products]
 ---
 
 # Build a screen

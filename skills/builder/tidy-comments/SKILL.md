@@ -10,13 +10,15 @@ when_to_use: >-
   point it at files the diff did not touch. Trigger phrases "tidy the comments", "clean up these
   comments", "the comments read like AI wrote them", "unslop the comments".
 compatibility: >-
-  Reads checks.format from .agents/host.json. With checks.format null the repo has no formatter, so
-  the Prettier step is skipped in one line. With the slot absent, look for a Prettier config or a
+  Reads checks.format from the host file found through captain.json (references/captain-lookup.md),
+  falling back to .agents/host.json. With checks.format null the repo has no formatter, so the
+  Prettier step is skipped in one line. With the slot absent, look for a Prettier config or a
   `prettier` entry in the package manifest, and skip the step in one line where neither exists.
 metadata:
   suite: captain-phil
   hand: builder
   host: [checks.format]
+  captain: [products]
 ---
 
 # Tidy comments

@@ -15,6 +15,7 @@ when_to_use: >-
 argument-hint: "[the feature or epic to check, in your words]"
 compatibility: >-
   Reads records.scope, memory.connectors, docs.root, surfaces.root and surfaces.harnessMarkers from
+  the host file found through captain.json (references/captain-lookup.md), falling back to
   .agents/host.json. With records.scope null, the scope is the tracker's description of the feature,
   read through memory.connectors, and the report says the baseline may have been edited since it was
   agreed. With records.scope absent, ask once where the agreed scope lives and offer to record the
@@ -24,6 +25,7 @@ metadata:
   suite: captain-phil
   hand: navigator
   host: [records.scope, memory.connectors, docs.root, surfaces.root, surfaces.harnessMarkers]
+  captain: [products]
 ---
 
 # Drift check

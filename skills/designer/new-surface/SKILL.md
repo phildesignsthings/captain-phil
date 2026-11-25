@@ -11,18 +11,21 @@ when_to_use: >-
   a screen set", "I made one with the form".
 compatibility: >-
   Reads surfaces.root, surfaces.unit, surfaces.doc, surfaces.route, surfaces.limits, theme.registry,
-  memory.connectors, records.design, issues.ladder, issues.doc, issues.retired, components.dir, dev.platform,
-  dev.start, dev.url and verify.mcp from .agents/host.json. With surfaces.root null the repo has a
-  single application, so the surface is a route folder and step 3 asks once where it lives. With
-  surfaces.doc absent the structure is read off a sibling surface rather than a document. With
-  theme.registry null the repo has one look, so the theme question is not asked. With issues.ladder
-  null, or issues.retired true, no issue declaration is written. With dev.platform native step 4
-  drives the simulator by deep link and keeps a screenshot, or by taps from launch where dev.url is
-  null. With verify.mcp null on the web step 4 reads the files rather than the screen and says so.
+  memory.connectors, records.design, issues.ladder, issues.doc, issues.retired, components.dir,
+  dev.platform, dev.start, dev.url and verify.mcp from the host file found through captain.json
+  (references/captain-lookup.md), falling back to .agents/host.json. With surfaces.root null the
+  repo has a single application, so the surface is a route folder and step 3 asks once where it
+  lives. With surfaces.doc absent the structure is read off a sibling surface rather than a
+  document. With theme.registry null the repo has one look, so the theme question is not asked. With
+  issues.ladder null, or issues.retired true, no issue declaration is written. With dev.platform
+  native step 4 drives the simulator by deep link and keeps a screenshot, or by taps from launch
+  where dev.url is null. With verify.mcp null on the web step 4 reads the files rather than the
+  screen and says so.
 metadata:
   suite: captain-phil
   hand: designer
   host: [surfaces.root, surfaces.unit, surfaces.doc, surfaces.route, surfaces.limits, theme.registry, memory.connectors, records.design, issues.ladder, issues.doc, issues.retired, components.dir, dev.platform, dev.start, dev.url, verify.mcp]
+  captain: [products]
 ---
 
 # New surface
@@ -59,7 +62,7 @@ Write the folder under `surfaces.root`, to the structure `surfaces.doc` states. 
 
 Four things hold wherever the folder lands.
 
-- **Three records, written as the folder is created.** One for the developer — what this is, what is real, what is faked, and the decisions already taken, starting with the intent step 2 agreed. One for the next designer, recording the visual system the built screens land rather than the plan: scaffold it unfilled below its overview and fill it from the screens, because values recorded before the build get defended against the screens instead of describing them. One for the agent — short, pointing at the two files to read first and the rules that bind inside the folder. Add the design record to `records.design` as it is created — a record no host file lists is one `record-design` never comes back to. The entry is an object rather than a path, and the shape is printed here because the schema does not travel with the host file: `{ "surface": "<the surface, in the repo's own word>", "path": "<the record>", "sidecar": null }`.
+- **Three records, written as the folder is created.** One for the developer — what this is, what is real, what is faked, and the decisions already taken, starting with the intent step 2 agreed. One for the next designer, recording the visual system the built screens land rather than the plan: scaffold it unfilled below its overview and fill it from the screens, because values recorded before the build get defended against the screens instead of describing them. One for the agent — short, pointing at the two files to read first and the rules that bind inside the folder. Add the design record to `records.design` in the brain's host file (`references/captain-lookup.md`, step 6) as it is created — a record no host file lists is one `record-design` never comes back to. The entry is an object rather than a path, and the shape is printed here because the schema does not travel with the host file: `{ "surface": "<the surface, in the repo's own word>", "path": "<the record>", "sidecar": null }`.
 - **Compose from `components.dir` rather than building a primitive.** Check what is there before writing any interface; the primitive usually exists. Data never gets hardcoded in a component.
 - **Every file lands in a layer, and imports run one direction only.** `surfaces.doc` names the layers. Where it names none, match the sibling that most resembles this surface.
 - **The size limits are a command, not a memory.** Run `surfaces.limits` rather than recalling a number. A screen outgrowing one wants a smaller component pulled out of it rather than a longer file.

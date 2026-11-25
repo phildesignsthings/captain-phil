@@ -7,11 +7,12 @@ color: cyan
 ---
 
 <!--
-  Copy this file into the repo's agent folder and fill the four bracketed values from
-  .agents/host.json: <dev.start>, <dev.cwd>, <verify.probes> and <verify.doc>. Add the repo's
-  browser-driving server under an `mcpServers:` key in the frontmatter, matching whatever
-  `verify.mcp` names. An unfilled bracket is a bug — the agent has no host file of its own to
-  read the answer from.
+  Copy this file into the repo's agent folder and fill the four bracketed values from the repo's
+  host file, found through captain.json as the verify-ui skill's references/captain-lookup.md
+  describes, falling back to .agents/host.json: <dev.start>, <dev.cwd>, <verify.probes> and
+  <verify.doc>. Add the repo's browser-driving server under an `mcpServers:` key in the
+  frontmatter, matching whatever `verify.mcp` names. An unfilled bracket is a bug — the agent has
+  no host file of its own to read the answer from.
 -->
 
 You measure one route of the running app and report what you measured. You never edit the app, and you never report a number you did not take from the rendered DOM.

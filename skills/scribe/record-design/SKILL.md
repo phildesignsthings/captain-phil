@@ -14,16 +14,18 @@ when_to_use: >-
 argument-hint: "[surface]"
 compatibility: >-
   Reads records.design, records.designDoc, records.driftWatch, surfaces.root, surfaces.unit,
-  theme.registry, docs.gotchas, dev.platform, verify.mcp and verify.probes from
-  .agents/host.json. Without records.designDoc, the format in references/design-record-format.md
-  applies. With records.design empty, ask which file records this surface and offer to record the
-  answer. With records.driftWatch null, drift is noticed by reading rather than reported. With
-  dev.platform native the screens are read off simulator screenshots, so every value in the record
-  is marked as looked at rather than measured.
+  theme.registry, docs.gotchas, dev.platform, verify.mcp and verify.probes from the host file found
+  through captain.json (references/captain-lookup.md), falling back to .agents/host.json. Without
+  records.designDoc, the format in references/design-record-format.md applies. With records.design
+  empty, ask which file records this surface and offer to record the answer. With records.driftWatch
+  null, drift is noticed by reading rather than reported. With dev.platform native the screens are
+  read off simulator screenshots, so every value in the record is marked as looked at rather than
+  measured.
 metadata:
   suite: captain-phil
   hand: scribe
   host: [records.design, records.designDoc, records.driftWatch, surfaces.root, surfaces.unit, theme.registry, docs.gotchas, dev.platform, verify.mcp, verify.probes]
+  captain: [products]
 ---
 
 # Record a surface's design
@@ -43,7 +45,7 @@ Two things go wrong often enough to name up front:
 
 1. Find the surface under `surfaces.root`, in whatever the repo calls one — `surfaces.unit` carries the word. Where `surfaces.root` is `null`, the repo is one application and the surface is the route or the area you were pointed at.
 2. Read its own configuration for the theme it pins and the screens it declares, and its developer-facing readme for what is real and what is faked.
-3. Read the record already on disk, where `records.design` names one for this surface, and note which sections carry values against which sit unfilled. A refresh replaces what has moved and keeps what still holds. Where the list names no file for this surface, ask where the record belongs and offer to add the entry to `.agents/host.json`.
+3. Read the record already on disk, where `records.design` names one for this surface, and note which sections carry values against which sit unfilled. A refresh replaces what has moved and keeps what still holds. Where the list names no file for this surface, ask where the record belongs and offer to add the entry to the brain's host file (`references/captain-lookup.md`, step 6).
 4. Stop and say so where the surface holds one placeholder screen. There is nothing to read off yet, and an invented record is worse than a scaffold's honest blanks.
 5. **A repo's own chassis is a surface too.** Where `records.design` lists an entry for the harness, the shell or the tooling, the same format and the same triage apply: read the theme `theme.registry` marks as the chassis one for the pin, and the repo's own routes for the screens. Nothing else about the procedure changes.
 

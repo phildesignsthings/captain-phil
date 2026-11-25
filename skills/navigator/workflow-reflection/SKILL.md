@@ -17,14 +17,16 @@ when_to_use: >-
 argument-hint: "[project folder or glob under ~/.claude/projects]"
 compatibility: >-
   Needs Node and the session transcripts Claude Code keeps under ~/.claude/projects. Reads
-  docs.local and docs.root from .agents/host.json. With docs.local set, the one-pager goes there.
-  With docs.local null, it goes under docs.root. With docs.root null as well, it goes in the study
-  folder beside the private report, and the hand-back says so. With docs.local absent, ask once
-  where branch-local docs live and offer to record the answer.
+  docs.local and docs.root from the host file found through captain.json
+  (references/captain-lookup.md), falling back to .agents/host.json. With docs.local set, the
+  one-pager goes there. With docs.local null, it goes under docs.root. With docs.root null as well,
+  it goes in the study folder beside the private report, and the hand-back says so. With docs.local
+  absent, ask once where branch-local docs live and offer to record the answer.
 metadata:
   suite: captain-phil
   hand: navigator
   host: [docs.local, docs.root]
+  captain: [products]
 ---
 
 # Workflow reflection

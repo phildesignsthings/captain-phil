@@ -104,9 +104,10 @@ export function maskProse(text) {
     .replace(/<https?:\/\/[^>\n]*>/g, blank);
 }
 
-// A line's blockquote depth, its indent inside the quote, and its text.
+// A line's blockquote depth, its indent inside the quote, and its text. The text takes every
+// character to the end, because `.` stops at a carriage return and the match would fail.
 function splitQuote(line) {
-  const [, marks, indent, text] = /^((?:[ \t]*> ?)*)([ \t]*)(.*)$/.exec(line);
+  const [, marks, indent, text] = /^((?:[ \t]*> ?)*)([ \t]*)([^\n]*)$/.exec(line);
   return {
     depth: marks.split(">").length - 1,
     indent: indent.replace(/\t/g, "    ").length,

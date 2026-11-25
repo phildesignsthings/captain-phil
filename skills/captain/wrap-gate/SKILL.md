@@ -10,12 +10,13 @@ when_to_use: >-
   "close this gate out", "ready for review", "hand this off to a fresh chat".
 argument-hint: "[gate-id]"
 compatibility: >-
-  Reads checks.typecheck, dev.url, dev.platform and verify.mcp from .agents/host.json. Without a
-  checks block the script falls back to the package manifest's own scripts against a baseline of
-  zero and says so. With dev.platform native the simulator takes the browser's place, so step 2
-  runs without verify.mcp, and a null dev.url means each screen is reached by taps from launch
-  rather than by deep link. On the web, step 2 cannot run without verify.mcp, and the report calls
-  the gate unverified.
+  Reads checks.typecheck, dev.url, dev.platform and verify.mcp from the host file found through
+  captain.json (references/captain-lookup.md), falling back to .agents/host.json. Without a checks
+  block the script falls back to the package manifest's own scripts against a baseline of zero and
+  says so. With dev.platform native the simulator takes the browser's place, so step 2 runs without
+  verify.mcp, and a null dev.url means each screen is reached by taps from launch rather than by
+  deep link. On the web, step 2 cannot run without verify.mcp, and the report calls the gate
+  unverified.
 metadata:
   suite: captain-phil
   hand: captain
@@ -39,7 +40,7 @@ Where `$1` names the gate, use it verbatim in the record's heading and in the re
 
 ## 1. Run the checks
 
-1. Run `node <this skill's dir>/scripts/check-baseline.mjs` from anywhere inside the project. It walks up for the repo's answers — `checks.typecheck` and its siblings in the host file first, then a legacy baseline file, then the package manifest's own scripts — runs every check in parallel, and prints one plain-language line per check. Its output is written for the designer; paste it, never restate it.
+1. Run `node <this skill's dir>/scripts/check-baseline.mjs` from anywhere inside the project. It looks for the repo's answers — `checks.typecheck` and its siblings in the host file first, found through `captain.json` as `references/captain-lookup.md` describes and falling back to the repo's `.agents/host.json`, then a legacy baseline file, then the package manifest's own scripts — runs every check in parallel, and prints one plain-language line per check. Its output is written for the designer; paste it, never restate it.
 2. Read exit code 1 as "at least one line needs action". A count under its baseline means the check did not run fully, and a line naming missing packages means `npm ci`, then rerun.
 3. Run it with `--record` only when the designer has agreed a known failure stays.
 
