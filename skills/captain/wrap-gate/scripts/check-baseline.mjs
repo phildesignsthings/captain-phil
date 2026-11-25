@@ -132,8 +132,13 @@ function findBrainConfig(start, notes) {
     return { config: null };
   }
   const h = readJson(host);
-  if (!h.error && "checks" in h.value)
+  if (h.error) {
+    notes.push(`${host} is not valid JSON (${h.error}), so every host slot reads as absent.`);
+    return { config: null };
+  }
+  if (h.value && typeof h.value === "object" && "checks" in h.value)
     return { config: { path: host, kind: "host", root: at(entry.path), checks: h.value.checks } };
+  notes.push(`${host} has no \`checks\` slot, so the checks fall back to package.json.`);
   return { config: null };
 }
 
@@ -228,7 +233,7 @@ if (config?.kind === "host" && config.checks === null) {
 } else {
   cwd = findPackageRoot(process.cwd());
   if (!cwd) {
-    console.log("No checks-baseline.json and no package.json found. Nothing to run.");
+    console.log("No host file answers `checks`, and no checks-baseline.json or package.json was found. Nothing to run.");
     process.exit(2);
   }
   const scripts = JSON.parse(readFileSync(join(cwd, "package.json"), "utf8")).scripts ?? {};

@@ -40,7 +40,7 @@ The short version: start the app, look with `verify.mcp` or the simulator, asser
 1. Run `dev.start` from `dev.cwd`. Where the slot is `null`, the repo has no runnable app: say so in one line and stop, because nothing here can be verified by looking.
 2. Read the URL the server prints, rather than trusting `dev.url`. A dev server walks up from its default port whenever another process holds it, so the printed URL is the one that answers and the slot is the expectation. On native, keep `dev.url`. A bundler such as Metro prints the address its own client connects to, and that address is no deep-link base.
 3. Where `dev.start` is absent, ask once for the command, and offer to record it in the brain's host file (`references/captain-lookup.md`, step 6).
-4. Where `dev.platform` is `native`, boot a simulator before starting, and read `dev.url` as the app's deep-link base, such as `myapp://`. Where that slot is absent, read the URL scheme from the app's own config, and offer to record it. Where it is `null`, the app takes no deep links: say so in one line, and reach every route by tapping from launch.
+4. Where `dev.platform` is `native`, boot a simulator before starting, and read `dev.url` as the app's deep-link base, such as `myapp://`. Where that slot is absent, read the URL scheme from the app's own config, and offer to record it in the brain's host file (`references/captain-lookup.md`, step 6). Where it is `null`, the app takes no deep links: say so in one line, and reach every route by tapping from launch.
 
 ## 2. Look
 

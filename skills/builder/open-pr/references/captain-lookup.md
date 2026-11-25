@@ -40,7 +40,7 @@ The target is the folder the task names, or the working directory where the task
 
 The entry's `host` follows the three-state rule.
 
-- **A path.** Read the file it names. That is the host file. Where the file does not exist, say so in one line naming the path, and read every slot as absent.
+- **A path.** Read the file it names. That is the host file. Where the file does not exist, say so in one line naming the path, and read every slot as absent. Where it is not valid JSON, say so in one line naming the path and the parse error, read every slot as absent, and make no offer to record an answer, because a write would replace what the designer wrote.
 - **`null`.** The repo has no host answers. Say so in one line, read every slot as absent, and make no offer to record one.
 - **Absent.** Nobody answered. Go to step 4.
 
@@ -69,6 +69,7 @@ A skill that offers to record a slot's answer writes it into the host file the e
 
 - **The entry has no `host`, or its file is missing.** Offer to create the file at `hosts/<name>.json` in the brain, and to set the entry's `host` to it.
 - **The entry's `host` is `null`.** Make no offer, because the designer said the repo has no host answers.
+- **The entry's host file is not valid JSON.** Make no offer, and say in one line that the file has to be fixed before an answer can be recorded in it.
 - **No brain was found.** Say in one line that the answer cannot be recorded without a `captain.json`.
 
 Never write an answer into the product repo, its `.agents/host.json` included.

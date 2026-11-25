@@ -17,8 +17,9 @@ compatibility: >-
   theme.registry, docs.gotchas, dev.platform, verify.mcp and verify.probes from the host file found
   through captain.json (references/captain-lookup.md), falling back to .agents/host.json. Without
   records.designDoc, the format in references/design-record-format.md applies. With records.design
-  empty, ask which file records this surface and offer to record the answer. With records.driftWatch
-  null, drift is noticed by reading rather than reported. With dev.platform native the screens are
+  empty, ask which file records this surface and offer to record the answer in the brain's host
+  file (references/captain-lookup.md, step 6). With records.driftWatch null, drift is noticed by
+  reading rather than reported. With dev.platform native the screens are
   read off simulator screenshots, so every value in the record is marked as looked at rather than
   measured.
 metadata:
