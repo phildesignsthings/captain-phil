@@ -65,7 +65,7 @@ Use the period words of the `crewman` skill, and none of the stage-pirate ones: 
 
 1. Read `references/default-taste.md` and `references/default-motion.md`. They are the default taste, and every rule in them is tagged `[bar]` or `[style]`.
 2. Resolve the `taste` slot of `captain.json` through `references/captain-lookup.md`: step 1 finds the brain, and "The other `captain.json` slots" gives the three states. A path names the overrides file: read it. Where that file is missing, the slot is `null` or absent, or no brain is found, use the default alone and say which in one line. A `null` means the designer keeps the default as shipped.
-3. Lay the overrides on the default, as `references/overrides-format.md` sets out. An entry names its rule by the rule's heading and its bold lead. An entry that would change a `[bar]` rule is set aside: name the rule in one line, and keep the default.
+3. Lay the overrides on the default, as `references/overrides-format.md` sets out. An entry names its rule by the rule's heading and its bold lead, and a `Keep all.` or `Drop all.` names every `[style]` rule under its heading. An entry that would change a `[bar]` rule is set aside: name the rule in one line, and keep the default.
 4. Apply the merged taste to every design call, review and critique for the rest of the session, without reading the files again.
 
 ## The checklists
