@@ -20,6 +20,7 @@ metadata:
   suite: captain-phil
   hand: captain
   host: [checks.typecheck, dev.url, dev.platform, verify.mcp]
+  captain: [products]
 ---
 
 # Wrap a gate

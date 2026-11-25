@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/phildesignsthings/captain-phil/captain/captain.schema.json",
+  "title": "captain-phil brain index",
+  "description": "The index at the root of a designer's brain repo. It points the suite at the designer's taste overrides, their plans, their tools, and each product repo with its host file. A slot carrying a value is the answer; a slot set to null says the brain has none of that thing, and the skill skips the step and says so in one line; an absent slot means nobody answered, and the skill runs its compatibility fallback. A relative path resolves against the folder holding this file, and a path starting with ~/ resolves against the home folder.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+
+    "taste": {
+      "type": ["string", "null"],
+      "description": "Markdown file holding the designer's taste overrides, which load on top of the suite's default taste. Null means the designer keeps the default taste as shipped."
+    },
+
+    "plans": {
+      "type": ["string", "null"],
+      "description": "Folder where plans are written, one file per plan. The reviewer's test plans and misses checklist live in its tests/ subfolder. Null means the designer keeps no plans in the brain, and a skill that would write one prints it instead."
+    },
+
+    "tools": {
+      "type": ["object", "null"],
+      "description": "Outside tools the designer has installed, keyed by a name the designer picks, each mapped to the path or command that runs it. A skill that uses a tool names its key. Null means the designer has none.",
+      "additionalProperties": { "type": ["string", "null"] }
+    },
+
+    "products": {
+      "type": ["array", "null"],
+      "description": "The product repos the designer works in, one entry each. A skill uses the entry whose path holds the folder it works in. An empty list means no repo is listed yet, so a skill run in a product repo offers to add its entry. Null means the brain manages no product repos, and a skill skips the lookup and never offers.",
+      "items": { "$ref": "#/definitions/product" }
+    }
+  },
+
+  "definitions": {
+    "product": {
+      "type": "object",
+      "description": "One product repo and where its answers live in the brain.",
+      "additionalProperties": false,
+      "required": ["name", "path"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Short name for the repo, used when a skill asks which product a task is for."
+        },
+        "path": {
+          "type": "string",
+          "description": "The product repo's root folder. A skill matches it against the folder it works in."
+        },
+        "host": {
+          "type": ["string", "null"],
+          "description": "The repo's host file, kept in the brain and shaped by host/host.schema.json. A skill that offers to record an answer writes it here. Null means the repo has no host answers, and every skill runs its fallback without offering. Absent means nobody answered, and the skill reads the repo's own .agents/host.json as a fallback, with a warning."
+        },
+        "reference": {
+          "type": ["string", "null"],
+          "description": "Another repo whose code style new code in this repo copies. house-style reads it after this repo's own example code. Null means the repo's own code is the only reference."
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Markdown file holding the designer's notes on this repo's code patterns, which house-style reads before editing and adds to after. Null means the designer keeps no notes on this repo."
+        }
+      }
+    }
+  }
+}

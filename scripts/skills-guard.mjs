@@ -2,12 +2,13 @@
 // Guards the suite's own invariants. Run it with `npm run guard`; CI runs the
 // same command on every push, and a branch cannot merge to main without it.
 //
-// Each check reads one of three things:
+// Each check reads one of four things:
 //
 //   the skill folders:   checkLayout, checkFrontmatter, checkSkillIndex,
 //                        checkHandIndex, checkSkillReferences, checkHostSlots,
-//                        checkNoHostPaths
+//                        checkNoHostPaths, checkCaptainSlots, checkLookupCopies
 //   the host schema:     checkHostSlots, checkTemplates
+//   the captain schema:  checkCaptainSlots, checkCaptainTemplates
 //   every markdown file: checkHouseStyle, which imports the only copy of the
 //                        rules from skills/scribe/write-doc/scripts/house-style.mjs
 //
@@ -22,6 +23,12 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SKILLS = join(root, "skills");
 const SCHEMA_PATH = join(root, "host", "host.schema.json");
 const TEMPLATES = join(root, "host", "templates");
+const CAPTAIN_SCHEMA_PATH = join(root, "captain", "captain.schema.json");
+const CAPTAIN_TEMPLATES = join(root, "captain", "templates");
+// The lookup every skill that reads a slot runs. An installed skill reads nothing outside its own
+// folder, so each one ships a copy under this name, and the copy has to match the canonical file.
+const LOOKUP = join(root, "captain", "lookup.md");
+const LOOKUP_COPY = join("references", "captain-lookup.md");
 // The suite's manual, and the index of its skills. It lives inside a skill so it installs into
 // every consuming repo, where the README never reaches.
 const INDEX = join(SKILLS, "whole-sloop", "articles", "references", "articles.md");
@@ -608,6 +615,8 @@ function validate(value, schema, path, schemaRoot, out) {
       if (!child) {
         if (schema.additionalProperties === false)
           out.push(`${path}.${key} is not a slot the schema defines`);
+        else if (schema.additionalProperties && typeof schema.additionalProperties === "object")
+          validate(sub, schema.additionalProperties, `${path}.${key}`, schemaRoot, out);
         continue;
       }
       validate(sub, child, `${path}.${key}`, schemaRoot, out);
@@ -664,12 +673,131 @@ function checkTemplates() {
   }
 }
 
-// ── 8. House style ──────────────────────────────────────────────────────────
+// ── 8. captain.json ─────────────────────────────────────────────────────────
+
+// The slots a skill can list in `metadata.captain`: the schema's top-level keys, minus `$schema`.
+function captainSlots() {
+  const schema = JSON.parse(readFileSync(CAPTAIN_SCHEMA_PATH, "utf8"));
+  return {
+    schema,
+    slots: new Set(Object.keys(schema.properties).filter((k) => k !== "$schema")),
+  };
+}
+
+/*
+  A template is the filled index a designer fetches into their brain, so it
+  validates against the schema and answers every slot, with `null` where the
+  example brain has none. A template that leaves a slot out teaches the
+  designer that slot does not exist.
+*/
+function checkCaptainTemplates() {
+  const { schema, slots } = captainSlots();
+  const names = existsSync(CAPTAIN_TEMPLATES)
+    ? readdirSync(CAPTAIN_TEMPLATES).filter((n) => n.endsWith(".json"))
+    : [];
+  if (!names.length)
+    fail(
+      `captain/templates/ holds no template, so a designer has no filled \`captain.json\` to ` +
+        `start from. Step 3 of README.md fetches it by name.`,
+    );
+  for (const name of names) {
+    const path = join(CAPTAIN_TEMPLATES, name);
+    const rel = relative(root, path);
+    let parsed;
+    try {
+      parsed = JSON.parse(readFileSync(path, "utf8"));
+    } catch (error) {
+      fail(`${rel} is not valid JSON: ${error.message}`);
+      continue;
+    }
+    const errors = [];
+    validate(parsed, schema, name.replace(/\.json$/, ""), schema, errors);
+    if (errors.length)
+      fail(`${rel} does not validate against captain/captain.schema.json:\n  ${errors.join("\n  ")}`);
+    const missing = [...slots].filter((s) => !(s in parsed));
+    if (missing.length)
+      fail(
+        `${rel} answers no ${missing.join(", ")}. A template is a filled index, so every slot ` +
+          `appears, with \`null\` where the example brain has none. An absent slot means "nobody ` +
+          `answered", which sends every skill into its fallback.`,
+      );
+  }
+}
+
+/*
+  `metadata.captain` lists the `captain.json` slots a skill reads, as
+  `metadata.host` lists the host slots. A slot the schema does not know is
+  absent in every brain. The lookup is the only way an installed skill reaches
+  a slot, so declaring a slot and shipping the lookup go together, and a skill
+  that ships the lookup reads the host file through `products`.
+*/
+function checkCaptainSlots() {
+  const { slots } = captainSlots();
+  for (const { dir } of skillFolders()) {
+    const path = join(dir, "SKILL.md");
+    if (!existsSync(path)) continue;
+    const rel = relative(root, path);
+    const raw = frontmatter(readFileSync(path, "utf8"))?.metadata?.captain;
+    const shipsLookup = existsSync(join(dir, LOOKUP_COPY));
+    if (raw !== undefined && !Array.isArray(raw)) {
+      fail(
+        `${rel} writes \`metadata.captain: ${raw}\`. Write it as a list, such as ` +
+          `\`captain: [products]\`.`,
+      );
+      continue;
+    }
+    const declared = raw ?? [];
+    for (const slot of declared)
+      if (!slots.has(slot))
+        fail(
+          `${rel} declares \`metadata.captain: ${slot}\`, which captain/captain.schema.json does ` +
+            `not define. The slots are ${[...slots].join(", ")}. Fix the name, or add the slot to ` +
+            `the schema.`,
+        );
+    if (declared.length && !shipsLookup)
+      fail(
+        `${rel} declares \`metadata.captain: [${declared.join(", ")}]\` and ships no ` +
+          `${LOOKUP_COPY}. An installed skill reads nothing outside its folder, so without the ` +
+          `copy it has no way to find the brain. Copy captain/lookup.md there.`,
+      );
+    if (shipsLookup && !declared.includes("products"))
+      fail(
+        `${rel} ships ${LOOKUP_COPY} and its \`metadata.captain\` does not list \`products\`. ` +
+          `The lookup reads the host file through the \`products\` entry, so declare it.`,
+      );
+  }
+}
+
+/*
+  captain/lookup.md is the one canonical lookup, and each skill carries a copy
+  because an installed skill reads nothing outside its folder. A copy that
+  drifts is a skill that finds the brain differently from every other skill,
+  so the copies match the canonical file byte for byte.
+*/
+function checkLookupCopies() {
+  if (!existsSync(LOOKUP)) {
+    fail(`No captain/lookup.md, so no skill has a canonical lookup to copy.`);
+    return;
+  }
+  const canonical = readFileSync(LOOKUP, "utf8");
+  for (const { dir, rel: folderRel } of skillFolders()) {
+    const copy = join(dir, LOOKUP_COPY);
+    if (!existsSync(copy)) continue;
+    if (readFileSync(copy, "utf8") !== canonical)
+      fail(
+        `${folderRel}/${LOOKUP_COPY} differs from captain/lookup.md. Edit the canonical file, ` +
+          `then copy it over every skill's copy, so every skill finds the brain the same way.`,
+      );
+  }
+}
+
+// ── 9. House style ──────────────────────────────────────────────────────────
 
 function styleReport() {
   const files = [
     ...markdownUnder(SKILLS),
     ...markdownUnder(join(root, "host")),
+    ...markdownUnder(join(root, "captain")),
     ...["README.md", "AGENTS.md"]
       .map((n) => join(root, n))
       .filter((p) => existsSync(p)),
@@ -690,6 +818,9 @@ checkSkillReferences();
 checkHostSlots();
 checkNoHostPaths();
 checkTemplates();
+checkCaptainTemplates();
+checkCaptainSlots();
+checkLookupCopies();
 const style = styleReport();
 findings.push(...style.findings);
 
