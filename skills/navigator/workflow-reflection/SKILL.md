@@ -21,7 +21,8 @@ compatibility: >-
   (references/captain-lookup.md), falling back to .agents/host.json. With docs.local set, the
   one-pager goes there. With docs.local null, it goes under docs.root. With docs.root null as well,
   it goes in the study folder beside the private report, and the hand-back says so. With docs.local
-  absent, ask once where branch-local docs live and offer to record the answer.
+  absent, ask once where branch-local docs live and offer to record the answer in the brain's host
+  file (references/captain-lookup.md, step 6).
 metadata:
   suite: captain-phil
   hand: navigator

@@ -16,8 +16,9 @@ compatibility: >-
   memory.gloss and checks.guard from the host file found through captain.json
   (references/captain-lookup.md), falling back to .agents/host.json. With docs.root null, the repo
   keeps no docs folder and a doc is written where the reader who needs it will be; with it absent,
-  ask once and offer to record the answer. With memory.root null, the repo keeps no project notes,
-  so step 1 never routes content there. Without checks.guard, step 6 runs by hand.
+  ask once and offer to record the answer in the brain's host file (references/captain-lookup.md,
+  step 6). With memory.root null, the repo keeps no project notes, so step 1 never routes content
+  there. Without checks.guard, step 6 runs by hand.
 metadata:
   suite: captain-phil
   hand: scribe
@@ -54,7 +55,7 @@ Two calls that come up every time:
 | Slot | Set | `null` | Absent |
 |---|---|---|---|
 | `docs.root` | Write the doc there | The repo keeps no docs folder, so write the doc where the reader who needs it will be, and say so in one line | Ask once where the repo keeps its docs, then offer to record the answer in the brain's host file (`references/captain-lookup.md`, step 6) |
-| `docs.retired` | Write the retirement record there | Keep the record beside the doc it retires from, and say so in one line | Run the `null` behaviour, and offer to record the answer |
+| `docs.retired` | Write the retirement record there | Keep the record beside the doc it retires from, and say so in one line | Run the `null` behaviour, and offer to record the answer in the brain's host file (`references/captain-lookup.md`, step 6) |
 | `docs.local` | Write a branch-local note there | Every note is repo-wide, so the convention goes in the doc that owns its topic | Run the `null` behaviour |
 
 Never ask about a `null` slot. The repo already answered, and being asked the same question every session is how a suite gets uninstalled.
@@ -109,7 +110,7 @@ The carve-outs are in that table and nowhere else. A design record keeps its met
 3. Link the term's first use in the draft to the glossary entry, rather than defining it in place.
 4. Define an acronym the same way.
 
-Where `docs.glossary` is `null` or absent, the repo keeps no glossary: define each term on its first use in the draft, in one clause, and never twice in the same file. Offer to record the answer where the slot is absent rather than `null`.
+Where `docs.glossary` is `null` or absent, the repo keeps no glossary: define each term on its first use in the draft, in one clause, and never twice in the same file. Offer to record the answer in the brain's host file (`references/captain-lookup.md`, step 6) where the slot is absent rather than `null`.
 
 ## 5. Wire it up
 

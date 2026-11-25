@@ -19,7 +19,8 @@ compatibility: >-
   .agents/host.json. With records.scope null, the scope is the tracker's description of the feature,
   read through memory.connectors, and the report says the baseline may have been edited since it was
   agreed. With records.scope absent, ask once where the agreed scope lives and offer to record the
-  answer. With docs.root null, the report goes in a docs folder at the repo root. With
+  answer in the brain's host file (references/captain-lookup.md, step 6). With docs.root null, the
+  report goes in a docs folder at the repo root. With
   surfaces.harnessMarkers absent or empty, no code is skipped as demo-only.
 metadata:
   suite: captain-phil

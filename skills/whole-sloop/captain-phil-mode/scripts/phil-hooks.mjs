@@ -4,7 +4,7 @@
   runs them for the rest of the session.
 
     node phil-hooks.mjs prompt   UserPromptSubmit: reminds the agent of the
-                                 "Before asking Phil anything" list, and flags
+                                 "Before asking the designer anything" list, and flags
                                  a message that reads as a correction.
     node phil-hooks.mjs stop     Stop: sends back a reply that asks the user
                                  something and breaks the asking rules.
@@ -73,8 +73,8 @@ export const isAsk = text => ASK.some(re => re.test(text))
 export const isCorrection = text => CORRECTION.some(re => re.test(text))
 
 const REMINDER =
-  'captain-phil-mode: before you ask the user anything, run captain-phil-mode\'s "Before asking Phil ' +
-  'anything" list. Skipping a step is a failure even when the work is right.'
+  'captain-phil-mode: before you ask the user anything, run captain-phil-mode\'s "Before asking the ' +
+  'designer anything" list. Skipping a step is a failure even when the work is right.'
 
 const DRIFT =
   "captain-phil-mode: the user's message may be correcting the direction. Before any tool call, " +
