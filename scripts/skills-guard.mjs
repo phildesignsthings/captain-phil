@@ -4,18 +4,19 @@
 //
 // Each check reads one of three things:
 //
-//   the skill folders:   checkNoStraySkillMd, checkFrontmatter, checkSkillIndex,
-//                        checkSkillReferences, checkHostSlots, checkNoHostPaths
+//   the skill folders:   checkLayout, checkFrontmatter, checkSkillIndex,
+//                        checkHandIndex, checkSkillReferences, checkHostSlots,
+//                        checkNoHostPaths
 //   the host schema:     checkHostSlots, checkTemplates
 //   every markdown file: checkHouseStyle, which imports the only copy of the
-//                        rules from skills/write-doc/scripts/house-style.mjs
+//                        rules from skills/scribe/write-doc/scripts/house-style.mjs
 //
 // Nothing here reads a consuming repo. A rule about how an installed skill
 // behaves belongs in that skill's own body, because this script never runs there.
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join, relative, basename, dirname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { checkHouseStyle } from "../skills/write-doc/scripts/house-style.mjs";
+import { checkHouseStyle } from "../skills/scribe/write-doc/scripts/house-style.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SKILLS = join(root, "skills");
@@ -23,14 +24,15 @@ const SCHEMA_PATH = join(root, "host", "host.schema.json");
 const TEMPLATES = join(root, "host", "templates");
 // The suite's manual, and the index of its skills. It lives inside a skill so it installs into
 // every consuming repo, where the README never reaches.
-const INDEX = join(SKILLS, "articles", "references", "articles.md");
-const INDEX_REL = "skills/articles/references/articles.md";
+const INDEX = join(SKILLS, "whole-sloop", "articles", "references", "articles.md");
+const INDEX_REL = "skills/whole-sloop/articles/references/articles.md";
 // A house-style finding cites this file as the written rule. A path gives the reader a file to
 // open, where the name of a standard leaves them searching for it.
-const STANDARD = "skills/write-doc/references/house-style.md";
+const STANDARD = "skills/scribe/write-doc/references/house-style.md";
 
 /*
-  Folders under skills/ allowed to have no SKILL.md, each mapped to its reason.
+  Skill folders allowed to have no SKILL.md, each keyed `<hand>/<skill>` and
+  mapped to its reason.
 
   The suite converts one cluster at a time, so a shared script can land before
   the skill that documents it. A folder missing its SKILL.md and absent from
@@ -78,11 +80,31 @@ function markdownUnder(dir) {
   return out;
 }
 
-function skillFolders() {
+/*
+  Every skill sits at skills/<hand>/<skill>/. The installer drops the hand
+  folder, so <skill> is the name a consuming repo installs and <hand> reaches
+  it only as `metadata.hand`. A directory under skills/ is a hand, and a
+  directory under a hand is a skill folder.
+*/
+function handFolders() {
   if (!existsSync(SKILLS)) return [];
   return readdirSync(SKILLS)
     .filter((n) => statSync(join(SKILLS, n)).isDirectory())
     .sort();
+}
+
+function skillFolders() {
+  return handFolders().flatMap((hand) =>
+    readdirSync(join(SKILLS, hand))
+      .filter((n) => statSync(join(SKILLS, hand, n)).isDirectory())
+      .sort()
+      .map((name) => ({
+        hand,
+        name,
+        dir: join(SKILLS, hand, name),
+        rel: `skills/${hand}/${name}`,
+      })),
+  );
 }
 
 /*
@@ -156,32 +178,56 @@ function bodyProse(text) {
   return out.replace(/```[\s\S]*?```/g, "");
 }
 
-// ── 1. No stray SKILL.md ─────────────────────────────────────────────────────
+// ── 1. The layout ───────────────────────────────────────────────────────────
 
 /*
-  The CLI installs any `<dir>/SKILL.md` it finds under skills/ as a skill of
-  that directory's name. A SKILL.md at the repo root, or one used as a reference
-  file inside a skill, installs a second skill nobody meant to publish.
+  The CLI installs any `<dir>/SKILL.md` it finds as a skill of that
+  directory's name. So the only place a SKILL.md may sit is
+  skills/<hand>/<skill>/SKILL.md. One at the repo root publishes the repo, one
+  in a hand folder publishes the hand, and one inside a skill's own files
+  publishes a second skill nobody meant to write. Installs are flat, so two
+  skills of one name under different hands would install over each other.
 */
-function checkNoStraySkillMd() {
+function checkLayout() {
   if (existsSync(join(root, "SKILL.md")))
     fail(
       `SKILL.md at the repo root. The CLI installs every \`<dir>/SKILL.md\` it finds as a skill of ` +
-        `that directory's name, so a root one publishes the repo itself. Move it under ` +
-        `skills/<name>/.`,
+        `that directory's name, so a root one publishes the repo itself. Move it to ` +
+        `skills/<hand>/<skill>/.`,
     );
-  for (const folder of skillFolders()) {
-    for (const file of markdownUnder(join(SKILLS, folder))) {
-      const rel = relative(root, file);
-      if (basename(file) !== "SKILL.md") continue;
-      if (rel === join("skills", folder, "SKILL.md")) continue;
+  for (const file of markdownUnder(SKILLS)) {
+    if (basename(file) !== "SKILL.md") continue;
+    const rel = relative(root, file);
+    const depth = rel.split(sep).length;
+    if (depth === 4) continue;
+    if (depth === 2)
       fail(
-        `${rel} is a second SKILL.md inside skills/${folder}/. The CLI would install it as its own ` +
-          `skill named after its parent folder. Rename it — a bundled document goes in ` +
-          `references/ under a name that says what it holds.`,
+        `${rel} sits directly in skills/. The CLI would install it as a skill named "skills". ` +
+          `Move it to skills/<hand>/<skill>/SKILL.md.`,
       );
-    }
+    else if (depth === 3)
+      fail(
+        `${rel} sits in the hand folder ${dirname(rel)}/ itself. The CLI would install the hand ` +
+          `as a skill named "${basename(dirname(rel))}". A hand folder holds skill folders and no ` +
+          `SKILL.md of its own: move it to ${dirname(rel)}/<skill>/SKILL.md.`,
+      );
+    else
+      fail(
+        `${rel} is a second SKILL.md inside ${rel.split(sep).slice(0, 3).join("/")}/. The CLI ` +
+          `would install it as its own skill named after its parent folder. Rename it — a bundled ` +
+          `document goes in references/ under a name that says what it holds.`,
+      );
   }
+  const hands = new Map();
+  for (const { hand, name } of skillFolders())
+    hands.set(name, [...(hands.get(name) ?? []), hand]);
+  for (const [name, under] of hands)
+    if (under.length > 1)
+      fail(
+        `Two skill folders are named ${name}: ${under.map((h) => `skills/${h}/${name}/`).join(", ")}. ` +
+          `An install drops the hand folder, so both land in \`.agents/skills/${name}/\` and one ` +
+          `overwrites the other. Rename one.`,
+      );
 }
 
 // ── 2. Frontmatter ──────────────────────────────────────────────────────────
@@ -194,8 +240,8 @@ function checkNoStraySkillMd() {
   margin.
 */
 function checkFrontmatter() {
-  for (const folder of skillFolders()) {
-    const path = join(SKILLS, folder, "SKILL.md");
+  for (const { hand, name, dir, rel: folderRel } of skillFolders()) {
+    const path = join(dir, "SKILL.md");
     const rel = relative(root, path);
     if (!existsSync(path)) continue;
     const text = readFileSync(path, "utf8");
@@ -204,9 +250,9 @@ function checkFrontmatter() {
       fail(`${rel} has no \`---\` frontmatter block. Every skill declares one.`);
       continue;
     }
-    if (fm.name !== folder)
+    if (fm.name !== name)
       fail(
-        `${rel} declares \`name: ${fm.name ?? "(none)"}\` inside skills/${folder}/. The folder name ` +
+        `${rel} declares \`name: ${fm.name ?? "(none)"}\` inside ${folderRel}/. The folder name ` +
           `is what a user types after the slash and the frontmatter name is what the harness ` +
           `registers; a split between them reads as a skill that exists and cannot be invoked.`,
       );
@@ -237,6 +283,12 @@ function checkFrontmatter() {
           `repo carries \`captain-phil\`, which is how a consuming repo tells a suite skill from ` +
           `one of its own.`,
       );
+    if (fm.metadata?.hand !== hand)
+      fail(
+        `${rel} declares \`metadata.hand: ${fm.metadata?.hand ?? "(none)"}\` inside skills/${hand}/. ` +
+          `Every skill carries the hand whose folder holds it. An install drops the folder, so the ` +
+          `tag is the only place a consuming repo can read the hand from.`,
+      );
     if (/\$1\b/.test(bodyProse(text)) && !fm["argument-hint"])
       fail(
         `${rel} reads \`$1\` in its body and declares no \`argument-hint:\`. Without the hint the ` +
@@ -259,22 +311,23 @@ function checkSkillIndex() {
     return;
   }
   const onDisk = new Set();
-  for (const folder of skillFolders()) {
-    const hasSkill = existsSync(join(SKILLS, folder, "SKILL.md"));
-    const pending = PENDING_SKILLS.get(folder);
+  for (const { name, dir, rel: folderRel } of skillFolders()) {
+    const key = relative(SKILLS, dir).split(sep).join("/");
+    const hasSkill = existsSync(join(dir, "SKILL.md"));
+    const pending = PENDING_SKILLS.get(key);
     if (hasSkill && pending)
       fail(
-        `skills/${folder}/ has a SKILL.md and is still listed in PENDING_SKILLS in ` +
+        `${folderRel}/ has a SKILL.md and is still listed in PENDING_SKILLS in ` +
           `scripts/skills-guard.mjs — "${pending}". Delete that entry in the same commit. An ` +
           `exemption for a skill that exists is a skill the index never has to list.`,
       );
     else if (!hasSkill && !pending)
       fail(
-        `skills/${folder}/ has no SKILL.md, so the CLI installs nothing from it. Write the ` +
-          `SKILL.md, or add the folder to PENDING_SKILLS in scripts/skills-guard.mjs with the ` +
+        `${folderRel}/ has no SKILL.md, so the CLI installs nothing from it. Write the ` +
+          `SKILL.md, or add "${key}" to PENDING_SKILLS in scripts/skills-guard.mjs with the ` +
           `reason and the gate that clears it.`,
       );
-    if (hasSkill) onDisk.add(folder);
+    if (hasSkill) onDisk.add(name);
   }
 
   const md = readFileSync(INDEX, "utf8");
@@ -313,6 +366,86 @@ function checkSkillIndex() {
     );
 }
 
+/*
+  The articles' `## Hands` section is the claim for `metadata.hand`, as the
+  Skills table is for the skill folders. One bullet per hand,
+  `- **<hand>**: <skill>, <skill>`, and the check fails a mismatch in either
+  direction: a skill missing from its hand's bullet, a skill listed under a
+  hand its tag does not name, a listed skill that does not exist, and a hand
+  folder or a bullet with no partner.
+*/
+function checkHandIndex() {
+  if (!existsSync(INDEX)) return;
+  const tagged = new Map();
+  for (const { name, dir } of skillFolders()) {
+    const path = join(dir, "SKILL.md");
+    if (!existsSync(path)) continue;
+    tagged.set(name, frontmatter(readFileSync(path, "utf8"))?.metadata?.hand);
+  }
+  const section = /\n## Hands\n([\s\S]*?)(?=\n## |$)/.exec(readFileSync(INDEX, "utf8"));
+  if (!section) {
+    fail(
+      `${INDEX_REL} has no \`## Hands\` section, so nothing lists which hand runs each of the ` +
+        `${tagged.size} skill(s). Restore the heading, or point checkHandIndex at the heading that ` +
+        `replaced it in the same commit.`,
+    );
+    return;
+  }
+  const listed = new Map();
+  const bullets = new Set();
+  for (const line of section[1].split("\n")) {
+    if (!line.startsWith("- ")) continue;
+    const bullet = /^- \*\*([\w-]+)\*\*: (.+)$/.exec(line);
+    if (!bullet) {
+      fail(
+        `${INDEX_REL}'s \`## Hands\` section has a bullet the guard cannot read: "${line}". Write ` +
+          `each hand as "- **<hand>**: <skill>, <skill>".`,
+      );
+      continue;
+    }
+    const [, hand, list] = bullet;
+    bullets.add(hand);
+    for (const name of list.split(",").map((s) => s.trim()).filter(Boolean)) {
+      if (listed.has(name))
+        fail(
+          `${INDEX_REL}'s \`## Hands\` section lists ${name} under both ${listed.get(name)} and ` +
+            `${hand}. A skill belongs to one hand.`,
+        );
+      else listed.set(name, hand);
+    }
+  }
+  for (const [name, hand] of tagged) {
+    if (!listed.has(name))
+      fail(
+        `${name} is missing from ${INDEX_REL}'s \`## Hands\` section. Add it to the ` +
+          `**${hand ?? "(none)"}** bullet, the hand its \`metadata.hand\` names.`,
+      );
+    else if (listed.get(name) !== hand)
+      fail(
+        `${INDEX_REL}'s \`## Hands\` section lists ${name} under ${listed.get(name)}, and its ` +
+          `\`metadata.hand\` says ${hand ?? "(none)"}. Move the skill or fix the list, so the ` +
+          `manual and the tag name one hand.`,
+      );
+  }
+  const phantom = [...listed.keys()].filter((n) => !tagged.has(n));
+  if (phantom.length)
+    fail(
+      `${INDEX_REL}'s \`## Hands\` section lists skills that do not exist: ${phantom.join(", ")}.`,
+    );
+  for (const hand of handFolders())
+    if (!bullets.has(hand))
+      fail(
+        `skills/${hand}/ is a hand folder with no bullet in ${INDEX_REL}'s \`## Hands\` section. ` +
+          `Add "- **${hand}**: …" listing its skills.`,
+      );
+  for (const hand of bullets)
+    if (!handFolders().includes(hand))
+      fail(
+        `${INDEX_REL}'s \`## Hands\` section has a **${hand}** bullet and there is no skills/${hand}/ ` +
+          `folder. Delete the bullet, or create the folder with its skills.`,
+      );
+}
+
 // ── 4. References resolve inside the skill ──────────────────────────────────
 
 /*
@@ -321,8 +454,7 @@ function checkSkillIndex() {
   reader meets a dead path rather than an error.
 */
 function checkSkillReferences() {
-  for (const folder of skillFolders()) {
-    const dir = join(SKILLS, folder);
+  for (const { dir, rel: folderRel } of skillFolders()) {
     for (const file of markdownUnder(dir)) {
       const rel = relative(root, file);
       const text = bodyProse(readFileSync(file, "utf8"));
@@ -335,7 +467,7 @@ function checkSkillReferences() {
       for (const [ref] of text.matchAll(/`\.\.\/[\w./-]+`/g)) dead.add(ref);
       if (dead.size)
         fail(
-          `${rel} cites paths that do not resolve inside skills/${folder}/: ` +
+          `${rel} cites paths that do not resolve inside ${folderRel}/: ` +
             `${[...dead].join(", ")}. A skill installs as one folder, so a citation that walks ` +
             `outside it resolves to nothing in every consuming repo. Bundle the file under ` +
             `references/, or cite the host file by slot instead.`,
@@ -368,8 +500,8 @@ function checkHostSlots() {
   const names = [...groups.keys()].join("|");
   const slotPattern = new RegExp(`\`((?:${names})\\.[A-Za-z]+)(?:\\[\\])?\``, "g");
 
-  for (const folder of skillFolders()) {
-    const path = join(SKILLS, folder, "SKILL.md");
+  for (const { dir } of skillFolders()) {
+    const path = join(dir, "SKILL.md");
     if (!existsSync(path)) continue;
     const rel = relative(root, path);
     const text = readFileSync(path, "utf8");
@@ -410,8 +542,8 @@ function checkHostSlots() {
 // ── 6. No host paths ────────────────────────────────────────────────────────
 
 function checkNoHostPaths() {
-  for (const folder of skillFolders()) {
-    for (const file of markdownUnder(join(SKILLS, folder))) {
+  for (const { dir, rel: folderRel } of skillFolders()) {
+    for (const file of markdownUnder(dir)) {
       const rel = relative(root, file);
       if (rel.split(sep).includes("references")) continue;
       const text = bodyProse(readFileSync(file, "utf8"));
@@ -424,7 +556,7 @@ function checkNoHostPaths() {
             `A portable skill names no host repo's paths — host/README.md § The ` +
             `generic-versus-host test states the call. Cite the host file by slot and state what ` +
             `happens when the slot is null or absent, or move the sentence into ` +
-            `skills/${folder}/references/, which is exempt. (Around body line ${line}.)`,
+            `${folderRel}/references/, which is exempt. (Around body line ${line}.)`,
         );
       }
     }
@@ -550,9 +682,10 @@ function styleReport() {
 
 // ── Run ─────────────────────────────────────────────────────────────────────
 
-checkNoStraySkillMd();
+checkLayout();
 checkFrontmatter();
 checkSkillIndex();
+checkHandIndex();
 checkSkillReferences();
 checkHostSlots();
 checkNoHostPaths();
@@ -566,7 +699,8 @@ if (findings.length) {
   process.exit(1);
 }
 console.log(
-  `guard: ok — ${skillFolders().length} skill folder(s), ${style.total} markdown file(s) read, ` +
+  `guard: ok — ${skillFolders().length} skill folder(s) in ${handFolders().length} hand(s), ` +
+    `${style.total} markdown file(s) read, ` +
     `${style.prose} of them for prose, ${style.pending} yet to opt in with \`house_style: true\`, ` +
     `${style.longSentences} sentence(s) over 26 words (advisory).`,
 );
