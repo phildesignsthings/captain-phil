@@ -1,0 +1,15 @@
+{
+  "$schema": "../captain.schema.json",
+  "taste": "taste/overrides.md",
+  "plans": "plans",
+  "tools": null,
+  "products": [
+    {
+      "name": "my-app",
+      "path": "~/code/my-app",
+      "host": "hosts/my-app.json",
+      "reference": null,
+      "notes": "notes/my-app.md"
+    }
+  ]
+}

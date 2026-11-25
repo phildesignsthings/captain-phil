@@ -10,7 +10,7 @@ Run your agents as Captain Phil runs his company, and I'll thank you to note the
 
 ## Install
 
-Installing captain-phil takes two commands, not one. `npx skills add` installs skills and nothing else, and the host file is not a skill, so step 2 is a separate fetch. Skip it and every skill runs its own degraded fallback instead of reading the repo's answers.
+Installing captain-phil takes three commands, not one. `npx skills add` installs skills and nothing else, and neither the host file nor the brain index is a skill, so steps 2 and 3 are separate fetches. Skip them and every skill runs its own degraded fallback instead of reading the repo's answers.
 
 ### Step 1. The skills
 
@@ -73,6 +73,19 @@ Open the file afterwards and correct the paths the repo does not match, most oft
 
 A repo with no host file still works. Each skill names its fallback in its `compatibility` frontmatter, runs that degraded path, and offers once to write the answer into `.agents/host.json`.
 
+### Step 3. The brain's captain.json
+
+The brain is the designer's own repo of taste, plans and notes, laid out however they like. Its root holds `captain.json`, which lists each product repo the designer works in and where that repo's host file is kept in the brain. A skill finds the host file through it, and falls back to the repo's `.agents/host.json` with a warning for one release.
+
+From the root of the brain repo, fetch the filled template. It refuses to overwrite an existing `captain.json`:
+
+```bash
+(set -C; gh api repos/phildesignsthings/captain-phil/contents/captain/templates/captain.json \
+  --jq .content | base64 -d > captain.json) && cat captain.json
+```
+
+Edit its values to match the brain, then point sessions started outside the brain at it. [The brain index spec](captain/README.md) gives the pointer file, the `CAPTAIN_BRAIN` variable, each slot's meaning, and how to move a host file into the brain.
+
 ## Skills
 
 The manual is [the articles](skills/whole-sloop/articles/references/articles.md): what each skill does, grouped by the moment it runs, plus how gates work and what the host file answers. It installs with the `articles` skill, so in a consuming repo `/articles` answers the questions this section would. Add a skill's row there, in the commit that adds the skill.
@@ -87,12 +100,13 @@ The manual is [the articles](skills/whole-sloop/articles/references/articles.md)
 - **Rollback** is `git revert` in the consuming repo, not a flag on the installer.
 - **Pinning** is not running `update`. The lock file records the hash a repo installed.
 - **Never hand-edit an installed skill.** `update` reinstalls from source and overwrites the edit without warning. Fix it in this repo, merge to `main`, then `npx skills update -p -y`.
+- **Migrate before you update.** Skills find a repo's host file through the brain's `captain.json`, and read the repo's own `.agents/host.json` only as a fallback that prints a warning. A later release drops the fallback, so move each host file into the brain before updating past it. [Migrating from the in-repo host file](captain/README.md#migrating-from-the-in-repo-host-file) holds the steps.
 
 ## Contributing
 
 Run `npm run guard` before every commit. CI runs it again on every push and every pull request, but a failing run does not block a merge. Somebody has to read a red run.
 
-The guard checks the skills index against the filesystem both ways, validates the three host templates against `host/host.schema.json`, ties each skill's `metadata.host` to the slots its body reads, fails any skill body outside `references/` that names a particular repo's paths, and runs the house style over every markdown file. It also fails any `SKILL.md` outside `skills/<hand>/<skill>/`, and any skill whose `metadata.hand` disagrees with its folder or with the articles' `## Hands` list.
+The guard checks the skills index against the filesystem both ways, validates the three host templates against `host/host.schema.json`, ties each skill's `metadata.host` to the slots its body reads, fails any skill body outside `references/` that names a particular repo's paths, and runs the house style over every markdown file. It also fails any `SKILL.md` outside `skills/<hand>/<skill>/`, and any skill whose `metadata.hand` disagrees with its folder or with the articles' `## Hands` list. On the brain side, it validates `captain/templates/` against `captain/captain.schema.json`, checks each skill's `metadata.captain` against the schema, and fails any skill's copy of the lookup that differs from `captain/lookup.md`.
 
 `AGENTS.md` holds the rules for an agent editing this repo. `CLAUDE.md` symlinks to it.
 
