@@ -44,7 +44,7 @@ Each group names a moment. The five after Switching on are `captain-phil-mode`'s
 
 | Skill | What it does |
 |:---|:---|
-| `captain-phil-mode` | Turns on Phil's working defaults: a checklist for each moment of a session that calls the right skill, and two hooks that keep the checklists running |
+| `captain-phil-mode` | Turns on Phil's working defaults: the default taste with your overrides, a checklist for each moment of a session that calls the right skill, and two hooks that keep the checklists running |
 | `articles` | Explains the suite: what each skill does and the moment it runs, how gates work, and what the host file answers. Ask it where to start |
 | `crewman` | Talks to you as Rodger, a pirate of Captain Phil's crew in 1716, for the rest of the session. Code, commands and files stay plain |
 
