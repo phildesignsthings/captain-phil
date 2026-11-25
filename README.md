@@ -75,7 +75,7 @@ A repo with no host file still works. Each skill names its fallback in its `comp
 
 ## Skills
 
-The manual is [the articles](skills/articles/references/articles.md): what each skill does, grouped by the moment it runs, plus how gates work and what the host file answers. It installs with the `articles` skill, so in a consuming repo `/articles` answers the questions this section would. Add a skill's row there, in the commit that adds the skill.
+The manual is [the articles](skills/whole-sloop/articles/references/articles.md): what each skill does, grouped by the moment it runs, plus how gates work and what the host file answers. It installs with the `articles` skill, so in a consuming repo `/articles` answers the questions this section would. Add a skill's row there, in the commit that adds the skill.
 
 ## Versioning
 
@@ -92,7 +92,7 @@ The manual is [the articles](skills/articles/references/articles.md): what each 
 
 Run `npm run guard` before every commit. CI runs it again on every push and every pull request, but a failing run does not block a merge. Somebody has to read a red run.
 
-The guard checks the skills index against the filesystem both ways, validates the three host templates against `host/host.schema.json`, ties each skill's `metadata.host` to the slots its body reads, fails any skill body outside `references/` that names a particular repo's paths, and runs the house style over every markdown file.
+The guard checks the skills index against the filesystem both ways, validates the three host templates against `host/host.schema.json`, ties each skill's `metadata.host` to the slots its body reads, fails any skill body outside `references/` that names a particular repo's paths, and runs the house style over every markdown file. It also fails any `SKILL.md` outside `skills/<hand>/<skill>/`, and any skill whose `metadata.hand` disagrees with its folder or with the articles' `## Hands` list.
 
 `AGENTS.md` holds the rules for an agent editing this repo. `CLAUDE.md` symlinks to it.
 
