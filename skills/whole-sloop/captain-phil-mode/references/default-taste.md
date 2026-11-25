@@ -14,7 +14,9 @@ Every rule is one bullet, and ends in one of two tags.
 
 **The bar** is a correctness rule, tagged `[bar]`. Work that breaks it is wrong, whatever the taste, and neither a designer's overrides nor a product's design file changes it.
 
-**A style rule**, tagged `[style]`, is a taste call. The designer's taste overrides file changes it, and a product's own design file (a design record, a design system) wins on its specifics.
+**A style rule**, tagged `[style]`, is a taste call. The designer's taste overrides file changes it, in the format `references/overrides-format.md` sets out.
+
+**A product's own design file** (a design record, a design system) sets the values a rule uses, such as a spacing, a colour or a timing. It never changes a rule, of either tag.
 
 ## The one rule: clarity
 
@@ -94,9 +96,9 @@ A product is an onion the user peels back to reach more complexity.
 
 ## Critique
 
-- **First ask what the designer was going for,** then be direct and specific, with the why. [style]
+- **First ask whoever made it what they were going for,** then be direct and specific, with the why. [style]
 - **Clear, actionable async feedback beats live feedback.** A live gut check can help but is often wrong, so weigh it rather than obey it. [style]
-- **The same goes for art, design and product alike.** [style]
+- **Critique works the same way for art, design and product.** [style]
 
 ## Things that make the default twitch
 

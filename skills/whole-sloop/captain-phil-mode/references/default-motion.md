@@ -7,7 +7,7 @@ read_when:
 
 # The default motion
 
-How the default taste moves things. `references/default-taste.md` decides where delight goes, and this file decides how it moves. The tags work the same way: a `[bar]` rule is correctness and never changes, and a `[style]` rule is a taste call the designer's overrides can change.
+How the default taste moves things. `references/default-taste.md` decides where delight goes, and this file decides how it moves. The tags work the same way: a `[bar]` rule is correctness and never changes, and a `[style]` rule is a taste call the designer's overrides can change. A product's design file sets the values a rule uses, such as the tokens below, and never changes a rule.
 
 Motion has two jobs. It informs, saying where something came from, where it went and what changed. It confirms, saying the tap worked or the thing saved. Delight comes from doing those two jobs fast and physically, never from extra animation.
 
@@ -91,7 +91,7 @@ The one exception to nothing moving while idle is the glow behind a glass focus 
 - **Haptics confirm, the way motion does, and never decorate.** Selection for picks and toggles, a light impact for a press that commits, and the success, warning and error notifications for outcomes. [style]
 - **Never on scroll, on every row, or on anything that fires repeatedly.** [style]
 - **Haptics work on both mobile platforms,** and a device with no vibration motor never throws. [bar]
-- **`expo-haptics` covers both platforms** in an Expo app. [style]
+- **Use `expo-haptics` in an Expo app.** It covers both platforms. [style]
 
 ## React Native and Expo
 

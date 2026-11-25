@@ -81,3 +81,13 @@ A skill reads only the slots its `metadata.captain` lists. `taste`, `plans` and 
 - **A value.** Resolve the path, and use it.
 - **`null`.** The brain has none of that thing. Skip the step, say so in one line, and never ask.
 - **Absent, or no brain.** Run the fallback the skill's `compatibility` line names.
+
+## Record into a `captain.json` slot
+
+A skill that offers to write into the file or folder a `captain.json` slot names, such as a taste call into the `taste` file, takes the case that matches, as step 6 does for a host file:
+
+- **The slot names a path that exists.** Write into it after a yes.
+- **The slot names a path that is missing.** Offer to create it at that path.
+- **The slot is absent.** Ask once where it lives, offering the path the suite's template gives the slot (`taste/overrides.md` for `taste`, `plans` for `plans`). Offer to create it there and to set the slot in `captain.json`.
+- **The slot is `null`.** Make no offer, because the designer said the brain keeps none of that thing.
+- **No brain was found.** Say in one line that the answer cannot be recorded without a `captain.json`.
