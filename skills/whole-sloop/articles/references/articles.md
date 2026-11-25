@@ -45,6 +45,7 @@ Each group names a moment. The five after Switching on are `captain-phil-mode`'s
 | Skill | What it does |
 |:---|:---|
 | `captain-phil-mode` | Turns on Phil's working defaults: the default taste with your overrides, a checklist for each moment of a session that calls the right skill, and two hooks that keep the checklists running |
+| `taste-grill` | Interviews you about the default taste one numbered question at a time, and writes where your taste differs into your overrides file as each answer lands |
 | `articles` | Explains the suite: what each skill does and the moment it runs, how gates work, and what the host file answers. Ask it where to start |
 | `crewman` | Talks to you as Rodger, a pirate of Captain Phil's crew in 1716, for the rest of the session. Code, commands and files stay plain |
 
@@ -138,7 +139,7 @@ Each skill also belongs to one hand, the member of the crew who would run it. Th
 - **whole-sloop**: captain-phil-mode, articles, crewman, unslop, confirm-scope, grill-me, show-me, decision-request, clean-done, work-report
 - **captain**: start-project, gate, wrap-gate, ask-issue-status
 - **navigator**: run-spike, drift-check, workflow-reflection
-- **designer**: paper, get-creative, ingest-theme, new-surface
+- **designer**: paper, get-creative, ingest-theme, new-surface, taste-grill
 - **builder**: new-screen, add-primitive, receive-prototype, tidy-comments, open-pr
 - **reviewer**: verify-ui, audit-design
 - **scribe**: write-doc, record-design, freeze-memory

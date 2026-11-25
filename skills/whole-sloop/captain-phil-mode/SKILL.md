@@ -39,7 +39,7 @@ Phil's working defaults for a whole session: the default taste with the designer
 
 ## Steps
 
-Run these in order when the session opens, then each checklist as its action comes up.
+Run these in order when the session opens, so the taste is loaded before the checklist below invokes `confirm-scope` or `gate`. Then run each checklist as its action comes up.
 
 ### 1. Roll call
 
@@ -65,7 +65,7 @@ Use the period words of the `crewman` skill, and none of the stage-pirate ones: 
 
 1. Read `references/default-taste.md` and `references/default-motion.md`. They are the default taste, and every rule in them is tagged `[bar]` or `[style]`.
 2. Resolve the `taste` slot of `captain.json` through `references/captain-lookup.md`: step 1 finds the brain, and "The other `captain.json` slots" gives the three states. A path names the overrides file: read it. Where that file is missing, the slot is `null` or absent, or no brain is found, use the default alone and say which in one line. A `null` means the designer keeps the default as shipped.
-3. Lay the overrides on the default. An override replaces the `[style]` rule it names. A rule the default lacks is added as a style rule. An override that would change a `[bar]` rule is set aside: name the rule in one line, and keep the default.
+3. Lay the overrides on the default, as `references/overrides-format.md` sets out. An entry names its rule by the rule's heading and its bold lead. An entry that would change a `[bar]` rule is set aside: name the rule in one line, and keep the default.
 4. Apply the merged taste to every design call, review and critique for the rest of the session, without reading the files again.
 
 ## The checklists
@@ -108,7 +108,7 @@ Route the correction by what it is, and write a memory only for the last row.
 |---|---|
 | A request for this task only | Nowhere |
 | How this repo works | The repo's agent instructions or a doc, through `write-doc` |
-| A taste call: how the designer wants things to look, read or move | An offer to add it to the overrides file the `taste` slot names |
+| A taste call: how the designer wants things to look, read or move | An offer to write it as an entry (`references/overrides-format.md`) in the `taste` file, taking the case `references/captain-lookup.md` § Record into a `captain.json` slot matches |
 | How the designer works, in every project | The captain-phil suite: this skill or another one |
 | A fact about the machine that no repo file can hold | A memory |
 
@@ -145,6 +145,6 @@ Invoking this skill registers two hooks for the rest of the session. Both run `s
 
 | You need | Read |
 |---|---|
-| The default design rules, and what is bar and what is style | `references/default-taste.md` |
-| How the default moves things: timings, easing, gestures, haptics | `references/default-motion.md` |
+| The default design and motion rules, and what is bar and what is style | `references/default-taste.md`, `references/default-motion.md` |
+| How an overrides entry names its rule, and how the merge runs | `references/overrides-format.md` |
 | Where the brain is, and the `taste` slot's three states | `references/captain-lookup.md` |

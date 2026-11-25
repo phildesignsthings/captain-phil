@@ -6,7 +6,8 @@
 //
 //   the skill folders:   checkLayout, checkFrontmatter, checkSkillIndex,
 //                        checkHandIndex, checkSkillReferences, checkHostSlots,
-//                        checkNoHostPaths, checkCaptainSlots, checkLookupCopies
+//                        checkNoHostPaths, checkCaptainSlots, checkLookupCopies,
+//                        checkTasteCopies
 //   the host schema:     checkHostSlots, checkTemplates
 //   the captain schema:  checkCaptainSlots, checkCaptainTemplates
 //   every markdown file: checkHouseStyle, which imports the only copy of the
@@ -29,6 +30,12 @@ const CAPTAIN_TEMPLATES = join(root, "captain", "templates");
 // folder, so each one ships a copy under this name, and the copy has to match the canonical file.
 const LOOKUP = join(root, "captain", "lookup.md");
 const LOOKUP_COPY = join("references", "captain-lookup.md");
+// The default taste lives in captain-phil-mode, which loads it. Another skill that reads it ships
+// copies under the same names, and each copy has to match the file in captain-phil-mode.
+const TASTE_HOME = join(SKILLS, "whole-sloop", "captain-phil-mode");
+const TASTE_FILES = ["default-taste.md", "default-motion.md", "overrides-format.md"].map((n) =>
+  join("references", n),
+);
 // The suite's manual, and the index of its skills. It lives inside a skill so it installs into
 // every consuming repo, where the README never reaches.
 const INDEX = join(SKILLS, "whole-sloop", "articles", "references", "articles.md");
@@ -791,6 +798,36 @@ function checkLookupCopies() {
   }
 }
 
+/*
+  captain-phil-mode holds the one canonical default taste and the overrides
+  format, because it loads them when a session opens. A skill that reads the
+  taste from inside its own folder carries copies. A copy that drifts is a
+  skill grilling or judging against a different default from the one the
+  session loads, so each copy matches its canonical file byte for byte.
+*/
+function checkTasteCopies() {
+  const homeRel = relative(root, TASTE_HOME);
+  for (const file of TASTE_FILES) {
+    const canonicalPath = join(TASTE_HOME, file);
+    if (!existsSync(canonicalPath)) {
+      fail(`No ${homeRel}/${file}, so no skill has a canonical default taste to copy.`);
+      continue;
+    }
+    const canonical = readFileSync(canonicalPath, "utf8");
+    for (const { dir, rel: folderRel } of skillFolders()) {
+      if (dir === TASTE_HOME) continue;
+      const copy = join(dir, file);
+      if (!existsSync(copy)) continue;
+      if (readFileSync(copy, "utf8") !== canonical)
+        fail(
+          `${folderRel}/${file} differs from ${homeRel}/${file}. Edit the file in ` +
+            `captain-phil-mode, then copy it over every skill's copy, so every skill reads the ` +
+            `same default taste.`,
+        );
+    }
+  }
+}
+
 // ── 9. House style ──────────────────────────────────────────────────────────
 
 function styleReport() {
@@ -821,6 +858,7 @@ checkTemplates();
 checkCaptainTemplates();
 checkCaptainSlots();
 checkLookupCopies();
+checkTasteCopies();
 const style = styleReport();
 findings.push(...style.findings);
 
