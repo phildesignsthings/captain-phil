@@ -92,6 +92,14 @@ Each group names a moment. The five after Switching on are `captain-phil-mode`'s
 |:---|:---|
 | `plan-it` | Turns an idea into a written plan before anything is built: asks why and what done looks like, reads what already exists, then asks one decision at a time and writes each answer into your plans folder, split into gates |
 
+### Reviewing
+
+| Skill | What it does |
+|:---|:---|
+| `test-plan` | Writes the checks before a build starts: one measurable pass line per behaviour the plan promises, saved in your brain's tests folder where the build cannot edit them |
+| `review-build` | Reviews one finished commit against its test plan through a fresh reviewer agent, and reports each finding as important, nit or pre-existing with its file and line, without touching the repo |
+| `qa-run` | Runs a test plan's flows against a running build, reports pass or fail for each with its evidence, and stops every server it started |
+
 ### Starting a product
 
 | Skill | What it does |
@@ -147,7 +155,7 @@ Each skill also belongs to one hand, the member of the crew who would run it. Th
 - **navigator**: run-spike, drift-check, workflow-reflection, plan-it
 - **designer**: paper, get-creative, ingest-theme, new-surface, taste-grill
 - **builder**: new-screen, add-primitive, receive-prototype, tidy-comments, open-pr
-- **reviewer**: verify-ui, audit-design
+- **reviewer**: verify-ui, audit-design, test-plan, review-build, qa-run
 - **scribe**: write-doc, record-design, freeze-memory
 
 ## Keeping the suite current

@@ -61,7 +61,7 @@ The file starts once the gate is answered and the survey is done, with its front
 - **Number every decision** `D<n>`, in the order the designer made them, and never reuse a number.
 - **Give each one its why and the options it beat,** each with its reason. A decision without the rejected options gets reopened by the next reader.
 - **Use the designer's words** for anything they said in free text, rather than an elaboration of them.
-- **Mark a default you wrote** as `Builder's call: cheap to change.` in place of the why, so a reader can tell it from a decision the designer made.
+- **Mark a default you wrote** as `Builder's call: cheap to change.` in place of the why, so a reader can tell it from a decision the designer made. Write it in the turn the tree marks the detail as cheap, without waiting for an answer.
 - **Copy a shape the designer adopted verbatim,** such as a tree or a flow, into the decision, rather than summarising it.
 
 Ideas from a link or from another person go under a `## Proposals (not decided)` heading, with where each came from. A proposal moves into Decided only when the designer adopts it.
@@ -97,7 +97,7 @@ A gate is one deliverable, sized so a single session can build it and someone ca
 
 ## The cold read
 
-Before the close, give the plan to a fresh subagent whose only context is the plan's path. Tell it to stay read-only: no file edits and no command that changes anything. Ask it:
+Before the close, give the plan to a fresh subagent whose only context is the plan's path, or the plan's text where there is no file to point at. Tell it to stay read-only: no file edits and no command that changes anything. Ask it:
 
 > Without doing the work: what would you do first, what does done look like, and what is unclear or missing?
 

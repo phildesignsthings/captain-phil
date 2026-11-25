@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(/<tests folder>/**)",
+      "Edit(/<review-build folder>/**)",
+      "Edit(/<reviewer agent file>)"
+    ]
+  }
+}

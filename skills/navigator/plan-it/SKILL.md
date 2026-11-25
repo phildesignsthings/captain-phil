@@ -84,7 +84,7 @@ The gate is passed when items 1 and 2 have an answer the designer gave or a file
 
 Resolve the product the idea is for, through steps 2 to 4 of `references/captain-lookup.md`. Where several entries match and the gate named none, this is the one place to ask which.
 
-Then read every source the idea touches, as `references/survey.md` sets out: earlier plans, the brain's notes on the product, the product record (`records.product`), the agreed scope (`records.scope`), the project notes (`memory.root`), the agent index (`docs.index`), and the tracker (`issues.tracker`), read-only. Report it as short bullets, one per source, naming the empty ones. Where two sources state opposite rules, say so before any question that rests on either.
+Then read every source the idea touches, as `references/survey.md` sets out: earlier plans, the brain's notes on the product, the product record (`records.product`), the agreed scope (`records.scope`), the project notes (`memory.root`), the agent index (`docs.index`), and the tracker (`issues.tracker`), read-only. Report it as short bullets, one per source, naming the empty ones. The bullets open the message that asks the "already fixed" question, or the first question of step 5 where that one is not needed, so the designer sees what was found before answering. Where two sources state opposite rules, say so before any question that rests on either.
 
 ### 4. Map the decisions
 
@@ -107,16 +107,16 @@ The interview is done when the frontier is empty: every branch visited, nothing 
 Write the plan in the shape `references/plan-format.md` gives: Goal and why, Decided, Open, one `## Gate <id>` heading per gate, and Next.
 
 1. Once the gate in step 2 is answered and the survey in step 3 is done, create the file with its Goal and why, naming what the survey found fixed. Where step 1 noted a missing folder or an absent slot, make that offer first, once.
-2. After each answer, add the decision to Decided and bump `updated:`.
+2. When step 4 marks a detail as cheap to change, write its default into Decided in the same turn, marked as the builder's call. After each answer, add the decision to Decided. Bump `updated:` with every write.
 3. After a reversal, mark the old decision superseded and list the files that still state it under `## To update`.
 4. Once the interview ends, split the build into gates, each one deliverable sized for one session, with its own done checks.
 5. Read the file back from disk before reporting what it holds.
 
 ### 7. Cold-read and close
 
-1. Give the plan to a fresh subagent with no context beyond its path, read-only, as `references/plan-format.md` § The cold read says. Fix each gap it finds, two rounds at most.
+1. Give the plan to a fresh subagent with no context beyond its path, or the plan's text where there is no file, read-only, as `references/plan-format.md` § The cold read says. Fix each gap it finds, two rounds at most.
 2. Tell the designer in a few lines what was decided, what is open, and where the plan lives. With nowhere to save it, print the whole plan.
-3. Point at `gate` to start the first gate in a fresh session. Start no building here.
+3. Point at `gate` to start the first gate in a fresh session, and print the first gate's id and the plan's path for the designer to give it. A fresh plan has no gate record yet, so `gate` asks which plan the work follows. Start no building here.
 
 ## When you need
 
