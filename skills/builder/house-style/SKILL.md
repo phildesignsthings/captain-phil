@@ -17,10 +17,12 @@ compatibility: >-
   Reads the product's reference and notes from its captain.json entry
   (references/captain-lookup.md). With notes a path, the pattern notes are read from it and
   written to it, and a missing file is created there. With notes null, the notes stay in the
-  chat and the closing report. With notes absent, it asks once where they live, offering
-  notes/<name>.md in the brain, and keeps them in the chat where nobody answers. With reference
-  null or absent, the repo's own code is the only reference, and where the repo has none, it asks
-  for one. Reads docs.index, git.trunk, components.dir, checks.lint and checks.typecheck from the
+  chat and the closing report, with no offer to record them and no question about a notes file.
+  With notes absent, it asks once where they live, offering notes/<name>.md in the brain, and
+  keeps them in the chat where nobody answers or no brain was found. With reference null or
+  absent, the repo's own code is
+  the only reference, and where the repo has none, it asks for one. Reads docs.index, git.trunk,
+  components.dir, checks.lint and checks.typecheck from the
   host file found through captain.json, falling back to .agents/host.json. docs.index absent means
   the agent index at the repo root. git.trunk absent means the remote's default branch, and the
   working tree where the repo has no remote. components.dir absent means the folder the example
@@ -43,7 +45,7 @@ The short version: find the product and its notes, find the reference, write the
 ## Hard rules
 
 - **Read the reference before writing any code.** The repo's own example code comes first, a reference repo the designer names comes second, and asking comes last.
-- **Write the patterns down before the first edit,** into the notes file in the brain. Never write notes into the product repo.
+- **Write the patterns down before the first edit,** into the notes file in the brain, or into the reply where step 1 keeps them in the chat. Never write notes into the product repo.
 - **Match the reference, not your habits.** Add no folder, pattern or library the reference doesn't use. A library outside the repo's stack is a question for the designer.
 - **The code wins over the notes,** and the repo's own code wins over a reference repo. Where they disagree, follow the code and update the notes in the same session.
 - **Take patterns from a reference repo, never its files.** Copy no code, names or content out of it.
@@ -60,7 +62,7 @@ Resolve the product the change is for through `references/captain-lookup.md`. Th
 
 | Key | A path | `null` | Absent |
 |---|---|---|---|
-| `notes` | Read the file where it exists. Where it is missing, note it: step 3 creates it there | Say in one line that the notes stay in the chat and the closing report | Ask once where the notes live, offering `notes/<name>.md` in the brain and setting the entry's `notes`. With nobody to answer, keep them in the chat |
+| `notes` | Read the file where it exists. Where it is missing, note it: step 3 creates it there | Say in one line that the notes stay in the chat and the closing report. Make no offer to record them and raise no question about a notes file, because `null` is the designer's answer | Ask once where the notes live, offering `notes/<name>.md` in the brain and setting the entry's `notes`. With nobody to answer, keep them in the chat. With no brain, keep them in the chat, and say in one line that they cannot be recorded without a `captain.json` |
 | `reference` | A second repo to read in step 2, after the product's own code | The product's own code is the only reference | The same as `null`, and step 2 asks for one only where the product has no example code |
 
 A path in either key resolves the way the lookup resolves every `captain.json` path.
@@ -70,9 +72,10 @@ A path in either key resolves the way the lookup resolves every `captain.json` p
 Work out what kind of code the change adds: a screen, a component, a hook, a data call, a test. Then find the code of that kind to copy, as `references/finding-a-reference.md` sets out:
 
 1. **The notes.** Patterns the notes already record, each with the file it was read from.
-2. **The product's own example code,** read from its trunk: `git.trunk`, then the remote's default branch, then the working tree where there is no remote. Read the agent index (`docs.index`) and the stack doc it names first, for what the repo allows.
-3. **The reference repo,** where the entry names one, for any kind of code the product has no example of.
-4. **The designer,** where neither has an example. Ask once which repo or file to copy, and offer to record a repo as the entry's `reference`. With nobody to answer, write no code: say what kind of example is missing, and stop.
+2. **The product's agent index and stack doc:** `docs.index` and the stack doc it names, for what the repo allows.
+3. **The product's own example code,** read from its trunk: `git.trunk`, then the remote's default branch, then the working tree where there is no remote.
+4. **The reference repo,** where the entry names one, for any kind of code the product has no example of.
+5. **The designer,** where neither has an example. Ask once which repo or file to copy, and offer to record a repo as the entry's `reference`. With nobody to answer, write no code: say what kind of example is missing, and stop.
 
 Pick the example the way `references/finding-a-reference.md` § What makes code a good reference orders it: the same kind first. Where two examples disagree, follow the one more files share, and name the other in the notes.
 
@@ -88,7 +91,7 @@ Before the first edit, write what the reference does into the notes file, in the
 ### 4. Write the change in that shape
 
 1. Write the change the way the reference would. Keep files as small as the reference keeps them, and put logic where the reference puts it.
-2. Extract repeated or large markup into a shared component in `components.dir`, and helpers into the folder the reference keeps them in.
+2. Where the reference extracts repeated or large markup into shared components, do the same into `components.dir`, and put helpers in the folder the reference keeps them in. Where it keeps markup inline and has no shared components, so does the change, because the hard rule against new folders and patterns wins.
 3. Use a library the repo's stack doc lists. One it doesn't list needs the designer's yes before it goes in. Where the stack has its own installer that picks versions, such as `npx expo install` on Expo, install through it and report the version it picked.
 4. Where the change needs a pattern the reference doesn't show, pick the one closest to the reference, and add it to the notes under § Decided by a change.
 
